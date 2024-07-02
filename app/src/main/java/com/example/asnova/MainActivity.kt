@@ -1,6 +1,7 @@
 package com.example.asnova
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -43,6 +44,16 @@ class MainActivity : ComponentActivity() {
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val userSharedPreferences =
+            this.getSharedPreferences(SHARED_PREFS_USER_SETTING, Context.MODE_PRIVATE)
+        val user = userSharedPreferences.getString(KEY_USER_SETTING, false.toString())
+        UserManager.status = when(user)
+        {
+            true.toString() -> true
+            false.toString() -> false
+            else -> false
+        }
         setContent {
             AsnovaTheme {
                 var showBottomBar by remember { mutableStateOf(true) }

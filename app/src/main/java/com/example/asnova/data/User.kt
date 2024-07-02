@@ -1,5 +1,9 @@
 package com.example.asnova.data
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+
 data class SignInResult(
     val data: UserData?,
     val errorMessage: String?
@@ -10,3 +14,7 @@ data class UserData(
     val username: String?,
     val profilePictureUrl: String?
 )
+
+object UserManager {
+    var status by mutableStateOf(false)
+}
