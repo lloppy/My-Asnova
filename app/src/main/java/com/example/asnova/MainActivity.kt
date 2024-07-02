@@ -9,6 +9,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.navigation.NavHostController
@@ -44,9 +45,13 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             AsnovaTheme {
+                var showBottomBar by remember { mutableStateOf(true) }
+
                 navController = rememberNavController()
                 val screen = navController.currentBackStackEntryAsState().value
-                val showBottomBar = screen?.destination?.route !in hideList
+                LaunchedEffect(screen?.destination?.route) {
+                    showBottomBar = screen?.destination?.route !in hideList
+                }
 
                 Scaffold(
                     bottomBar = {
@@ -64,4 +69,4 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
-
+    

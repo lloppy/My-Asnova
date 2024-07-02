@@ -18,14 +18,12 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.example.asnova.R
 import com.example.asnova.SharedViewModel
-import com.example.asnova.navigation.nav_bar.DoubleDuration
-import com.example.asnova.navigation.nav_bar.Duration
 import com.example.asnova.screen.feed.FeedScreen
 import com.example.asnova.screen.log_in.LogInScreen
 import com.example.asnova.screen.profile_settings.ProfileSettingsScreen
 import com.example.asnova.screen.schedule.ScheduleScreen
+import com.example.asnova.screen.splash.SplashScreen
 import com.example.asnova.ui.theme.orangeMaterial
 import com.exyte.animatednavbar.AnimatedNavigationBar
 import com.exyte.animatednavbar.animation.balltrajectory.Parabolic
@@ -36,7 +34,6 @@ import com.exyte.animatednavbar.items.dropletbutton.DropletButton
 @Composable
 fun SetupNavGraph(navHostController: NavHostController, viewModel: SharedViewModel) {
     val dropletButtons = listOf(
-        Route.LogIn,
         Route.Feed,
         Route.Schedule,
         Route.ProfileSettings
@@ -86,8 +83,11 @@ fun SetupNavGraph(navHostController: NavHostController, viewModel: SharedViewMod
 
     NavHost(
         navController = navHostController,
-        startDestination = Route.LogIn.route
+        startDestination = Route.Feed.route
     ) {
+        composable(Route.Splash.route) {
+            SplashScreen(navHostController = navHostController)
+        }
         composable(Route.LogIn.route) {
             LogInScreen(viewModel = viewModel)
         }
@@ -103,9 +103,5 @@ fun SetupNavGraph(navHostController: NavHostController, viewModel: SharedViewMod
     }
 }
 
-sealed class Route(val route: String, val iconId: Int) {
-    object LogIn : Route(route = "log_in_screen", iconId = R.drawable.ic_launcher_foreground)
-    object Feed : Route(route = "feed_screen", iconId = R.drawable.ic_feed)
-    object Schedule : Route(route = "schedule_screen", iconId = R.drawable.ic_schedule)
-    object ProfileSettings : Route(route = "profile_settings_screen", iconId = R.drawable.ic_person)
-}
+const val Duration = 500
+const val DoubleDuration = 1000
