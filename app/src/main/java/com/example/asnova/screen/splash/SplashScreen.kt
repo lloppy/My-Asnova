@@ -13,14 +13,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.res.painterResource
-import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import com.example.asnova.R
-import com.example.asnova.navigation.Route
 import kotlinx.coroutines.delay
 
 @Composable
-fun SplashScreen(navHostController: NavHostController) {
+fun SplashScreen(navHostController: NavHostController, route: String) {
     val scale = remember {
         Animatable(0f)
     }
@@ -35,7 +33,7 @@ fun SplashScreen(navHostController: NavHostController) {
         )
         delay(150L)
         navHostController.popBackStack()
-        navHostController.navigate(Route.Feed.route)
+        navHostController.navigate(route)
     }
 
     Box(

@@ -23,8 +23,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.SubcomposeAsyncImage
-import com.elnfach.arthouse.utils.managers.UserManager
-import com.elnfach.arthouse.utils.shimmerEffect
 import com.example.asnova.data.NewsItem
 import com.example.asnova.data.UserManager
 import com.example.asnova.utils.shimmerEffect
@@ -62,7 +60,9 @@ fun NewsArticleCardTop(
                 .clip(shape = MaterialTheme.shapes.medium),
             contentScale = ContentScale.Crop,
             loading = {
-                Box(modifier = Modifier.fillMaxSize().shimmerEffect())
+                Box(modifier = Modifier
+                    .fillMaxSize()
+                    .shimmerEffect())
             }
         )
         Spacer(Modifier.height(16.dp))

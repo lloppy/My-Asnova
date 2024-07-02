@@ -18,7 +18,6 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.example.asnova.SharedViewModel
 import com.example.asnova.screen.feed.FeedScreen
 import com.example.asnova.screen.log_in.LogInScreen
 import com.example.asnova.screen.profile_settings.ProfileSettingsScreen
@@ -32,11 +31,11 @@ import com.exyte.animatednavbar.animation.indendshape.shapeCornerRadius
 import com.exyte.animatednavbar.items.dropletbutton.DropletButton
 
 @Composable
-fun SetupNavGraph(navHostController: NavHostController, viewModel: SharedViewModel) {
+fun SetupNavGraph(navHostController: NavHostController) {
     val dropletButtons = listOf(
-        Route.Feed,
-        Route.Schedule,
-        Route.ProfileSettings
+        Screen.Feed,
+        Screen.Schedule,
+        Screen.ProfileSettings
     )
 
     var selectedItem by remember { mutableStateOf(0) }
@@ -71,7 +70,7 @@ fun SetupNavGraph(navHostController: NavHostController, viewModel: SharedViewMod
                 onClick = {
                     selectedItem = index
                     navHostController.navigate(item.route) {
-                        popUpTo(Route.LogIn.route) {
+                        popUpTo(Screen.LogIn.route) {
                             saveState = true
                         }
                         launchSingleTop = true
@@ -83,22 +82,22 @@ fun SetupNavGraph(navHostController: NavHostController, viewModel: SharedViewMod
 
     NavHost(
         navController = navHostController,
-        startDestination = Route.Feed.route
+        startDestination = Screen.Splash.route
     ) {
-        composable(Route.Splash.route) {
-            SplashScreen(navHostController = navHostController)
+        composable(Screen.Splash.route) {
+            SplashScreen(navHostController = navHostController, route = Screen.Feed.route)
         }
-        composable(Route.LogIn.route) {
-            LogInScreen(viewModel = viewModel)
+        composable(Screen.LogIn.route) {
+            LogInScreen()
         }
-        composable(Route.Feed.route) {
-            FeedScreen(viewModel = viewModel)
+        composable(Screen.Feed.route) {
+            FeedScreen()
         }
-        composable(Route.Schedule.route) {
-            ScheduleScreen(viewModel = viewModel)
+        composable(Screen.Schedule.route) {
+            ScheduleScreen()
         }
-        composable(Route.ProfileSettings.route) {
-            ProfileSettingsScreen(viewModel = viewModel)
+        composable(Screen.ProfileSettings.route) {
+            ProfileSettingsScreen()
         }
     }
 }
