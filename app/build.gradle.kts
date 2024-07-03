@@ -110,8 +110,8 @@ dependencies {
     kapt("androidx.hilt:hilt-compiler:1.2.0")
     implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
 
-    // Hilt Jetpack Integration
-    implementation("androidx.compose.material3:material3:1.2.1")
+    implementation("androidx.compose.material3:material3:1.2.0-beta01")
+    implementation("androidx.compose.material:material:1.2.0-alpha02")
 }
 
 kapt {

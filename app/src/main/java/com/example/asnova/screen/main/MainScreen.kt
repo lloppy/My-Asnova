@@ -9,6 +9,7 @@ import androidx.lifecycle.LifecycleCoroutineScope
 import androidx.lifecycle.LifecycleOwner
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.example.asnova.navigation.BottomNavigationBar
 import com.example.asnova.navigation.Screen
 import com.example.asnova.navigation.SetupNavGraph
 import com.example.asnova.utils.navigation.Router
@@ -24,8 +25,6 @@ fun MainScreen(
 ) {
     val hideList = setOf(
         Screen.LogIn.route,
-        // Screen.Splash.route
-
     )
 
     val navController = rememberNavController()
@@ -35,14 +34,16 @@ fun MainScreen(
     Scaffold(
         bottomBar = {
             if (showBottomBar) {
-                SetupNavGraph(
-                    navController,
-                    context = context,
-                    lifecycleScope = lifecycleScope,
-                    lifecycleOwner = lifecycleOwner,
-                    router = router
-                )
+                BottomNavigationBar(navController)
             }
-        }) {
+        }
+    ) {
+        SetupNavGraph(
+            navController,
+            context = context,
+            lifecycleScope = lifecycleScope,
+            lifecycleOwner = lifecycleOwner,
+            router = router
+        )
     }
 }

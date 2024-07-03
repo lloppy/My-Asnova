@@ -2,5 +2,7 @@
     <string name="app_name">Asnova</string>
     <string name="default_web_client_id" translatable="false">137295282458-kkptkao7n20ps5c101i5vn3b3q16ec18.apps.googleusercontent.com</string>
     <string name="firebase_realtimedb_link" translatable="false">your-firebase-realtimedb-link</string>
+    <string name="feed">Новости\n</string>
+    <string name="write_article">Написать статью</string>
 
 </resources>

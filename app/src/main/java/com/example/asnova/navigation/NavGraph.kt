@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.LifecycleCoroutineScope
 import androidx.lifecycle.LifecycleOwner
+import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -45,12 +46,29 @@ fun SetupNavGraph(
     router: Router,
     viewModel: MainScreenViewModel = hiltViewModel()
 ) {
-    val dropletButtons = listOf(
+    NavHost(
+        navController = navHostController,
+        startDestination = Screen.Feed.route
+    ) {
+        composable(Screen.Feed.route) {
+            FeedScreen(externalRouter = router, navController = navHostController, lifecycleOwner = lifecycleOwner)
+        }
+        composable(Screen.Schedule.route) {
+            ScheduleScreen(externalRouter = router, context = context, lifecycleOwner = lifecycleOwner)
+        }
+        composable(Screen.ProfileSettings.route) {
+            ProfileSettingsScreen(externalRouter = router, context = context, lifecycleScope = lifecycleScope, lifecycleOwner = lifecycleOwner)
+        }
+    }
+}
+
+@Composable
+fun BottomNavigationBar(navController: NavController) {
+    val items = listOf(
         Screen.Feed,
         Screen.Schedule,
         Screen.ProfileSettings
     )
-
     var selectedItem by remember { mutableStateOf(0) }
 
     AnimatedNavigationBar(
@@ -70,7 +88,7 @@ fun SetupNavGraph(
                 easing = { OvershootInterpolator().getInterpolation(it) })
         )
     ) {
-        dropletButtons.forEachIndexed { index, item ->
+        items.forEachIndexed { index, item ->
             DropletButton(
                 modifier = Modifier.fillMaxSize(),
                 isSelected = selectedItem == index,
@@ -82,7 +100,7 @@ fun SetupNavGraph(
                 ),
                 onClick = {
                     selectedItem = index
-                    navHostController.navigate(item.route) {
+                    navController.navigate(item.route) {
                         popUpTo(Screen.LogIn.route) {
                             saveState = true
                         }
@@ -93,22 +111,8 @@ fun SetupNavGraph(
             )
         }
     }
-
-    NavHost(
-        navController = navHostController,
-        startDestination = Screen.Feed.route
-    ) {
-        composable(Screen.Feed.route) {
-            FeedScreen(externalRouter = router, navController = navHostController, lifecycleOwner = lifecycleOwner)
-        }
-        composable(Screen.Schedule.route) {
-            ScheduleScreen(externalRouter = router, context = context, lifecycleOwner = lifecycleOwner)
-        }
-        composable(Screen.ProfileSettings.route) {
-            ProfileSettingsScreen(externalRouter = router, context = context, lifecycleScope = lifecycleScope, lifecycleOwner = lifecycleOwner)
-        }
-    }
 }
+
 
 const val Duration = 500
 const val DoubleDuration = 1000
