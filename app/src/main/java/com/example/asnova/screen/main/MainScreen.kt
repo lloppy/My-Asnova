@@ -1,0 +1,48 @@
+package com.example.asnova.screen.main
+
+import android.annotation.SuppressLint
+import android.content.Context
+import androidx.compose.material3.Scaffold
+import androidx.compose.runtime.Composable
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.LifecycleCoroutineScope
+import androidx.lifecycle.LifecycleOwner
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
+import com.example.asnova.navigation.Screen
+import com.example.asnova.navigation.SetupNavGraph
+import com.example.asnova.utils.navigation.Router
+
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
+@Composable
+fun MainScreen(
+    context: Context,
+    lifecycleScope: LifecycleCoroutineScope,
+    lifecycleOwner: LifecycleOwner,
+    router: Router,
+    viewModel: MainScreenViewModel = hiltViewModel()
+) {
+    val hideList = setOf(
+        Screen.LogIn.route,
+        // Screen.Splash.route
+
+    )
+
+    val navController = rememberNavController()
+    val screen = navController.currentBackStackEntryAsState().value
+    val showBottomBar = screen?.destination?.route !in hideList
+
+    Scaffold(
+        bottomBar = {
+            if (showBottomBar) {
+                SetupNavGraph(
+                    navController,
+                    context = context,
+                    lifecycleScope = lifecycleScope,
+                    lifecycleOwner = lifecycleOwner,
+                    router = router
+                )
+            }
+        }) {
+    }
+}

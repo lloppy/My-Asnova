@@ -1,5 +1,6 @@
 package com.example.asnova.navigation
 
+import android.content.Context
 import android.view.animation.OvershootInterpolator
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.LinearOutSlowInEasing
@@ -15,15 +16,20 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.LifecycleCoroutineScope
+import androidx.lifecycle.LifecycleOwner
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.asnova.screen.feed.FeedScreen
 import com.example.asnova.screen.log_in.LogInScreen
+import com.example.asnova.screen.main.MainScreenViewModel
 import com.example.asnova.screen.profile_settings.ProfileSettingsScreen
 import com.example.asnova.screen.schedule.ScheduleScreen
 import com.example.asnova.screen.splash.SplashScreen
 import com.example.asnova.ui.theme.orangeMaterial
+import com.example.asnova.utils.navigation.Router
 import com.exyte.animatednavbar.AnimatedNavigationBar
 import com.exyte.animatednavbar.animation.balltrajectory.Parabolic
 import com.exyte.animatednavbar.animation.indendshape.Height
@@ -31,7 +37,14 @@ import com.exyte.animatednavbar.animation.indendshape.shapeCornerRadius
 import com.exyte.animatednavbar.items.dropletbutton.DropletButton
 
 @Composable
-fun SetupNavGraph(navHostController: NavHostController) {
+fun SetupNavGraph(
+    navHostController: NavHostController,
+    context: Context,
+    lifecycleScope: LifecycleCoroutineScope,
+    lifecycleOwner: LifecycleOwner,
+    router: Router,
+    viewModel: MainScreenViewModel = hiltViewModel()
+) {
     val dropletButtons = listOf(
         Screen.Feed,
         Screen.Schedule,
@@ -74,30 +87,25 @@ fun SetupNavGraph(navHostController: NavHostController) {
                             saveState = true
                         }
                         launchSingleTop = true
+                        restoreState = true
                     }
-                }
+                },
             )
         }
     }
 
     NavHost(
         navController = navHostController,
-        startDestination = Screen.Splash.route
+        startDestination = Screen.Feed.route
     ) {
-        composable(Screen.Splash.route) {
-            SplashScreen(navHostController = navHostController, route = Screen.Feed.route)
-        }
-        composable(Screen.LogIn.route) {
-            LogInScreen()
-        }
         composable(Screen.Feed.route) {
-            FeedScreen()
+            FeedScreen(externalRouter = router, navController = navHostController, lifecycleOwner = lifecycleOwner)
         }
         composable(Screen.Schedule.route) {
-            ScheduleScreen()
+            ScheduleScreen(externalRouter = router, context = context, lifecycleOwner = lifecycleOwner)
         }
         composable(Screen.ProfileSettings.route) {
-            ProfileSettingsScreen()
+            ProfileSettingsScreen(externalRouter = router, context = context, lifecycleScope = lifecycleScope, lifecycleOwner = lifecycleOwner)
         }
     }
 }
