@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -30,7 +29,7 @@ import com.example.asnova.screen.main.MainScreenViewModel
 import com.example.asnova.screen.main.feed.FeedScreen
 import com.example.asnova.screen.main.profile_settings.ProfileSettingsScreen
 import com.example.asnova.screen.main.schedule.ScheduleScreen
-import com.example.asnova.ui.theme.orangeMaterial
+import com.example.asnova.ui.theme.greenAsnova
 import com.example.asnova.utils.navigation.Router
 import com.example.asnova.utils.toastMessage
 import com.exyte.animatednavbar.AnimatedNavigationBar
@@ -98,7 +97,7 @@ fun BottomNavigationBar(navController: NavController) {
         Screen.Schedule,
         Screen.ProfileSettings
     )
-    var selectedItem by remember { mutableIntStateOf(1) } // это расписание)
+    var selectedItem by remember { mutableIntStateOf(0) }
 
     AnimatedNavigationBar(
         modifier = Modifier
@@ -122,7 +121,7 @@ fun BottomNavigationBar(navController: NavController) {
                 modifier = Modifier.fillMaxSize(),
                 isSelected = selectedItem == index,
                 icon = item.iconId,
-                dropletColor = orangeMaterial,
+                dropletColor = greenAsnova,
                 animationSpec = tween(
                     durationMillis = Duration,
                     easing = LinearEasing

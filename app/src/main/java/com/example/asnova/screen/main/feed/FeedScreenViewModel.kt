@@ -34,6 +34,7 @@ class FeedScreenViewModel @Inject constructor(
                     value = messages.mapIndexed { index, message ->
                         NewsItem(
                             id = index.toString(),
+                            image = "https://asnova.pro/thumb/2/5DD6qxOMlnoQps2Rxbj3wA/400r/d/l.jpg",
                             title = getHeadline(message),
                             content = message
                         )

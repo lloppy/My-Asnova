@@ -2,6 +2,7 @@ package com.example.asnova.screen.main.profile_settings
 
 import android.content.Context
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -89,30 +90,31 @@ fun LogInContent(
             modifier = Modifier
                 .fillMaxSize()
                 .background(Color.White),
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.SpaceBetween
         ) {
-            Spacer(modifier = Modifier.height(60.dp))
-            if (userData?.profilePictureUrl != null) {
-                AsyncImage(
-                    model = userData.profilePictureUrl,
-                    contentDescription = stringResource(R.string.profile_picture),
-                    modifier = Modifier
-                        .size(150.dp)
-                        .clip(CircleShape),
-                    contentScale = ContentScale.Crop
-                )
-                Spacer(modifier = Modifier.height(16.dp))
+            Column {
+                if (userData?.profilePictureUrl != null) {
+                    AsyncImage(
+                        model = userData.profilePictureUrl,
+                        contentDescription = stringResource(R.string.profile_picture),
+                        modifier = Modifier
+                            .size(150.dp)
+                            .clip(CircleShape),
+                        contentScale = ContentScale.Crop
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                }
+                if (userData?.username != null) {
+                    Text(
+                        text = userData.username,
+                        textAlign = TextAlign.Center,
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                    Spacer(modifier = Modifier.height(36.dp))
+                }
             }
-            if (userData?.username != null) {
-                Text(
-                    text = userData.username,
-                    textAlign = TextAlign.Center,
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.SemiBold
-                )
-                Spacer(modifier = Modifier.height(36.dp))
-            }
-            Spacer(modifier = Modifier.height(24.dp))
             Button(
                 onClick = onSignOut,
                 colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)
