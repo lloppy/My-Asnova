@@ -1,4 +1,4 @@
-package com.example.asnova.screen.feed.components
+package com.example.asnova.screen.main.feed.components
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Box

@@ -1,4 +1,4 @@
-package com.example.asnova.screen.profile_settings
+package com.example.asnova.screen.main.profile_settings
 
 import android.content.Context
 import androidx.compose.material3.Text

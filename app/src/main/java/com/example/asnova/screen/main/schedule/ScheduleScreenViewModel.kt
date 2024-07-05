@@ -1,10 +1,10 @@
-package com.example.asnova.screen.profile_settings
+package com.example.asnova.screen.main.schedule
 
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 @HiltViewModel
-class ProfileScreenViewModel @Inject constructor(
+class ScheduleScreenViewModel @Inject constructor(
 
 ) : ViewModel() {}

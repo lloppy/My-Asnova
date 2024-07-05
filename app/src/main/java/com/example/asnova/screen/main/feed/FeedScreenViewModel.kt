@@ -1,4 +1,4 @@
-package com.example.asnova.screen.feed
+package com.example.asnova.screen.main.feed
 
 import android.util.Log
 import androidx.compose.runtime.State

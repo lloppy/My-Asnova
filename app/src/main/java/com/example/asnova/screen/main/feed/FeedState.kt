@@ -1,4 +1,4 @@
-package com.example.asnova.screen.feed
+package com.example.asnova.screen.main.feed
 
 import com.example.asnova.data.NewsItem
 

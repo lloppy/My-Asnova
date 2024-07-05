@@ -1,4 +1,4 @@
-package com.example.asnova.screen.feed
+package com.example.asnova.screen.main.feed
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -44,8 +44,8 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.navigation.NavController
 import com.example.asnova.R
 import com.example.asnova.data.UserManager
-import com.example.asnova.screen.feed.components.NewsArticleCardTop
-import com.example.asnova.screen.feed.components.PostListDivider
+import com.example.asnova.screen.main.feed.components.NewsArticleCardTop
+import com.example.asnova.screen.main.feed.components.PostListDivider
 import com.example.asnova.utils.SkeletonScreen
 import com.example.asnova.utils.navigation.Router
 import com.example.asnova.utils.shimmerEffect
@@ -106,7 +106,7 @@ fun FeedScreen(
         }
     ) {
         Box(
-            modifier = Modifier.padding(it)
+            modifier = Modifier.padding(top = it.calculateTopPadding(), bottom = 90.dp)
         ) {
             SkeletonScreen(
                 isLoading = state.loading,

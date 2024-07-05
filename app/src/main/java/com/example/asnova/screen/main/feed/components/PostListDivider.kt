@@ -1,4 +1,4 @@
-package com.example.asnova.screen.feed.components
+package com.example.asnova.screen.main.feed.components
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.HorizontalDivider

@@ -1,4 +1,4 @@
-package com.example.asnova.screen.schedule
+package com.example.asnova.screen.main.schedule
 
 import android.content.Context
 import androidx.compose.material3.Text

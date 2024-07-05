@@ -23,11 +23,11 @@ import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.example.asnova.screen.feed.FeedScreen
+import com.example.asnova.screen.main.feed.FeedScreen
 import com.example.asnova.screen.log_in.LogInScreen
 import com.example.asnova.screen.main.MainScreenViewModel
-import com.example.asnova.screen.profile_settings.ProfileSettingsScreen
-import com.example.asnova.screen.schedule.ScheduleScreen
+import com.example.asnova.screen.main.profile_settings.ProfileSettingsScreen
+import com.example.asnova.screen.main.schedule.ScheduleScreen
 import com.example.asnova.screen.splash.SplashScreen
 import com.example.asnova.ui.theme.orangeMaterial
 import com.example.asnova.utils.navigation.Router
