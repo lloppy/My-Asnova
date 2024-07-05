@@ -112,6 +112,8 @@ dependencies {
 
     implementation("androidx.compose.material3:material3:1.2.0-beta01")
     implementation("androidx.compose.material:material:1.2.0-alpha02")
+
+    implementation("org.jsoup:jsoup:1.13.1")
 }
 
 kapt {

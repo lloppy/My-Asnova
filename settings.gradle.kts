@@ -21,4 +21,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "Asnova"
 include(":app")
- 
+include(":core")
