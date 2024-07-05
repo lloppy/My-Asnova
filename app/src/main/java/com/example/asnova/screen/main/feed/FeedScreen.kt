@@ -2,6 +2,7 @@ package com.example.asnova.screen.main.feed
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -9,6 +10,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.ExperimentalMaterialApi
@@ -17,7 +19,6 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
-import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
@@ -50,7 +51,7 @@ import com.example.asnova.utils.SkeletonScreen
 import com.example.asnova.utils.navigation.Router
 import com.example.asnova.utils.shimmerEffect
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FeedScreen(
     externalRouter: Router,
@@ -58,12 +59,6 @@ fun FeedScreen(
     lifecycleOwner: LifecycleOwner,
     viewModel: FeedScreenViewModel = hiltViewModel()
 ) {
-    val state = viewModel.state.value
-
-    // Refresh
-    val isRefreshing by remember { mutableStateOf(false) }
-    val stateRefresh = rememberPullRefreshState(isRefreshing, { viewModel.pullToRefresh() })
-
     // FAB
     val listState = rememberLazyListState()
     val isExpanded by remember { derivedStateOf { listState.firstVisibleItemScrollOffset == 0 } }
@@ -104,104 +99,122 @@ fun FeedScreen(
                 )
             }
         }
+    ) { padding ->
+        FeedContext(padding, viewModel, listState)
+    }
+
+}
+
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+fun FeedContext(
+    padding: PaddingValues,
+    viewModel: FeedScreenViewModel,
+    listState: LazyListState
+) {
+    val state = viewModel.state.value
+
+    // Refresh
+    val isRefreshing by remember { mutableStateOf(false) }
+    val stateRefresh = rememberPullRefreshState(isRefreshing, { viewModel.pullToRefresh() })
+
+
+    Box(
+        modifier = Modifier.padding(top = padding.calculateTopPadding(), bottom = 90.dp)
     ) {
-        Box(
-            modifier = Modifier.padding(top = it.calculateTopPadding(), bottom = 90.dp)
-        ) {
-            SkeletonScreen(
-                isLoading = state.loading,
-                skeleton = {
-                    LazyColumn(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp)
-                    ) {
-                        items(2) {
-                            Box(
-                                modifier = Modifier
-                                    .height(180.dp)
-                                    .fillMaxSize()
-                                    .clip(shape = MaterialTheme.shapes.medium)
-                                    .shimmerEffect()
-                            )
-                            Spacer(Modifier.height(16.dp))
-                            Box(
-                                modifier = Modifier
-                                    .height(16.dp)
-                                    .width(150.dp)
-                                    .clip(shape = MaterialTheme.shapes.medium)
-                                    .shimmerEffect()
-                            )
-                            Spacer(Modifier.height(16.dp))
-                            Box(
-                                modifier = Modifier
-                                    .height(16.dp)
-                                    .width(50.dp)
-                                    .clip(shape = MaterialTheme.shapes.medium)
-                                    .shimmerEffect()
-                            )
-                            Spacer(Modifier.height(16.dp))
-                        }
-                    }
-                }
-            ) {
+        SkeletonScreen(
+            isLoading = state.loading,
+            skeleton = {
                 LazyColumn(
                     modifier = Modifier
-                        .fillMaxSize()
-                        .pullRefresh(stateRefresh),
-                    state = listState
+                        .fillMaxWidth()
+                        .padding(16.dp)
                 ) {
-                    items(state.value) { item ->
-                        NewsArticleCardTop(
-                            newsItem = item,
-                            modifier = Modifier.clickable(onClick = {
-                                //  externalRouter.routeTo("${Screen.NewsArticle.route}/${item.id}")
-                            })
-                        ) {
-                            /*Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
-                                IconButton(onClick = {
-                                    viewModel.addNewItemToFavorites(item.id) { callback ->
-                                        if(callback.data == true)
-                                        {
-                                            isClicked = !isClicked
-                                        }
-                                    }
-                                }) {
-                                    if(isClicked)
-                                    {
-                                        isClicked = false
-                                        Icon(
-                                            painter = painterResource(id = R.drawable.baseline_bookmark_24),
-                                            contentDescription = null
-                                        )
-                                    } else {
-                                        Icon(
-                                            painter = painterResource(id = R.drawable.baseline_bookmark_border_24),
-                                            contentDescription = null
-                                        )
-                                    }
-                                }
-                            }*/
-                        }
-                        PostListDivider()
-                    }
-                    item {
-                        Spacer(modifier = Modifier.padding(24.dp))
+                    items(2) {
+                        Box(
+                            modifier = Modifier
+                                .height(180.dp)
+                                .fillMaxSize()
+                                .clip(shape = MaterialTheme.shapes.medium)
+                                .shimmerEffect()
+                        )
+                        Spacer(Modifier.height(16.dp))
+                        Box(
+                            modifier = Modifier
+                                .height(16.dp)
+                                .width(150.dp)
+                                .clip(shape = MaterialTheme.shapes.medium)
+                                .shimmerEffect()
+                        )
+                        Spacer(Modifier.height(16.dp))
+                        Box(
+                            modifier = Modifier
+                                .height(16.dp)
+                                .width(50.dp)
+                                .clip(shape = MaterialTheme.shapes.medium)
+                                .shimmerEffect()
+                        )
+                        Spacer(Modifier.height(16.dp))
                     }
                 }
             }
-            if (state.error.isNotBlank()) {
-                Text(
-                    text = state.error,
-                    color = MaterialTheme.colorScheme.error,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 20.dp)
-                        .align(Alignment.Center)
-                )
+        ) {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .pullRefresh(stateRefresh),
+                state = listState
+            ) {
+                items(state.value) { item ->
+                    NewsArticleCardTop(
+                        newsItem = item,
+                        modifier = Modifier.clickable(onClick = {
+                            //  externalRouter.routeTo("${Screen.NewsArticle.route}/${item.id}")
+                        })
+                    ) {
+                        /*Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
+                            IconButton(onClick = {
+                                viewModel.addNewItemToFavorites(item.id) { callback ->
+                                    if(callback.data == true)
+                                    {
+                                        isClicked = !isClicked
+                                    }
+                                }
+                            }) {
+                                if(isClicked)
+                                {
+                                    isClicked = false
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.baseline_bookmark_24),
+                                        contentDescription = null
+                                    )
+                                } else {
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.baseline_bookmark_border_24),
+                                        contentDescription = null
+                                    )
+                                }
+                            }
+                        }*/
+                    }
+                    PostListDivider()
+                }
+                item {
+                    Spacer(modifier = Modifier.padding(24.dp))
+                }
             }
-            PullRefreshIndicator(isRefreshing, stateRefresh, Modifier.align(Alignment.TopCenter))
         }
+        if (state.error.isNotBlank()) {
+            Text(
+                text = state.error,
+                color = MaterialTheme.colorScheme.error,
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp)
+                    .align(Alignment.Center)
+            )
+        }
+        PullRefreshIndicator(isRefreshing, stateRefresh, Modifier.align(Alignment.TopCenter))
     }
 }

@@ -89,9 +89,9 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.0")
 
     // LiveData
-    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.4.1")
+    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.8.3")
     implementation("androidx.lifecycle:lifecycle-extensions:2.2.0")
-    implementation("androidx.compose.runtime:runtime-livedata:1.0.5")
+    implementation("androidx.compose.runtime:runtime-livedata:1.6.8")
 
     // Firebase
     implementation("com.google.firebase:firebase-database:21.0.0")
@@ -114,6 +114,11 @@ dependencies {
     implementation("androidx.compose.material:material:1.2.0-alpha02")
 
     implementation("org.jsoup:jsoup:1.13.1")
+
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.2")
+    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.6.2")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0")
+
 }
 
 kapt {

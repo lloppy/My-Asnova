@@ -4,5 +4,31 @@
     <string name="firebase_realtimedb_link" translatable="false">your-firebase-realtimedb-link</string>
     <string name="feed">Новости\n</string>
     <string name="write_article">Написать статью</string>
+    <string name="schedule">Расписание</string>
+    <string name="profile_settings">Профиль</string>
+    <string name="log_in">Вход\n</string>
+    <string name="email_login">Вход по электронной почте</string>
+    <string name="back">Назад</string>
+    <string name="email">E-mail</string>
+    <string name="password">Пароль</string>
+    <string name="empty_spaces_error">Есть пустые места</string>
+    <string name="sign_in">Войти</string>
+    <string name="first_time_here">Впервые здесь?</string>
+    <string name="forgot_password">Забыли пароль</string>
+    <string name="sign_up">Зарегистрироваться</string>
+    <string name="complete_registration">Завершите регистрацию</string>
+    <string name="enter_your_email">Введите свою электронную почту</string>
+    <string name="enter_your_password">Введите свой пароль</string>
+    <string name="confirm_password">Подтвердите пароль</string>
+    <string name="enter_a_nickname">Введите никнейм</string>
+    <string name="nickname">Никнейм</string>
+    <string name="there_are_empty_spaces">Есть пустые места</string>
+    <string name="password_doesn_t_match">Пароль не совпадает</string>
+    <string name="email_formatting_is_incorrect">Неправильное форматирование адреса электронной почты</string>
+    <string name="your_password_must_be_at_least_6_digits_long">Ваш пароль должен состоять не менее чем из 6 цифр</string>
+    <string name="sign_up_failed">Не удалось зарегистрироваться</string>
+    <string name="google_sign_in">Вход через Google</string>
+    <string name="google_logo">лого Google</string>
+    <string name="email_icon">Иконка электронной почты</string>
 
 </resources>

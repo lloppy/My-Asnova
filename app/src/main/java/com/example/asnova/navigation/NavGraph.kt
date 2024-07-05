@@ -23,12 +23,10 @@ import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.example.asnova.screen.main.feed.FeedScreen
-import com.example.asnova.screen.log_in.LogInScreen
 import com.example.asnova.screen.main.MainScreenViewModel
+import com.example.asnova.screen.main.feed.FeedScreen
 import com.example.asnova.screen.main.profile_settings.ProfileSettingsScreen
 import com.example.asnova.screen.main.schedule.ScheduleScreen
-import com.example.asnova.screen.splash.SplashScreen
 import com.example.asnova.ui.theme.orangeMaterial
 import com.example.asnova.utils.navigation.Router
 import com.exyte.animatednavbar.AnimatedNavigationBar
@@ -51,13 +49,26 @@ fun SetupNavGraph(
         startDestination = Screen.Feed.route
     ) {
         composable(Screen.Feed.route) {
-            FeedScreen(externalRouter = router, navController = navHostController, lifecycleOwner = lifecycleOwner)
+            FeedScreen(
+                externalRouter = router,
+                navController = navHostController,
+                lifecycleOwner = lifecycleOwner
+            )
         }
         composable(Screen.Schedule.route) {
-            ScheduleScreen(externalRouter = router, context = context, lifecycleOwner = lifecycleOwner)
+            ScheduleScreen(
+                externalRouter = router,
+                context = context,
+                lifecycleOwner = lifecycleOwner
+            )
         }
         composable(Screen.ProfileSettings.route) {
-            ProfileSettingsScreen(externalRouter = router, context = context, lifecycleScope = lifecycleScope, lifecycleOwner = lifecycleOwner)
+            ProfileSettingsScreen(
+                externalRouter = router,
+                context = context,
+                lifecycleScope = lifecycleScope,
+                lifecycleOwner = lifecycleOwner
+            )
         }
     }
 }
