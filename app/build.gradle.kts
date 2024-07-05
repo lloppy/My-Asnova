@@ -119,6 +119,8 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.6.2")
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0")
 
+    implementation("io.coil-kt:coil-compose:2.2.2")
+
 }
 
 kapt {

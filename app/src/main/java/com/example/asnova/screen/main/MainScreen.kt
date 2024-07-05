@@ -12,6 +12,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.asnova.navigation.BottomNavigationBar
 import com.example.asnova.navigation.Screen
 import com.example.asnova.navigation.SetupNavGraph
+import com.example.asnova.screen.log_in.GoogleAuthUiClient
 import com.example.asnova.utils.navigation.Router
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -21,6 +22,7 @@ fun MainScreen(
     lifecycleScope: LifecycleCoroutineScope,
     lifecycleOwner: LifecycleOwner,
     router: Router,
+    googleAuthUiClient: GoogleAuthUiClient,
     viewModel: MainScreenViewModel = hiltViewModel()
 ) {
     val hideList = setOf(
@@ -43,7 +45,8 @@ fun MainScreen(
             context = context,
             lifecycleScope = lifecycleScope,
             lifecycleOwner = lifecycleOwner,
-            router = router
+            router = router,
+            googleAuthUiClient = googleAuthUiClient
         )
     }
 }

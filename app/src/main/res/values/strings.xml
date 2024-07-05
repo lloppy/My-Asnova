@@ -30,5 +30,7 @@
     <string name="google_sign_in">Вход через Google</string>
     <string name="google_logo">лого Google</string>
     <string name="email_icon">Иконка электронной почты</string>
+    <string name="profile_picture">Картинка профиля</string>
+    <string name="log_out">Выйти</string>
 
 </resources>

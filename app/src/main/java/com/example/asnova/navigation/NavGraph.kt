@@ -23,6 +23,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.example.asnova.screen.log_in.GoogleAuthUiClient
 import com.example.asnova.screen.main.MainScreenViewModel
 import com.example.asnova.screen.main.feed.FeedScreen
 import com.example.asnova.screen.main.profile_settings.ProfileSettingsScreen
@@ -39,6 +40,7 @@ import com.exyte.animatednavbar.items.dropletbutton.DropletButton
 fun SetupNavGraph(
     navHostController: NavHostController,
     context: Context,
+    googleAuthUiClient: GoogleAuthUiClient,
     lifecycleScope: LifecycleCoroutineScope,
     lifecycleOwner: LifecycleOwner,
     router: Router,
@@ -59,14 +61,6 @@ fun SetupNavGraph(
             ScheduleScreen(
                 externalRouter = router,
                 context = context,
-                lifecycleOwner = lifecycleOwner
-            )
-        }
-        composable(Screen.ProfileSettings.route) {
-            ProfileSettingsScreen(
-                externalRouter = router,
-                context = context,
-                lifecycleScope = lifecycleScope,
                 lifecycleOwner = lifecycleOwner
             )
         }

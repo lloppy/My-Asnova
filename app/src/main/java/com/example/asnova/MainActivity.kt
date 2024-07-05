@@ -3,6 +3,7 @@ package com.example.asnova
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
@@ -28,6 +29,7 @@ import com.example.asnova.screen.log_in.IsNotLogin.YET
 import com.example.asnova.screen.log_in.LogInViewModel
 import com.example.asnova.screen.log_in.SignInScreen
 import com.example.asnova.screen.main.MainScreen
+import com.example.asnova.screen.main.profile_settings.ProfileSettingsScreen
 import com.example.asnova.screen.splash.SplashScreen
 import com.example.asnova.ui.theme.AsnovaTheme
 import com.example.asnova.utils.LOG_IN
@@ -132,9 +134,31 @@ class MainActivity : ComponentActivity() {
                             context = this@MainActivity,
                             lifecycleScope = lifecycleScope,
                             lifecycleOwner = this@MainActivity,
+                            googleAuthUiClient = googleAuthUiClient,
                             router = createExternalRouter { screen, params ->
                                 navController.navigate(screen, params)
                             })
+                    }
+                    composable(Screen.ProfileSettings.route) {
+                        ProfileSettingsScreen(
+                            userData = googleAuthUiClient.getSignedInUser(),
+                            onSignOut = {
+                                lifecycleScope.launch {
+                                    googleAuthUiClient.signOut()
+                                    Toast.makeText(
+                                        applicationContext,
+                                        "Завершение выхода из системы",
+                                        Toast.LENGTH_LONG
+                                    ).show()
+                                    isNotLogin = NOT
+                                    navController.navigate(route = Screen.LogIn.route) {
+                                        popUpTo(route = Screen.LogIn.route) {
+                                            inclusive = true
+                                        }
+                                    }
+                                }
+                            }
+                        )
                     }
                 }
             }
