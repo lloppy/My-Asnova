@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -23,6 +24,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.example.asnova.MainActivity
 import com.example.asnova.screen.log_in.GoogleAuthUiClient
 import com.example.asnova.screen.main.MainScreenViewModel
 import com.example.asnova.screen.main.feed.FeedScreen
@@ -30,11 +32,13 @@ import com.example.asnova.screen.main.profile_settings.ProfileSettingsScreen
 import com.example.asnova.screen.main.schedule.ScheduleScreen
 import com.example.asnova.ui.theme.orangeMaterial
 import com.example.asnova.utils.navigation.Router
+import com.example.asnova.utils.toastMessage
 import com.exyte.animatednavbar.AnimatedNavigationBar
 import com.exyte.animatednavbar.animation.balltrajectory.Parabolic
 import com.exyte.animatednavbar.animation.indendshape.Height
 import com.exyte.animatednavbar.animation.indendshape.shapeCornerRadius
 import com.exyte.animatednavbar.items.dropletbutton.DropletButton
+import kotlinx.coroutines.launch
 
 @Composable
 fun SetupNavGraph(
@@ -64,6 +68,26 @@ fun SetupNavGraph(
                 lifecycleOwner = lifecycleOwner
             )
         }
+        composable(Screen.ProfileSettings.route) {
+            ProfileSettingsScreen(
+                externalRouter = router,
+                context = context,
+                lifecycleScope = lifecycleScope,
+                lifecycleOwner = lifecycleOwner,
+                userData = googleAuthUiClient.getSignedInUser(),
+                onSignOut = {
+                    lifecycleScope.launch {
+                        googleAuthUiClient.signOut()
+                        toastMessage(
+                            context, "Выход из аккаунта завершен"
+                        )
+                    }
+                    if (context is MainActivity) {
+                        context.restartApp()
+                    }
+                }
+            )
+        }
     }
 }
 
@@ -74,7 +98,7 @@ fun BottomNavigationBar(navController: NavController) {
         Screen.Schedule,
         Screen.ProfileSettings
     )
-    var selectedItem by remember { mutableStateOf(0) }
+    var selectedItem by remember { mutableIntStateOf(1) } // это расписание)
 
     AnimatedNavigationBar(
         modifier = Modifier
@@ -112,7 +136,7 @@ fun BottomNavigationBar(navController: NavController) {
                         launchSingleTop = true
                         restoreState = true
                     }
-                },
+                }
             )
         }
     }

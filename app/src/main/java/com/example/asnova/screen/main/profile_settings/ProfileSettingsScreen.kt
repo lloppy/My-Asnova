@@ -43,6 +43,10 @@ import com.example.asnova.utils.navigation.Router
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileSettingsScreen(
+    externalRouter: Router,
+    context: Context,
+    lifecycleScope: LifecycleCoroutineScope,
+    lifecycleOwner: LifecycleOwner,
     userData: UserData?,
     onSignOut: () -> Unit,
     viewModel: ProfileScreenViewModel = hiltViewModel()

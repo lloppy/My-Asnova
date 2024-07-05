@@ -1,6 +1,7 @@
 package com.example.asnova
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
@@ -14,6 +15,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -29,6 +31,7 @@ import com.example.asnova.screen.log_in.IsNotLogin.YET
 import com.example.asnova.screen.log_in.LogInViewModel
 import com.example.asnova.screen.log_in.SignInScreen
 import com.example.asnova.screen.main.MainScreen
+import com.example.asnova.screen.main.MainScreenViewModel
 import com.example.asnova.screen.main.profile_settings.ProfileSettingsScreen
 import com.example.asnova.screen.splash.SplashScreen
 import com.example.asnova.ui.theme.AsnovaTheme
@@ -39,18 +42,18 @@ import com.example.asnova.utils.toastMessage
 import com.google.android.gms.auth.api.identity.Identity
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    private lateinit var navController: NavHostController
+
     private val googleAuthUiClient by lazy {
         GoogleAuthUiClient(
             context = applicationContext,
             oneTapClient = Identity.getSignInClient(applicationContext)
         )
     }
-
-    private lateinit var navController: NavHostController
-
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -139,29 +142,14 @@ class MainActivity : ComponentActivity() {
                                 navController.navigate(screen, params)
                             })
                     }
-                    composable(Screen.ProfileSettings.route) {
-                        ProfileSettingsScreen(
-                            userData = googleAuthUiClient.getSignedInUser(),
-                            onSignOut = {
-                                lifecycleScope.launch {
-                                    googleAuthUiClient.signOut()
-                                    Toast.makeText(
-                                        applicationContext,
-                                        "Завершение выхода из системы",
-                                        Toast.LENGTH_LONG
-                                    ).show()
-                                    isNotLogin = NOT
-                                    navController.navigate(route = Screen.LogIn.route) {
-                                        popUpTo(route = Screen.LogIn.route) {
-                                            inclusive = true
-                                        }
-                                    }
-                                }
-                            }
-                        )
-                    }
                 }
             }
         }
+    }
+    fun restartApp() {
+        val intent = Intent(this, MainActivity::class.java)
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
+        startActivity(intent)
+        finish()
     }
 }
