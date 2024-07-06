@@ -32,5 +32,19 @@
     <string name="email_icon">Иконка электронной почты</string>
     <string name="profile_picture">Картинка профиля</string>
     <string name="log_out">Выйти</string>
+    <string name="today">Сегодня</string>
+    <string name="tomorrow">Завтра</string>
+    <string name="grade_upper_case">Группа</string>
+    <string name="grade"> группа</string>
+    <string name="id_copied">Идентификатор скопирован</string>
+    <string name="access_code_copied">Код доступа скопирован</string>
+    <string name="task">Задание</string>
+    <string name="homework">Домашнее задание</string>
+    <string name="id">Идентификатор:</string>
+    <string name="access_code">Код доступа:</string>
+    <string name="open">Открыть</string>
+    <string name="teacher">Преподаватель</string>
+
+
 
 </resources>

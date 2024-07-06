@@ -41,7 +41,7 @@ fun SplashScreen(navHostController: NavHostController, route: String) {
         modifier = Modifier.fillMaxSize()
     ) {
         Icon(
-            painter = painterResource(id = R.drawable.ic_launcher_foreground),
+            painter = painterResource(id = R.drawable.ic_launcher_foreground), // asnova_logo
             contentDescription = "Logo",
             modifier = Modifier.scale(scale.value * 3)
         )
