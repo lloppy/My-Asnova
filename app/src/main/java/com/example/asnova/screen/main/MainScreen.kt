@@ -22,8 +22,7 @@ fun MainScreen(
     lifecycleScope: LifecycleCoroutineScope,
     lifecycleOwner: LifecycleOwner,
     router: Router,
-    googleAuthUiClient: GoogleAuthUiClient,
-    viewModel: MainScreenViewModel = hiltViewModel()
+    googleAuthUiClient: GoogleAuthUiClient
 ) {
     val hideList = setOf(
         Screen.LogIn.route,

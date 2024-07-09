@@ -3,7 +3,6 @@ package com.example.asnova.screen.log_in
 import android.app.Activity
 import android.content.Context
 import android.widget.Toast
-import androidx.activity.result.ActivityResultLauncher
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
@@ -26,6 +25,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
@@ -76,8 +76,6 @@ fun SignInScreen(
     onSignInClick: () -> Unit,
     goProfile: () -> Unit
 ) {
-    lateinit var authLauncher: ActivityResultLauncher<Collection<VKScope>>
-
     val context = LocalContext.current
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -274,7 +272,7 @@ fun SignInScreen(
                             .align(Alignment.TopCenter)
                     ) {
                         Icon(
-                            imageVector = Icons.Filled.ArrowBack,
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             tint = Color(0xFFFFD900),
                             modifier = Modifier
                                 .padding(12.dp, 0.dp)

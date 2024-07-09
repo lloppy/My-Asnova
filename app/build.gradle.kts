@@ -1,7 +1,6 @@
 plugins {
     kotlin("kapt")
     id("com.google.gms.google-services")
-    id("dagger.hilt.android.plugin")
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
 }
@@ -118,8 +117,6 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.3")
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.3")
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.3")
-
-    implementation("io.coil-kt:coil-compose:2.6.0")
 
     // VK SDK
     implementation("com.vk:android-sdk-core:4.1.0")
