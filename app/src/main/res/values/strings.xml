@@ -44,7 +44,10 @@
     <string name="access_code">Код доступа:</string>
     <string name="open">Открыть</string>
     <string name="teacher">Преподаватель</string>
-
+    <string name="vk_sign_in">Войти с помощью Вконтакте</string>
+    <string name="ok_sign_in">Войти с помощью Одноклассников</string>
+    <string name="ok_logo">Ок логотип</string>
+    <string name="vk_logo">Вк логотип</string>
 
 
 </resources>

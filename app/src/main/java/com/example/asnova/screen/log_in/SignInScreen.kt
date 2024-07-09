@@ -1,7 +1,9 @@
 package com.example.asnova.screen.log_in
 
+import android.app.Activity
 import android.content.Context
 import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
@@ -61,6 +63,11 @@ import com.example.asnova.R
 import com.example.asnova.utils.toastMessage
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthException
+import com.vk.api.sdk.VK
+import com.vk.api.sdk.auth.VKScope
+import ru.ok.android.sdk.Odnoklassniki
+import ru.ok.android.sdk.util.OkAuthType
+import ru.ok.android.sdk.util.OkScope
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -69,6 +76,8 @@ fun SignInScreen(
     onSignInClick: () -> Unit,
     goProfile: () -> Unit
 ) {
+    lateinit var authLauncher: ActivityResultLauncher<Collection<VKScope>>
+
     val context = LocalContext.current
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -78,6 +87,7 @@ fun SignInScreen(
     var signUpDialog by remember {
         mutableStateOf(false)
     }
+
     LaunchedEffect(key1 = state.signInError) {
         state.signInError?.let { error ->
             Toast.makeText(
@@ -93,56 +103,156 @@ fun SignInScreen(
             .padding(16.dp),
         contentAlignment = Alignment.Center
     ) {
-        AnimatedVisibility(visible = true,
-            enter = slideInVertically(tween(2200, easing = FastOutSlowInEasing), initialOffsetY = { it/8 }) + fadeIn(tween(2200, easing = FastOutSlowInEasing))
+        AnimatedVisibility(
+            visible = true,
+            enter = slideInVertically(
+                tween(2200, easing = FastOutSlowInEasing),
+                initialOffsetY = { it / 8 }) + fadeIn(tween(2200, easing = FastOutSlowInEasing))
         ) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Spacer(modifier = Modifier.height(240.dp))
-                Box(modifier = Modifier
-                    .size(450.dp, 60.dp)
-                    .shadow(
-                        elevation = 2.dp,
-                        shape = RoundedCornerShape(percent = 10),
-                        spotColor = Color.Black,
-                        ambientColor = Color.Black
-                    )
-                    .background(Color(0xFFF2F2F2))
-                    .clip(RoundedCornerShape(10))
-                    .clickable(onClick = onSignInClick)
-                ){
-                    Image(painter = painterResource(id = R.drawable.googlelogo),
+
+                // Google Sign-In Button
+                Box(
+                    modifier = Modifier
+                        .size(450.dp, 60.dp)
+                        .shadow(
+                            elevation = 2.dp,
+                            shape = RoundedCornerShape(percent = 10),
+                            spotColor = Color.Black,
+                            ambientColor = Color.Black
+                        )
+                        .background(Color(0xFFF2F2F2))
+                        .clip(RoundedCornerShape(10))
+                        .clickable(onClick = onSignInClick)
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.googlelogo),
                         contentDescription = stringResource(R.string.google_logo),
                         modifier = Modifier
                             .padding(start = 8.dp)
                             .size(48.dp)
-                            .align(Alignment.CenterStart))
-                    Text(text = stringResource(R.string.google_sign_in), fontFamily = FontFamily(Font(R.font.pretendbold)), color = Color(0xFF1F1F1F), fontSize = 16.sp,
-                        modifier = Modifier.align(Alignment.Center))
+                            .align(Alignment.CenterStart)
+                    )
+                    Text(
+                        text = stringResource(R.string.google_sign_in),
+                        fontFamily = FontFamily(Font(R.font.pretendbold)),
+                        color = Color(0xFF1F1F1F),
+                        fontSize = 16.sp,
+                        modifier = Modifier.align(Alignment.Center)
+                    )
                 }
                 Spacer(modifier = Modifier.height(16.dp))
-                Box(modifier = Modifier
-                    .size(450.dp, 60.dp)
-                    .shadow(
-                        elevation = 2.dp,
-                        shape = RoundedCornerShape(percent = 10),
-                        spotColor = Color.Black,
-                        ambientColor = Color.Black
+
+                // VK Sign-In Button
+                Box(
+                    modifier = Modifier
+                        .size(450.dp, 60.dp)
+                        .shadow(
+                            elevation = 2.dp,
+                            shape = RoundedCornerShape(percent = 10),
+                            spotColor = Color.Black,
+                            ambientColor = Color.Black
+                        )
+                        .background(Color(0xFF4C75A3))
+                        .clip(RoundedCornerShape(10))
+                        .clickable(onClick = {
+                            VK.login(context as Activity, arrayListOf())
+                        })
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.vklogo),
+                        contentDescription = stringResource(R.string.vk_logo),
+                        modifier = Modifier
+                            .padding(start = 8.dp)
+                            .size(48.dp)
+                            .align(Alignment.CenterStart)
                     )
-                    .background(Color(0xFFD0021B))
-                    .clip(RoundedCornerShape(10))
-                    .clickable(onClick = {
-                        loginDialog = true
-                    })
-                ){
-                    Icon(imageVector = Icons.Filled.Email,
+                    Text(
+                        text = stringResource(R.string.vk_sign_in),
+                        fontFamily = FontFamily(Font(R.font.pretendbold)),
+                        color = Color(0xFFFFFFFF),
+                        fontSize = 16.sp,
+                        modifier = Modifier.align(Alignment.Center)
+                    )
+                }
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // OK Sign-In Button
+                Box(
+                    modifier = Modifier
+                        .size(450.dp, 60.dp)
+                        .shadow(
+                            elevation = 2.dp,
+                            shape = RoundedCornerShape(percent = 10),
+                            spotColor = Color.Black,
+                            ambientColor = Color.Black
+                        )
+                        .background(Color(0xFFFF9900))
+                        .clip(RoundedCornerShape(10))
+                        .clickable(onClick = {
+                            Odnoklassniki.createInstance(context, OK_APP_ID, OK_APP_KEY)
+                            Odnoklassniki
+                                .getInstance()
+                                .requestAuthorization(
+                                    context as Activity,
+                                    OK_REDIRECT_URI,
+                                    OkAuthType.ANY,
+                                    OkScope.VALUABLE_ACCESS,
+                                    OkScope.LONG_ACCESS_TOKEN
+                                )
+                        })
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.oklogo),
+                        contentDescription = stringResource(R.string.ok_logo),
+                        modifier = Modifier
+                            .padding(start = 8.dp)
+                            .size(48.dp)
+                            .align(Alignment.CenterStart)
+                    )
+                    Text(
+                        text = stringResource(R.string.ok_sign_in),
+                        fontFamily = FontFamily(Font(R.font.pretendbold)),
+                        color = Color(0xFFFFFFFF),
+                        fontSize = 16.sp,
+                        modifier = Modifier.align(Alignment.Center)
+                    )
+                }
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Email Sign-In Button
+                Box(
+                    modifier = Modifier
+                        .size(450.dp, 60.dp)
+                        .shadow(
+                            elevation = 2.dp,
+                            shape = RoundedCornerShape(percent = 10),
+                            spotColor = Color.Black,
+                            ambientColor = Color.Black
+                        )
+                        .background(Color(0xFFD0021B))
+                        .clip(RoundedCornerShape(10))
+                        .clickable(onClick = {
+                            loginDialog = true
+                        })
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Email,
                         tint = Color(0xFFFBEFF1),
                         contentDescription = stringResource(R.string.email_icon),
                         modifier = Modifier
                             .padding(start = 16.dp)
                             .size(32.dp)
-                            .align(Alignment.CenterStart))
-                    Text(text = stringResource(R.string.email_login), fontFamily = FontFamily(Font(R.font.pretendbold)), color = Color(0xFFFBEFF1), fontSize = 16.sp,
-                        modifier = Modifier.align(Alignment.Center))
+                            .align(Alignment.CenterStart)
+                    )
+                    Text(
+                        text = stringResource(R.string.email_login),
+                        fontFamily = FontFamily(Font(R.font.pretendbold)),
+                        color = Color(0xFFFBEFF1),
+                        fontSize = 16.sp,
+                        modifier = Modifier.align(Alignment.Center)
+                    )
                 }
             }
         }
@@ -389,3 +499,7 @@ fun signInEmail(email: String, password: String, context: Context, goProfile: ()
             }
         }
 }
+
+private const val OK_APP_ID = "125497344"
+private const val OK_APP_KEY = "CBABPLHIABABABABA"
+private const val OK_REDIRECT_URI = "okauth://ok125497344"

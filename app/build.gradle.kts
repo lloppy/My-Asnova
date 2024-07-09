@@ -121,6 +121,15 @@ dependencies {
 
     implementation("io.coil-kt:coil-compose:2.2.2")
 
+    // VK SDK
+    implementation("com.vk:android-sdk-core:3.3.0")
+    implementation("com.vk:android-sdk-api:3.3.0")
+
+
+    // Odnoklassniki SDK
+    implementation("ru.ok:odnoklassniki-android-sdk:2.0.2")
+
+
 }
 
 kapt {

@@ -1,10 +1,11 @@
-package com.example.asnova.screen.log_in
+package com.example.asnova.screen.log_in.services
 
 import android.content.Context
 import android.content.Intent
 import android.content.IntentSender
 import com.example.asnova.R
 import com.example.asnova.data.UserData
+import com.example.asnova.screen.log_in.SignInResult
 import com.google.android.gms.auth.api.identity.BeginSignInRequest
 import com.google.android.gms.auth.api.identity.BeginSignInRequest.GoogleIdTokenRequestOptions
 import com.google.android.gms.auth.api.identity.SignInClient

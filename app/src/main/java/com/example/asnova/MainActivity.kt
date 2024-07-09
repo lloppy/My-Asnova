@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
@@ -15,7 +14,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -24,15 +22,13 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.asnova.navigation.Screen
-import com.example.asnova.screen.log_in.GoogleAuthUiClient
+import com.example.asnova.screen.log_in.services.GoogleAuthUiClient
 import com.example.asnova.screen.log_in.IsNotLogin.ALREADY_LOGIN
 import com.example.asnova.screen.log_in.IsNotLogin.NOT
 import com.example.asnova.screen.log_in.IsNotLogin.YET
 import com.example.asnova.screen.log_in.LogInViewModel
 import com.example.asnova.screen.log_in.SignInScreen
 import com.example.asnova.screen.main.MainScreen
-import com.example.asnova.screen.main.MainScreenViewModel
-import com.example.asnova.screen.main.profile_settings.ProfileSettingsScreen
 import com.example.asnova.screen.splash.SplashScreen
 import com.example.asnova.ui.theme.AsnovaTheme
 import com.example.asnova.utils.LOG_IN
@@ -42,7 +38,6 @@ import com.example.asnova.utils.toastMessage
 import com.google.android.gms.auth.api.identity.Identity
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {

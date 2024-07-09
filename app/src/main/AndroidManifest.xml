@@ -14,6 +14,23 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Asnova"
         tools:targetApi="31">
+
+        <!-- VK SDK -->
+        <activity
+            android:name="com.vk.api.sdk.ui.VKWebViewAuthActivity"
+            android:exported="true"
+            android:launchMode="singleTop"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            tools:replace="android:theme" />
+
+
+        <!-- OK SDK -->
+        <activity
+            android:name="ru.ok.android.sdk.OkAuthActivity"
+            android:exported="true"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen" />
+
         <activity
             android:name=".MainActivity"
             android:exported="true"

@@ -24,7 +24,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.asnova.MainActivity
-import com.example.asnova.screen.log_in.GoogleAuthUiClient
+import com.example.asnova.screen.log_in.services.GoogleAuthUiClient
 import com.example.asnova.screen.main.MainScreenViewModel
 import com.example.asnova.screen.main.feed.FeedScreen
 import com.example.asnova.screen.main.profile_settings.ProfileSettingsScreen
