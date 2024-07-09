@@ -46,8 +46,7 @@ fun SetupNavGraph(
     googleAuthUiClient: GoogleAuthUiClient,
     lifecycleScope: LifecycleCoroutineScope,
     lifecycleOwner: LifecycleOwner,
-    router: Router,
-    viewModel: MainScreenViewModel = hiltViewModel()
+    router: Router
 ) {
     NavHost(
         navController = navHostController,
