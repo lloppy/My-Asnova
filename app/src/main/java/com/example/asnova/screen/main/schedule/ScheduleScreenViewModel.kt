@@ -8,7 +8,8 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import java.time.LocalDate
 import javax.inject.Inject
 
-class ScheduleScreenViewModel(
+@HiltViewModel
+class ScheduleScreenViewModel @Inject constructor(
 
 ) : ViewModel() {
     private val _state = mutableStateOf(ScheduleState())

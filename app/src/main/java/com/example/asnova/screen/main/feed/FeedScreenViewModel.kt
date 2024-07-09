@@ -6,14 +6,17 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.asnova.data.NewsItem
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.jsoup.Jsoup
 import javax.inject.Inject
 
-class FeedScreenViewModel(
-) : ViewModel() {
+@HiltViewModel
+class FeedScreenViewModel @Inject constructor(
+
+): ViewModel() {
     private val _state = mutableStateOf(FeedState())
     val state: State<FeedState> = _state
 
