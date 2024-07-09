@@ -36,7 +36,6 @@ import com.example.asnova.utils.navigation.createExternalRouter
 import com.example.asnova.utils.navigation.navigate
 import com.example.asnova.utils.toastMessage
 import com.google.android.gms.auth.api.identity.Identity
-import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
