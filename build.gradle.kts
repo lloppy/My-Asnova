@@ -16,5 +16,5 @@ plugins {
     id("com.google.dagger.hilt.android") version "2.48" apply false
     id("com.google.gms.google-services") version "4.4.0" apply false
     id("org.jetbrains.kotlin.jvm") version "1.7.20" apply false
-    id("com.android.library") version "8.3.1" apply false
+    id("com.android.library") version "8.4.0-beta02" apply false
 }

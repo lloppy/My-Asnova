@@ -22,3 +22,7 @@ dependencyResolutionManagement {
 rootProject.name = "Asnova"
 include(":app")
 include(":core")
+include(":core:domain")
+include(":core:model")
+include(":core:firebase")
+include(":core:storage")
