@@ -12,7 +12,7 @@ import kotlinx.coroutines.withContext
 import org.jsoup.Jsoup
 import javax.inject.Inject
 
-class FeedScreenViewModel @Inject constructor(
+class FeedScreenViewModel(
 ) : ViewModel() {
     private val _state = mutableStateOf(FeedState())
     val state: State<FeedState> = _state

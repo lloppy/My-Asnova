@@ -104,12 +104,6 @@ dependencies {
     implementation("com.airbnb.android:lottie:6.1.0")
     implementation("com.airbnb.android:lottie-compose:6.1.0")
 
-    // Dagger Hilt
-    implementation("com.google.dagger:hilt-android:2.44")
-    kapt("com.google.dagger:hilt-compiler:2.44")
-    kapt("androidx.hilt:hilt-compiler:1.2.0")
-    implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
-
     implementation("androidx.compose.material3:material3:1.2.0-beta01")
     implementation("androidx.compose.material:material:1.2.0-alpha02")
 
@@ -118,8 +112,6 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.2")
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.6.2")
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0")
-
-    implementation("io.coil-kt:coil-compose:2.2.2")
 
     // VK SDK
     implementation("com.vk:android-sdk-core:3.3.0")

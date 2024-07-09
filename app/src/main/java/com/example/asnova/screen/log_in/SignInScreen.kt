@@ -3,7 +3,6 @@ package com.example.asnova.screen.log_in
 import android.app.Activity
 import android.content.Context
 import android.widget.Toast
-import androidx.activity.result.ActivityResultLauncher
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
