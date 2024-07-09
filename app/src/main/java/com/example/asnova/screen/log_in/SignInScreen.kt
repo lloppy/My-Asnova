@@ -26,6 +26,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
@@ -76,8 +77,6 @@ fun SignInScreen(
     onSignInClick: () -> Unit,
     goProfile: () -> Unit
 ) {
-    lateinit var authLauncher: ActivityResultLauncher<Collection<VKScope>>
-
     val context = LocalContext.current
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -157,7 +156,8 @@ fun SignInScreen(
                         .background(Color(0xFF4C75A3))
                         .clip(RoundedCornerShape(10))
                         .clickable(onClick = {
-                            VK.login(context as Activity, arrayListOf())
+
+                          //  VK.login(context as Activity, arrayListOf())
                         })
                 ) {
                     Image(
@@ -274,7 +274,7 @@ fun SignInScreen(
                             .align(Alignment.TopCenter)
                     ) {
                         Icon(
-                            imageVector = Icons.Filled.ArrowBack,
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             tint = Color(0xFFFFD900),
                             modifier = Modifier
                                 .padding(12.dp, 0.dp)
