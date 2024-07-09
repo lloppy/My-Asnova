@@ -157,7 +157,7 @@ fun SignInScreen(
                         .background(Color(0xFF4C75A3))
                         .clip(RoundedCornerShape(10))
                         .clickable(onClick = {
-                            VK.login(context as Activity, arrayListOf())
+                            // VK.login(context as Activity, arrayListOf())
                         })
                 ) {
                     Image(
@@ -192,15 +192,15 @@ fun SignInScreen(
                         .clip(RoundedCornerShape(10))
                         .clickable(onClick = {
                             Odnoklassniki.createInstance(context, OK_APP_ID, OK_APP_KEY)
-                            Odnoklassniki
-                                .getInstance()
-                                .requestAuthorization(
-                                    context as Activity,
-                                    OK_REDIRECT_URI,
-                                    OkAuthType.ANY,
-                                    OkScope.VALUABLE_ACCESS,
-                                    OkScope.LONG_ACCESS_TOKEN
-                                )
+//                            Odnoklassniki
+//                                .getInstance()
+//                                .requestAuthorization(
+//                                    context as Activity,
+//                                    OK_REDIRECT_URI,
+//                                    OkAuthType.ANY,
+//                                    OkScope.VALUABLE_ACCESS,
+//                                    OkScope.LONG_ACCESS_TOKEN
+//                                )
                         })
                 ) {
                     Image(
