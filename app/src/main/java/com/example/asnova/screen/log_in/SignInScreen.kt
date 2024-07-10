@@ -114,6 +114,7 @@ fun SignInScreen(
                     }
                 )
                 Spacer(modifier = Modifier.height(16.dp))
+                bottomSheetState.show()
 
                 OneTapBottomSheet(
                     state = bottomSheetState,
@@ -122,17 +123,7 @@ fun SignInScreen(
                         token.userData.email
 
                     },
-                    serviceName = "Cool app"
-                )
-                Spacer(modifier = Modifier.height(16.dp))
-
-                OneTap(
-                    onAuth = { oAuth, token ->
-                        // Использование токена
-                        token.userData.email
-
-                    },
-                    signInAnotherAccountButtonEnabled = true
+                    serviceName = stringResource(R.string.service_name)
                 )
                 Spacer(modifier = Modifier.height(16.dp))
 
