@@ -21,6 +21,14 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+
+        addManifestPlaceholders(mapOf(
+            "VKIDRedirectHost" to "vk.com", // Обычно vk.com.
+            "VKIDRedirectScheme" to "vk1233445", // Строго в формате vk{ID приложения}.
+            "VKIDClientID" to "51989160",
+            "VKIDClientSecret" to "bPqwTigtISWdmH9BR8eA"
+        ))
+
     }
 
     buildTypes {
@@ -35,6 +43,8 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
+
+        isCoreLibraryDesugaringEnabled = true
     }
     kotlinOptions {
         jvmTarget = "1.8"
@@ -54,6 +64,8 @@ android {
 }
 
 dependencies {
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
+
     implementation(project(":core:model"))
     implementation(project(":core:domain"))
     implementation(project(":core:storage"))
@@ -124,14 +136,11 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.3")
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.3")
 
-    // VK SDK
-    implementation("com.vk:android-sdk-core:4.1.0")
-    implementation("com.vk:android-sdk-api:4.1.0")
-
-
-    // Odnoklassniki SDK
-    implementation("ru.ok:odnoklassniki-android-sdk:2.1.8")
-
+    // VK auth
+    val sdkVersion = "2.0.0"
+    implementation("com.vk.id:vkid:${sdkVersion}")
+    implementation("com.vk.id:onetap-compose:${sdkVersion}")
+    implementation("com.vk.id:multibranding-compose:${sdkVersion}")
 
 }
 
