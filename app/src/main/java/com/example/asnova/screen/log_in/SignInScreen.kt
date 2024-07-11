@@ -10,6 +10,7 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -35,7 +36,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.asnova.R
 import com.vk.id.multibranding.OAuthListWidget
-import com.vk.id.onetap.compose.onetap.OneTap
 import com.vk.id.onetap.compose.onetap.sheet.OneTapBottomSheet
 import com.vk.id.onetap.compose.onetap.sheet.rememberOneTapBottomSheetState
 
@@ -46,6 +46,8 @@ fun SignInScreen(
     goProfile: () -> Unit
 ) {
     val context = LocalContext.current
+    val bottomSheetState = rememberOneTapBottomSheetState()
+    bottomSheetState.show()
 
     LaunchedEffect(key1 = state.signInError) {
         state.signInError?.let { error ->
@@ -68,9 +70,10 @@ fun SignInScreen(
                 tween(2200, easing = FastOutSlowInEasing),
                 initialOffsetY = { it / 8 }) + fadeIn(tween(2200, easing = FastOutSlowInEasing))
         ) {
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Spacer(modifier = Modifier.height(240.dp))
-
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
                 // Google Sign-In Button
                 Box(
                     modifier = Modifier
@@ -104,7 +107,10 @@ fun SignInScreen(
                 Spacer(modifier = Modifier.height(16.dp))
 
                 // VK Sign-In Button
-                val bottomSheetState = rememberOneTapBottomSheetState()
+
+                // не работает, потому что нужно выложить приложение в плей маркет
+                // doesnt work - info here: https://id.vk.com/about/business/go/docs/ru/vkid/latest/oauth/oauth-mail/configure/application-settings#Obshie-nastrojki
+
                 OAuthListWidget(
                     onFail = { oAuth, fail ->
                         Log.e("AuthFail", "Error: ${fail.description}")
@@ -114,19 +120,16 @@ fun SignInScreen(
                     }
                 )
                 Spacer(modifier = Modifier.height(16.dp))
-                bottomSheetState.show()
 
+                // https://id.vk.com/about/business/go/docs/ru/vkid/latest/vk-id/connection/android/floating-onetap
                 OneTapBottomSheet(
                     state = bottomSheetState,
                     onAuth = { oAuth, token ->
-                        // Использование токена
-                        token.userData.email
-
+                        Log.d("Auth", "Token name: ${token.userData.email}")
                     },
                     serviceName = stringResource(R.string.service_name)
                 )
                 Spacer(modifier = Modifier.height(16.dp))
-
             }
         }
     }

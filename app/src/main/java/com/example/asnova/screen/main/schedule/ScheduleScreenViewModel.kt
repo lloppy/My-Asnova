@@ -12,6 +12,8 @@ import javax.inject.Inject
 class ScheduleScreenViewModel @Inject constructor(
 
 ) : ViewModel() {
+    // https://calendar.mail.ru/principals/vk.com/ankudinovazaecologiy/calendars/e44497c4-4978-4518-81de-0530cf40c794/
+
     private val _state = mutableStateOf(ScheduleState())
     val state: State<ScheduleState> = _state
 

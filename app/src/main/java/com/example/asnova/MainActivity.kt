@@ -14,6 +14,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -29,6 +30,7 @@ import com.example.asnova.screen.log_in.IsNotLogin.YET
 import com.example.asnova.screen.log_in.LogInViewModel
 import com.example.asnova.screen.log_in.SignInScreen
 import com.example.asnova.screen.main.MainScreen
+import com.example.asnova.screen.main.schedule.CalDavClient
 import com.example.asnova.screen.splash.SplashScreen
 import com.example.asnova.ui.theme.AsnovaTheme
 import com.example.asnova.utils.LOG_IN
@@ -38,7 +40,13 @@ import com.example.asnova.utils.toastMessage
 import com.google.android.gms.auth.api.identity.Identity
 import com.vk.id.VKID
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import net.fortuna.ical4j.model.Property
+import net.fortuna.ical4j.model.component.VEvent
+import net.fortuna.ical4j.model.property.Summary
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -50,11 +58,32 @@ class MainActivity : ComponentActivity() {
             oneTapClient = Identity.getSignInClient(applicationContext)
         )
     }
+
+    private val calDavClient = CalDavClient(
+        "https://calendar.mail.ru/principals/vk.com/ankudinovazaecologiy/calendars/e44497c4-4978-4518-81de-0530cf40c794/",
+        "ankudinovazaecologiy@vk.com",
+        "FYnERU8DZC1zvTm12NV3"
+    )
+
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         VKID.init(this)
+        CoroutineScope(Dispatchers.IO).launch {
+            val calendarData = calDavClient.fetchCalendarData()
+            if (calendarData != null) {
+                val calendar = calDavClient.parseCalendarData(calendarData)
+                val events: List<VEvent> = calendar.components.filterIsInstance<VEvent>()
+                val eventTitles: List<String> = events.mapNotNull { event ->
+                    event.getProperty<Property>(Summary.SUMMARY)?.value
+                }
 
+                withContext(Dispatchers.Main) {
+                    val allData = eventTitles.joinToString("\n")
+                    Log.e("calendar_info", allData)
+                }
+            }
+        }
         setContent {
             AsnovaTheme {
                 navController = rememberNavController()
@@ -144,6 +173,7 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+
     fun restartApp() {
         val intent = Intent(this, MainActivity::class.java)
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)

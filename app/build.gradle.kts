@@ -142,6 +142,12 @@ dependencies {
     implementation("com.vk.id:onetap-compose:${sdkVersion}")
     implementation("com.vk.id:multibranding-compose:${sdkVersion}")
 
+    // calendar CalDAV
+    implementation("org.mnode.ical4j:ical4j:3.0.18")
+    implementation("javax.cache:cache-api:1.1.1")
+    implementation("org.ehcache:ehcache:3.9.7")
+
+
 }
 
 kapt {
