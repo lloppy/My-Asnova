@@ -27,7 +27,7 @@ import com.example.asnova.R
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ModalBottomSheet(
-    schoolSchedule: com.asnova.model.Schedule,
+    schoolSchedule: com.asnova.model.AsnovaSchedule,
     onClickId: () -> Unit,
     onClickAC: () -> Unit,
     onClickAction: () -> Unit,

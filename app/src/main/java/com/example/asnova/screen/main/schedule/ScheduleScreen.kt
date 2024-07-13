@@ -168,7 +168,7 @@ fun LogInContent(
                     itemsIndexed(state.value)
                     { _, item ->
                         Text(
-                            text = "grade " + stringResource(id = R.string.grade),
+                            text = item.grade.toString() + stringResource(id = R.string.grade),
                             fontSize = 12.sp,
                             color = MaterialTheme.colorScheme.secondary,
                             modifier = Modifier.padding(horizontal = 32.dp)
@@ -185,7 +185,6 @@ fun LogInContent(
                                 clickedItemId = item.uid
                             }) {
                             if (clickedItemId == item.uid) {
-                                /*
                                 ModalBottomSheet(
                                     schoolSchedule = item,
                                     onClickId = {
@@ -206,8 +205,6 @@ fun LogInContent(
                                 ) {
                                     clickedItemId = ""
                                 }
-
-                                 */
                             }
                             Column(modifier = Modifier.padding(4.dp)) {
                                 Text(
@@ -240,7 +237,7 @@ fun LogInContent(
                                     Column {
                                         Text(text = item.summary.toString(), fontWeight = FontWeight.Bold)
                                         Text(
-                                            text = stringResource(id = R.string.teacher) + " " + "item teacher",
+                                            text = stringResource(id = R.string.teacher) + " " + "teacher",
                                             fontSize = 12.sp,
                                             color = MaterialTheme.colorScheme.secondary
                                         )

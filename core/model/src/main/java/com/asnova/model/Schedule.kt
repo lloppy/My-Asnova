@@ -18,8 +18,12 @@ data class Schedule(
 )
 
 data class AsnovaSchedule(
+    val uid: String,
     val summary: String?,
     val date: LocalDate = LocalDate.now(),
+    val task: ScheduleTask = ScheduleTask(),
+    val grade: Int = 1,
+    val homeWork: List<String> = emptyList()
 //    val created: String?,
 //    val start: String?,
 //    val end: String?,
@@ -28,5 +32,4 @@ data class AsnovaSchedule(
 //    val status: String?,
 //    val organizer: String?,
 //    val attendees: List<String>?,
-    val uid: String
 )
