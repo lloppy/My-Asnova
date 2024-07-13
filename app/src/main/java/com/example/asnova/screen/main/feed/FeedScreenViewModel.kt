@@ -3,9 +3,14 @@ package com.example.asnova.screen.main.feed
 import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.asnova.data.NewsItem
+import com.example.asnova.screen.main.feed.api.GroupsInteractor
+import com.example.asnova.screen.main.feed.api.SingleLiveEvent
+import com.example.asnova.screen.main.feed.api.WallItem
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -15,14 +20,36 @@ import javax.inject.Inject
 
 @HiltViewModel
 class FeedScreenViewModel @Inject constructor(
-
+    private val groupsInteractor: GroupsInteractor
 ): ViewModel() {
+    private val _showMessage = SingleLiveEvent<String>()
+    val showMessage: LiveData<String> = _showMessage
+
+    private var wallId: Int = 221091451
+
     private val _state = mutableStateOf(FeedState())
     val state: State<FeedState> = _state
 
+    private val _wallItems = MutableLiveData<List<WallItem>>()
+    val wallItems: LiveData<List<WallItem>> get() = _wallItems
+
     init {
-        // Simulate initial loading
+        onUpdateWall()
         fetchTelegramMessages()
+    }
+
+
+    fun onUpdateWall() = viewModelScope.launch {
+        try {
+            val list = wallItems.value?.toMutableList() ?: mutableListOf()
+            val loadedData = groupsInteractor.getGroupWall(wallId, 0)
+            if (list.isEmpty()) _wallItems.value = loadedData.sortedByDescending { it.date }
+            else _wallItems.value = list.apply { addAll(loadedData) }
+                .distinctBy { it.id }.sortedByDescending { it.date }
+            Log.e("vk_info", "news is ${wallItems.value?.firstOrNull()?.text.toString()}")
+        } catch (e: Exception) {
+            //showMessage(e.message ?:"")
+        }
     }
 
     private fun fetchTelegramMessages() {

@@ -2,6 +2,7 @@ package com.example.asnova.app.di
 
 import CalDavClient
 import android.content.Context
+import android.os.FileUtils
 import com.asnova.domain.repository.firebase.NewsRepository
 import com.asnova.domain.repository.firebase.ScheduleRepository
 import com.asnova.domain.repository.firebase.UserRepository
@@ -22,6 +23,9 @@ import com.asnova.storage.ScheduleStateRepositoryImpl
 import com.asnova.storage.ScheduleStateStorageImpl
 import com.asnova.storage.ThemeSettingRepositoryImpl
 import com.asnova.storage.ThemeSettingStorageImpl
+import com.example.asnova.screen.main.feed.api.GroupsApi
+import com.example.asnova.screen.main.feed.api.GroupsRepository
+import com.example.asnova.screen.main.feed.api.VkGroupsRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -32,6 +36,13 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 class DataModule {
+    @Provides
+    @Singleton
+    fun provideGroupsRepository(
+        fileUtils: FileUtils,
+        groupsApi: GroupsApi
+    ): GroupsRepository = VkGroupsRepository(fileUtils, groupsApi)
+
     @Provides
     @Singleton
     fun provideNewsRepository(): NewsRepository {

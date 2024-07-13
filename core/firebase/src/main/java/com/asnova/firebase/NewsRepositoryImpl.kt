@@ -25,14 +25,19 @@ import java.util.UUID
 import javax.inject.Inject
 
 class NewsRepositoryImpl @Inject constructor() : NewsRepository {
+    // https://dev.vk.com/ru/method/groups
     private val _database: FirebaseFirestore = FirebaseFirestore.getInstance()
     private val _databaseReference: CollectionReference = _database.collection("news")
     private val _storage: FirebaseStorage = Firebase.storage
     private val _storageReference: StorageReference = _storage.reference
 
     private val newsUrl = "https://asnova.pro"
-    //  "https://oauth.vk.com/authorize?" + "client_id=51985947" + "&redirect_uri=https://oauth.vk.com/blank.html" + "&group_ids=162375388" + "&display=page" + "&scope=wall,photos,groups" + "&response_type=token" + "&v=5.131"
-    //  https://oauth.vk.com/authorize?client_id=51985947&group_ids=162375388&display=page&redirect_uri=https://oauth.vk.com/blank.html&scope=wall,groups&response_type=token&v=5.131
+    // asnova  "https://oauth.vk.com/authorize?" + "client_id=51985947" + "&redirect_uri=https://oauth.vk.com/blank.html" + "&group_ids=162375388" + "&display=page" + "&scope=wall,photos,groups" + "&response_type=token" + "&v=5.131"
+    // chineese  "https://oauth.vk.com/authorize?" + "client_id=51985947" + "&redirect_uri=https://oauth.vk.com/blank.html" + "&group_ids=221091451" + "&display=page" + "&scope=wall,photos,groups" + "&response_type=token" + "&v=5.131"
+    // asnova https://oauth.vk.com/authorize?client_id=51985947&group_ids=162375388&display=page&redirect_uri=https://oauth.vk.com/blank.html&scope=wall,groups&response_type=token&v=5.131
+    // chineese https://oauth.vk.com/authorize?client_id=51985947&group_ids=221091451&display=page&redirect_uri=https://oauth.vk.com/blank.html&scope=wall,groups&response_type=token&v=5.131
+
+    // vk1.a.kqcfhxbPlKsLzyIqoNzSSmonCRSyg5RlSeypPry1_JQTOqGlCALd_ySQzKnZP1foLfhgQThN4dZ0LOChaPmr1CVY6419FJM5x71u0lwgw8b4hW2Gd1IwM65b7miAhnMqrKlp-3CRAvtHNruhtosDVR6aHc1zBvwOz2HlPIlu00nfxiBBxyGVWbEwPUccuiyl47OiLlGHFcrrwJc7sRKliQ
 
     override fun addNewsItem(newsItem: NewsItem, callback: (Resource<Boolean>) -> Unit) {
         callback(Resource.Loading())
