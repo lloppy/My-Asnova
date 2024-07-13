@@ -19,13 +19,14 @@ data class Schedule(
 
 data class AsnovaSchedule(
     val summary: String?,
-    val created: String?,
-    val start: String?,
-    val end: String?,
-    val location: String?,
-    val description: String?,
-    val status: String?,
-    val organizer: String?,
-    val attendees: List<String>?,
+    val date: LocalDate = LocalDate.now(),
+//    val created: String?,
+//    val start: String?,
+//    val end: String?,
+//    val location: String?,
+//    val description: String?,
+//    val status: String?,
+//    val organizer: String?,
+//    val attendees: List<String>?,
     val uid: String
 )

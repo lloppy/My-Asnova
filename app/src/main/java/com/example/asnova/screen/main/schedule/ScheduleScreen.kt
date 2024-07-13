@@ -225,12 +225,12 @@ fun LogInContent(
                                         horizontalAlignment = Alignment.CenterHorizontally
                                     ) {
                                         Text(
-                                            text = item.start.toString(),
+                                            text = "item.start.toString()",
                                             textAlign = TextAlign.Center,
                                             fontWeight = FontWeight.Bold
                                         )
                                         Text(
-                                            text = item.end.toString(),
+                                            text = "item.end.toString()",
                                             textAlign = TextAlign.Center,
                                             fontSize = 12.sp,
                                             color = MaterialTheme.colorScheme.secondary

@@ -28,7 +28,7 @@ class CalDavClient(
 ) {
     private val client = OkHttpClient()
 
-    private fun fetchCalendarData(): String? {
+    fun fetchCalendarData(): String? {
         val request = Request.Builder()
             .url(baseUrl)
             .header("Authorization", Credentials.basic(username, password))
@@ -39,7 +39,7 @@ class CalDavClient(
         }
     }
 
-    private fun parseCalendarData(data: String): Calendar {
+    fun parseCalendarData(data: String): Calendar {
         val stringReader = StringReader(data)
         val calendarBuilder = CalendarBuilder()
         return calendarBuilder.build(stringReader)
@@ -47,20 +47,21 @@ class CalDavClient(
 
     fun getScheduleList(): List<com.asnova.model.AsnovaSchedule> {
         val calendarData = fetchCalendarData()
+
         val calendar = calendarData?.let { parseCalendarData(it) } ?: return emptyList()
 
         val events: List<VEvent> = calendar.components.filterIsInstance<VEvent>()
         return events.map { event ->
             com.asnova.model.AsnovaSchedule(
                 summary = event.getProperty<Property>(Property.SUMMARY)?.value,
-                created = event.getProperty<Property>(Property.CREATED)?.value,
-                start = event.getProperty<Property>(Property.DTSTART)?.value,
-                end = event.getProperty<Property>(Property.DTEND)?.value,
-                location = event.getProperty<Property>(Property.LOCATION)?.value,
-                description = event.getProperty<Property>(Property.DESCRIPTION)?.value,
-                status = event.getProperty<Property>(Property.STATUS)?.value,
-                organizer = event.getProperty<Property>(Property.ORGANIZER)?.value,
-                attendees = event.getProperties<Property>(Property.ATTENDEE)?.map { it.value },
+//                created = event.getProperty<Property>(Property.CREATED)?.value,
+//                start = event.getProperty<Property>(Property.DTSTART)?.value,
+//                end = event.getProperty<Property>(Property.DTEND)?.value,
+//                location = event.getProperty<Property>(Property.LOCATION)?.value,
+//                description = event.getProperty<Property>(Property.DESCRIPTION)?.value,
+//                status = event.getProperty<Property>(Property.STATUS)?.value,
+//                organizer = event.getProperty<Property>(Property.ORGANIZER)?.value,
+//                attendees = event.getProperties<Property>(Property.ATTENDEE)?.map { it.value },
                 uid = event.getProperty<Property>(Property.UID)?.value.toString()
             )
         }

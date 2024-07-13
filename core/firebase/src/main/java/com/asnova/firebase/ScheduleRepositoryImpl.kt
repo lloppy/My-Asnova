@@ -100,17 +100,23 @@ class ScheduleRepositoryImpl @Inject constructor(
     override fun getAllScheduleFromCalDav(callback: (Resource<List<AsnovaSchedule>>) -> Unit) {
         callback(Resource.Loading())
 
-        try {
-            val scheduleList = calDavClient.getScheduleList()
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val scheduleList = calDavClient.getScheduleList()
 
-            Log.d("calendar_info", "Success: ${scheduleList.size} items")
-            scheduleList.forEach {  Log.d("calendar_info",it.summary.toString()) }
+                Log.d("calendar_info", "Success: ${scheduleList.size} items")
+                scheduleList.forEach { Log.d("calendar_info", it.summary.toString()) }
 
-            callback(Resource.Success(scheduleList))
-        } catch (e: Exception) {
-            Log.d("calendar_info", "Error: ${e.message}")
+                withContext(Dispatchers.Main) {
+                    callback(Resource.Success(scheduleList))
+                }
+            } catch (e: Exception) {
+                Log.d("calendar_info", "Error: ${e.message}")
 
-            callback(Resource.Error(e.message.toString()))
+                withContext(Dispatchers.Main) {
+                    callback(Resource.Error(e.message.toString()))
+                }
+            }
         }
     }
 

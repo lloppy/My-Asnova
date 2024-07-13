@@ -1,5 +1,6 @@
 package com.example.asnova.screen.main.schedule
 
+import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.MutableLiveData
@@ -32,29 +33,32 @@ class ScheduleScreenViewModel @Inject constructor(
 
     fun loadSchedule()
     {
+        Log.d("calendar_info", "loadSchedule called")
+
         getScheduleUseCase(callback = { result ->
             when(result){
                 is Resource.Success -> {
+                    Log.d("calendar_info", "Schedules loaded")
+
                     _state.value = AsnovaScheduleState(value = result.data ?: emptyList())
                     val temp = mutableListOf<AsnovaSchedule>()
                     for (item in _state.value.value)
                     {
-                        /*
                         if (selectedDateMutableState.value?.dayOfMonth == item.date.dayOfMonth &&
                             selectedDateMutableState.value?.monthValue == item.date.monthValue &&
                             selectedDateMutableState.value?.year == item.date.year)
                         {
                             temp.add(item)
                         }
-
-                         */
                     }
                     _state.value.value = temp
                 }
                 is Resource.Error -> {
+                    Log.d("calendar_info", "Error loading schedules")
                     _state.value = AsnovaScheduleState(error = result.message ?: "An unexpected error occurred")
                 }
                 is Resource.Loading -> {
+                    Log.d("calendar_info", "Loading schedules")
                     _state.value = AsnovaScheduleState(loading = true)
                 }
             }

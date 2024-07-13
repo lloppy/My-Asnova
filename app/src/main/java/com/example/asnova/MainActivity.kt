@@ -55,6 +55,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         VKID.init(this)
+
         setContent {
             AsnovaTheme {
                 navController = rememberNavController()
