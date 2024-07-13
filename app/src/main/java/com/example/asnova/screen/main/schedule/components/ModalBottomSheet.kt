@@ -23,12 +23,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.asnova.R
-import com.example.asnova.screen.main.schedule.Schedule
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ModalBottomSheet(
-    schoolSchedule: Schedule,
+    schoolSchedule: com.asnova.model.Schedule,
     onClickId: () -> Unit,
     onClickAC: () -> Unit,
     onClickAction: () -> Unit,

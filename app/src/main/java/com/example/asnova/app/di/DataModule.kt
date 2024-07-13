@@ -1,5 +1,6 @@
 package com.example.asnova.app.di
 
+import CalDavClient
 import android.content.Context
 import com.asnova.domain.repository.firebase.NewsRepository
 import com.asnova.domain.repository.firebase.ScheduleRepository
@@ -58,7 +59,13 @@ class DataModule {
     @Provides
     @Singleton
     fun provideScheduleRepository(): ScheduleRepository {
-        return ScheduleRepositoryImpl()
+        return ScheduleRepositoryImpl(
+            CalDavClient(
+                "https://calendar.mail.ru/principals/vk.com/ankudinovazaecologiy/calendars/e44497c4-4978-4518-81de-0530cf40c794/",
+                "ankudinovazaecologiy@vk.com",
+                "FYnERU8DZC1zvTm12NV3"
+            )
+        )
     }
 
     @Provides

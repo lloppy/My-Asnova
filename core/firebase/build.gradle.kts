@@ -56,5 +56,12 @@ dependencies {
     implementation("com.google.firebase:firebase-firestore:25.0.0")
     implementation("com.google.firebase:firebase-auth")
 
+    // calendar CalDAV
+    implementation("org.mnode.ical4j:ical4j:3.0.18")
+    implementation("javax.cache:cache-api:1.1.1")
+    implementation("org.ehcache:ehcache:3.9.7")
+
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
+
 
 }

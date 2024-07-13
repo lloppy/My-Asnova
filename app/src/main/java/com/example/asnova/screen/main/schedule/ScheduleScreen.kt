@@ -168,7 +168,7 @@ fun LogInContent(
                     itemsIndexed(state.value)
                     { _, item ->
                         Text(
-                            text = item.grade.toString() + " " + stringResource(id = R.string.grade),
+                            text = "grade " + stringResource(id = R.string.grade),
                             fontSize = 12.sp,
                             color = MaterialTheme.colorScheme.secondary,
                             modifier = Modifier.padding(horizontal = 32.dp)
@@ -182,9 +182,10 @@ fun LogInContent(
                                 color = MaterialTheme.colorScheme.onSecondary
                             )
                             .clickable {
-                                clickedItemId = item.id
+                                clickedItemId = item.uid
                             }) {
-                            if (clickedItemId == item.id) {
+                            if (clickedItemId == item.uid) {
+                                /*
                                 ModalBottomSheet(
                                     schoolSchedule = item,
                                     onClickId = {
@@ -205,12 +206,14 @@ fun LogInContent(
                                 ) {
                                     clickedItemId = ""
                                 }
+
+                                 */
                             }
                             Column(modifier = Modifier.padding(4.dp)) {
                                 Text(
                                     modifier = Modifier.padding(start = 12.dp, top = 12.dp),
                                     fontWeight = FontWeight.SemiBold,
-                                    text = item.classRoom,
+                                    text = "classRoom", // item.classRoom,
                                     fontSize = 12.sp,
                                     color = MaterialTheme.colorScheme.secondary
                                 )
@@ -235,9 +238,9 @@ fun LogInContent(
                                     }
                                     Spacer(modifier = Modifier.width(24.dp))
                                     Column {
-                                        Text(text = item.lesson, fontWeight = FontWeight.Bold)
+                                        Text(text = item.summary.toString(), fontWeight = FontWeight.Bold)
                                         Text(
-                                            text = stringResource(id = R.string.teacher) + " " + item.teacher,
+                                            text = stringResource(id = R.string.teacher) + " " + "item teacher",
                                             fontSize = 12.sp,
                                             color = MaterialTheme.colorScheme.secondary
                                         )

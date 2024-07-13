@@ -4,18 +4,25 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.asnova.domain.usecase.GetScheduleStateUseCase
+import com.asnova.domain.usecase.GetScheduleUseCase
+import com.asnova.domain.usecase.SaveScheduleStateUseCase
+import com.asnova.model.AsnovaSchedule
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.time.LocalDate
+import com.asnova.model.Resource
+import com.asnova.model.Schedule
 import javax.inject.Inject
 
 @HiltViewModel
 class ScheduleScreenViewModel @Inject constructor(
-
+    private val saveScheduleStateUseCase: SaveScheduleStateUseCase,
+    private val getScheduleStateUseCase: GetScheduleStateUseCase,
+    private val getScheduleUseCase: GetScheduleUseCase
 ) : ViewModel() {
-    // https://calendar.mail.ru/principals/vk.com/ankudinovazaecologiy/calendars/e44497c4-4978-4518-81de-0530cf40c794/
 
-    private val _state = mutableStateOf(ScheduleState())
-    val state: State<ScheduleState> = _state
+    private val _state = mutableStateOf(AsnovaScheduleState())
+    val state: State<AsnovaScheduleState> = _state
 
     private val selectedDateMutableState = MutableLiveData(LocalDate.now())
     val selectedDate: MutableLiveData<LocalDate?> = selectedDateMutableState
@@ -23,9 +30,37 @@ class ScheduleScreenViewModel @Inject constructor(
         loadSchedule()
     }
 
-    fun loadSchedule() {
+    fun loadSchedule()
+    {
+        getScheduleUseCase(callback = { result ->
+            when(result){
+                is Resource.Success -> {
+                    _state.value = AsnovaScheduleState(value = result.data ?: emptyList())
+                    val temp = mutableListOf<AsnovaSchedule>()
+                    for (item in _state.value.value)
+                    {
+                        /*
+                        if (selectedDateMutableState.value?.dayOfMonth == item.date.dayOfMonth &&
+                            selectedDateMutableState.value?.monthValue == item.date.monthValue &&
+                            selectedDateMutableState.value?.year == item.date.year)
+                        {
+                            temp.add(item)
+                        }
 
+                         */
+                    }
+                    _state.value.value = temp
+                }
+                is Resource.Error -> {
+                    _state.value = AsnovaScheduleState(error = result.message ?: "An unexpected error occurred")
+                }
+                is Resource.Loading -> {
+                    _state.value = AsnovaScheduleState(loading = true)
+                }
+            }
+        })
     }
+
     fun saveDate(date: LocalDate) {
         selectedDateMutableState.value = date
     }

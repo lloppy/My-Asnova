@@ -7,12 +7,10 @@ import com.asnova.domain.repository.storage.ScheduleStateStorage
 class ScheduleStateRepositoryImpl(
     private val scheduleStateStorage: ScheduleStateStorage
 ) : ScheduleStateRepository {
-    override fun save(date: LocalDate)
-    {
+    override fun save(date: LocalDate) {
         scheduleStateStorage.save(date)
     }
-    override fun get() : LocalDate
-    {
+    override fun get() : LocalDate {
         return scheduleStateStorage.get()
     }
 }

@@ -6,8 +6,7 @@ import com.asnova.domain.repository.storage.ScheduleStateRepository
 class SaveScheduleStateUseCase(
     private val scheduleStateRepository: ScheduleStateRepository
 ) {
-    operator fun invoke(date: LocalDate)
-    {
+    operator fun invoke(date: LocalDate) {
         scheduleStateRepository.save(date)
     }
 }

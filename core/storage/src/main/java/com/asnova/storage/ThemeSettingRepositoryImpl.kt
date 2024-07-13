@@ -11,7 +11,7 @@ class ThemeSettingRepositoryImpl(
         themeSettingStorage.save(theme)
     }
 
-    override fun get(): com.asnova.model.ThemeOption {
+    override fun get(): ThemeOption {
         return themeSettingStorage.get()
     }
 }
