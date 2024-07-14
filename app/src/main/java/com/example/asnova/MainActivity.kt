@@ -57,25 +57,6 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         VKID.init(this)
 
-        val accessToken = "2c7485642c7485642c748564202f6dcfcc22c742c7485644afaf2742c0714f09e3fa61a"
-            // "vk1.a.kqcfhxbPlKsLzyIqoNzSSmonCRSyg5RlSeypPry1_JQTOqGlCALd_ySQzKnZP1foLfhgQThN4dZ0LOChaPmr1CVY6419FJM5x71u0lwgw8b4hW2Gd1IwM65b7miAhnMqrKlp-3CRAvtHNruhtosDVR6aHc1zBvwOz2HlPIlu00nfxiBBxyGVWbEwPUccuiyl47OiLlGHFcrrwJc7sRKliQ"
-        val groupId = "221091451"
-
-        val vkClient = VkClient(accessToken, groupId)
-        vkClient.getGroupWall { wallItems ->
-            wallItems?.forEach { item ->
-                Log.e("vk_info", "Post ID: ${item.id}")
-                Log.e("vk_info", "Text: ${item.text}")
-                item.attachments?.forEach { attachment ->
-                    if (attachment.type == "photo") {
-                        attachment.photo?.sizes?.forEach { size ->
-                            Log.e("vk_info", "Photo URL: ${size.url}")
-                        }
-                    }
-                }
-            }
-        }
-
         setContent {
             AsnovaTheme {
                 navController = rememberNavController()

@@ -48,6 +48,8 @@ class FeedScreenViewModel @Inject constructor(
                 .distinctBy { it.id }.sortedByDescending { it.date }
             Log.e("vk_info", "news is ${wallItems.value?.firstOrNull()?.text.toString()}")
         } catch (e: Exception) {
+            Log.e("vk_info", e.message ?: "error occured in onUpdateWall")
+
             //showMessage(e.message ?:"")
         }
     }
