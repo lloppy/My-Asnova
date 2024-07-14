@@ -23,25 +23,24 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.SubcomposeAsyncImage
-import com.example.asnova.data.NewsItem
 import com.example.asnova.data.UserManager
+import com.example.asnova.screen.main.feed.api.WallItem
 import com.example.asnova.utils.shimmerEffect
 import java.text.SimpleDateFormat
-import java.util.Date
 import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("SimpleDateFormat")
 @Composable
 fun NewsArticleCardTop(
-    newsItem: NewsItem,
+    newsItem: WallItem,
     modifier: Modifier,
     onClickAddToFavorites: @Composable () -> Unit
 ) {
     val typography = MaterialTheme.typography
 
     val sdf = SimpleDateFormat("dd.MM HH:mm", Locale.getDefault())
-    val formattedDate = sdf.format(Date(newsItem.published * 1000))
+    //  val formattedDate = sdf.format(Date(newsItem.date * 1000))
 
     var onSuccess by remember { mutableStateOf(false) }
     val isClicked by remember { mutableStateOf(false) }
@@ -51,8 +50,10 @@ fun NewsArticleCardTop(
             .fillMaxWidth()
             .padding(16.dp)
     ) {
+        val defaultImageUrl = "https://sun9-78.userapi.com/impg/Ir5UOUAUw9qczne8EVGjGw_wWvEK_Dsv_awN9Q/qguEM4hhSLA.jpg?size=1953x989&quality=96&sign=86ca45843194e357c1ea8ba559dc6117&type=album"
+
         SubcomposeAsyncImage(
-            model = newsItem.image,
+            model = if (newsItem.images.isNullOrEmpty()) defaultImageUrl else newsItem.images.first().url,
             contentDescription = null,
             modifier = Modifier
                 .height(180.dp)
@@ -60,14 +61,17 @@ fun NewsArticleCardTop(
                 .clip(shape = MaterialTheme.shapes.medium),
             contentScale = ContentScale.Crop,
             loading = {
-                Box(modifier = Modifier
-                    .fillMaxSize()
-                    .shimmerEffect())
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .shimmerEffect()
+                )
             }
         )
         Spacer(Modifier.height(16.dp))
+
         Text(
-            text = newsItem.title,
+            text = newsItem.text,
             maxLines = 3,
             overflow = TextOverflow.Ellipsis,
             style = typography.titleLarge,
@@ -75,7 +79,7 @@ fun NewsArticleCardTop(
         )
         Row {
             Text(
-                text = "$formattedDate.",
+                text = newsItem.date.toString(),
                 style = typography.bodySmall
             )
             if (UserManager.status) {

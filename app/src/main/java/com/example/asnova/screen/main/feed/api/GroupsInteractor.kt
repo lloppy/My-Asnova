@@ -19,6 +19,7 @@ class GroupsInteractor @Inject constructor(
         return groupsRepository.getWallById(-id, offset, count, extended, fields)
             .map { it.copy(text = parseText(it.text)) }
     }
+
     private fun parseText(text: String): String {
         val pattern = "\\[(.*?)\\|(.*?)\\]".toRegex()
         return pattern.replace(text, "[$VK_URL/$1|$2]")

@@ -42,7 +42,6 @@ class VkGroupsRepository @Inject constructor(
         Log.d("vk_info", "Response received: $wall")
 
         return getResponseOrThrow(wall).mapToDomain()
-
     }
 
     private fun <R : Any> getResponseOrThrow(response: VkResponse<R>): R {

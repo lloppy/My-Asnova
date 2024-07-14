@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
@@ -102,7 +101,7 @@ fun FeedScreen(
             }
         }
     ) { padding ->
-        FeedContext(padding, viewModel, listState)
+        FeedContext(padding, viewModel, listState, lifecycleOwner)
     }
 }
 
@@ -111,9 +110,11 @@ fun FeedScreen(
 fun FeedContext(
     padding: PaddingValues,
     viewModel: FeedScreenViewModel,
-    listState: LazyListState
+    listState: LazyListState,
+    lifecycleOwner: LifecycleOwner
 ) {
     val state by viewModel.state
+    val news by viewModel.wallItems.observeAsState()
 
     // Refresh
     val isRefreshing by remember { mutableStateOf(false) }
@@ -165,14 +166,15 @@ fun FeedContext(
                     .pullRefresh(stateRefresh),
                 state = listState
             ) {
-                items(state.value) { item ->
-                    NewsArticleCardTop(
-                        newsItem = item,
-                        modifier = Modifier.clickable(onClick = {
-                            //  externalRouter.routeTo("${Screen.NewsArticle.route}/${item.id}")
-                        })
-                    ) {
-                        /*Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
+                news?.let { newsList ->
+                    items(newsList.size) { index ->
+                        NewsArticleCardTop(
+                            newsItem = newsList[index],
+                            modifier = Modifier.clickable(onClick = {
+                                //  externalRouter.routeTo("${Screen.NewsArticle.route}/${item.id}")
+                            })
+                        ) {
+                            /*Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
                             IconButton(onClick = {
                                 viewModel.addNewItemToFavorites(item.id) { callback ->
                                     if(callback.data == true)
@@ -196,11 +198,12 @@ fun FeedContext(
                                 }
                             }
                         }*/
+                        }
+                        PostListDivider()
                     }
-                    PostListDivider()
-                }
-                item {
-                    Spacer(modifier = Modifier.padding(24.dp))
+                    item {
+                        Spacer(modifier = Modifier.padding(24.dp))
+                    }
                 }
             }
         }

@@ -30,11 +30,6 @@ class NetworkModule {
         .build().create(GroupsApi::class.java)
 
     @Provides
-    fun provideWallId(): Int {
-        return 221091451
-    }
-
-    @Provides
     fun provideAccessToken(): String {
         return "2c7485642c7485642c748564202f6dcfcc22c742c7485644afaf2742c0714f09e3fa61a"
     }
