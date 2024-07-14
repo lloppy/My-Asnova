@@ -30,19 +30,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalInspectionMode
-import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.PopupProperties
 import coil.compose.AsyncImage
-import com.example.asnova.R
 import com.example.asnova.screen.main.feed.api.WallItem
 import com.example.asnova.ui.theme.Pink80
-import com.example.asnova.ui.theme.Purple40
 import com.example.asnova.ui.theme.Purple80
 import com.example.asnova.ui.theme.PurpleGrey80
 import com.example.asnova.ui.theme.fontFamilyInter
@@ -146,8 +141,7 @@ private fun FeedSourceAndUnreadDotRow(
                         )
                         .padding(horizontal = 12.dp, vertical = 8.dp)
                         .wrapContentWidth()
-                        .wrapContentHeight()
-                        ,
+                        .wrapContentHeight(),
                     text = hashtag,
                     color = Color.Black,
                     style = MaterialTheme.typography.bodySmall,
