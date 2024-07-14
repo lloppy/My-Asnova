@@ -91,7 +91,7 @@ dependencies {
 
     // Navigation
     implementation("androidx.navigation:navigation-compose:2.7.7")
-    implementation("com.exyte:animated-navigation-bar:1.0.0")
+   // implementation("com.exyte:animated-navigation-bar:1.0.0")
 
     // Image Loading
     implementation("io.coil-kt:coil-compose:2.6.0")
@@ -155,7 +155,10 @@ dependencies {
     implementation("com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:0.8.0")
     implementation("com.squareup.okhttp3:logging-interceptor:4.9.1")
 
-  //  implementation("com.google.accompanist:accompanist-gesture:0.20.2")
+    // navigation bar
+    implementation("com.canopas.compose-animated-navigationbar:bottombar:1.0.1")
+
+    //  implementation("com.google.accompanist:accompanist-gesture:0.20.2")
 
 }
 

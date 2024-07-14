@@ -1,22 +1,22 @@
 package com.example.asnova.navigation
 
 import android.content.Context
-import android.view.animation.OvershootInterpolator
-import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.LinearOutSlowInEasing
-import androidx.compose.animation.core.tween
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.LifecycleCoroutineScope
 import androidx.lifecycle.LifecycleOwner
 import androidx.navigation.NavController
@@ -25,18 +25,17 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.asnova.MainActivity
 import com.example.asnova.screen.log_in.services.GoogleAuthUiClient
-import com.example.asnova.screen.main.MainScreenViewModel
 import com.example.asnova.screen.main.feed.FeedScreen
 import com.example.asnova.screen.main.profile_settings.ProfileSettingsScreen
 import com.example.asnova.screen.main.schedule.ScheduleScreen
-import com.example.asnova.ui.theme.greenAsnova
 import com.example.asnova.utils.navigation.Router
 import com.example.asnova.utils.toastMessage
-import com.exyte.animatednavbar.AnimatedNavigationBar
-import com.exyte.animatednavbar.animation.balltrajectory.Parabolic
-import com.exyte.animatednavbar.animation.indendshape.Height
-import com.exyte.animatednavbar.animation.indendshape.shapeCornerRadius
-import com.exyte.animatednavbar.items.dropletbutton.DropletButton
+import com.example.bottombar.AnimatedBottomBar
+import com.example.bottombar.components.BottomBarItem
+import com.example.bottombar.model.IndicatorDirection
+import com.example.bottombar.model.IndicatorStyle
+import com.example.bottombar.model.ItemStyle
+import com.example.bottombar.model.VisibleItem
 import kotlinx.coroutines.launch
 
 @Composable
@@ -54,6 +53,7 @@ fun SetupNavGraph(
     ) {
         composable(Screen.Feed.route) {
             FeedScreen(
+                userData = googleAuthUiClient.getSignedInUser(),
                 externalRouter = router,
                 navController = navHostController,
                 lifecycleOwner = lifecycleOwner
@@ -98,48 +98,45 @@ fun BottomNavigationBar(navController: NavController) {
     )
     var selectedItem by remember { mutableIntStateOf(0) }
 
-    AnimatedNavigationBar(
+    AnimatedBottomBar(
+        bottomBarHeight = 90.dp,
         modifier = Modifier
-            .padding(bottom = 8.dp, start = 10.dp, end = 10.dp)
-            .height(80.dp),
-        selectedIndex = selectedItem,
-        ballColor = Color.Black,
-        barColor = Color.Black,
-        cornerRadius = shapeCornerRadius(25.dp),
-        ballAnimation = Parabolic(tween(Duration, easing = LinearOutSlowInEasing)),
-        indentAnimation = Height(
-            indentWidth = 56.dp,
-            indentHeight = 15.dp,
-            animationSpec = tween(
-                DoubleDuration,
-                easing = { OvershootInterpolator().getInterpolation(it) })
-        )
+            .shadow(6.dp, RoundedCornerShape(topStart = 40.dp, topEnd = 40.dp)),
+        selectedItem = selectedItem,
+        itemSize = items.take(3).size,
+        contentColor = Color.White,
+        indicatorColor = Color.Black,
+        indicatorStyle = IndicatorStyle.LINE,
+        containerShape = RoundedCornerShape(topStart = 40.dp, topEnd = 40.dp),
+        indicatorDirection = IndicatorDirection.BOTTOM,
+        containerColor = Color.White,
     ) {
-        items.forEachIndexed { index, item ->
-            DropletButton(
-                modifier = Modifier.fillMaxSize(),
-                isSelected = selectedItem == index,
-                icon = item.iconId,
-                dropletColor = greenAsnova,
-                animationSpec = tween(
-                    durationMillis = Duration,
-                    easing = LinearEasing
-                ),
+        items.forEachIndexed { index, navigationItem ->
+            val selected = index == selectedItem
+            BottomBarItem(
+                activeIndicatorColor = Color.Transparent,
+                modifier = Modifier.padding(22.dp)
+                    .padding(start = if (index == 0) 30.dp else 0.dp)
+                    .padding(end = if (index == 2) 30.dp else 0.dp),
+                selected = selected,
                 onClick = {
-                    selectedItem = index
-                    navController.navigate(item.route) {
-                        popUpTo(Screen.LogIn.route) {
-                            saveState = true
+                    if (items[selectedItem].route != navigationItem.route) {
+                        selectedItem = index
+                        navController.navigate(items[selectedItem].route) {
+                            popUpTo(Screen.LogIn.route) {
+                                saveState = true
+                            }
+                            launchSingleTop = true
+                            restoreState = true
                         }
-                        launchSingleTop = true
-                        restoreState = true
                     }
-                }
+                },
+                imageVector = navigationItem.icon!!, //ImageVector.vectorResource(id = navigationItem.iconId),
+                label = navigationItem.route.toString(),
+                visibleItem = VisibleItem.ICON,
+                itemStyle = ItemStyle.STYLE4,
+                iconColor = Color.Black
             )
         }
     }
 }
-
-
-const val Duration = 500
-const val DoubleDuration = 1000
