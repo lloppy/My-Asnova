@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -43,7 +44,7 @@ fun NewsArticleCardTop(
     //  val formattedDate = sdf.format(Date(newsItem.date * 1000))
 
     var onSuccess by remember { mutableStateOf(false) }
-    val isClicked by remember { mutableStateOf(false) }
+    var isClicked by remember { mutableStateOf(false) }
 
     Column(
         modifier = modifier
@@ -71,8 +72,8 @@ fun NewsArticleCardTop(
         Spacer(Modifier.height(16.dp))
 
         Text(
-            text = newsItem.text,
-            maxLines = 3,
+            text = newsItem.title,
+            maxLines = 2,
             overflow = TextOverflow.Ellipsis,
             style = typography.titleLarge,
             modifier = Modifier.padding(bottom = 8.dp)
@@ -88,16 +89,16 @@ fun NewsArticleCardTop(
         }
     }
     if (isClicked) {
-        /*ModalBottomSheet(onDismissRequest = {
+        ModalBottomSheet(onDismissRequest = {
             isClicked = false
         }) {
             Box(modifier = Modifier.fillMaxSize())
             {
                 Column {
-
+                    Text(text = newsItem.withoutTitle)
                 }
             }
-        }*/
+        }
 
     }
 }

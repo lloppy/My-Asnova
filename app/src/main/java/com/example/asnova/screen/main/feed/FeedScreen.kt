@@ -28,6 +28,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -44,13 +45,11 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.navigation.NavController
 import com.example.asnova.R
 import com.example.asnova.data.UserManager
+import com.example.asnova.screen.main.feed.components.FeedItemView
 import com.example.asnova.screen.main.feed.components.NewsArticleCardTop
-import com.example.asnova.screen.main.feed.components.PostListDivider
 import com.example.asnova.utils.SkeletonScreen
 import com.example.asnova.utils.navigation.Router
 import com.example.asnova.utils.shimmerEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -168,38 +167,25 @@ fun FeedContext(
             ) {
                 news?.let { newsList ->
                     items(newsList.size) { index ->
-                        NewsArticleCardTop(
-                            newsItem = newsList[index],
-                            modifier = Modifier.clickable(onClick = {
-                                //  externalRouter.routeTo("${Screen.NewsArticle.route}/${item.id}")
-                            })
-                        ) {
-                            /*Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
-                            IconButton(onClick = {
-                                viewModel.addNewItemToFavorites(item.id) { callback ->
-                                    if(callback.data == true)
-                                    {
-                                        isClicked = !isClicked
-                                    }
-                                }
-                            }) {
-                                if(isClicked)
-                                {
-                                    isClicked = false
-                                    Icon(
-                                        painter = painterResource(id = R.drawable.baseline_bookmark_24),
-                                        contentDescription = null
-                                    )
-                                } else {
-                                    Icon(
-                                        painter = painterResource(id = R.drawable.baseline_bookmark_border_24),
-                                        contentDescription = null
-                                    )
-                                }
+                        if (index != 0) {
+                            FeedItemView(
+                                feedItem = newsList[index],
+                                index = index
+                            ) {
+
                             }
-                        }*/
+
+                        } else {
+                            NewsArticleCardTop(
+                                newsItem = newsList[index],
+                                modifier = Modifier.clickable(onClick = {
+                                    //  externalRouter.routeTo("${Screen.NewsArticle.route}/${item.id}")
+                                })
+                            ) {}
+                            Spacer(modifier = Modifier.padding(24.dp))
                         }
-                        PostListDivider()
+
+                        // PostListDivider()
                     }
                     item {
                         Spacer(modifier = Modifier.padding(24.dp))

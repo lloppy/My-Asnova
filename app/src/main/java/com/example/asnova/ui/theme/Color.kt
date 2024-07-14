@@ -13,4 +13,4 @@ val Pink40 = Color(0xFF7D5260)
 
 val orangeMaterial = Color(0xFFF5982A)
 val greenAsnova = Color(0xFF4dbd38)
-val greyAsnova = Color(0xFFADADAD)
+val grayAsnova = Color(0xFFf0f2f4)

@@ -1,7 +1,6 @@
 package com.example.asnova.screen.main.feed.api
 
 import android.util.Log
-import com.example.asnova.screen.main.feed.VkResponse
 import org.json.JSONException
 import javax.inject.Inject
 import kotlin.math.abs
@@ -68,9 +67,13 @@ class VkGroupsRepository @Inject constructor(
                 posterName = "${it.firstName} ${it.lastName}"
                 posterThumbnail = it.photo50
             }
+            val defaultImageUrl = "https://sun9-78.userapi.com/impg/Ir5UOUAUw9qczne8EVGjGw_wWvEK_Dsv_awN9Q/qguEM4hhSLA.jpg?size=1953x989&quality=96&sign=86ca45843194e357c1ea8ba559dc6117&type=album"
+
             WallItem(
                 response.id,
                 response.text,
+                title = getHeadline(response.text),
+                withoutTitle = removeHeadlineAndHashtags(response.text),
                 posterName,
                 posterThumbnail,
                 response.date,
@@ -86,7 +89,32 @@ class VkGroupsRepository @Inject constructor(
                         it.photo.sizes.filter { resized -> resized.type == "r" }
                             .getOrNull(0)?.url ?: ""
                     )
-                }
+                }.ifEmpty { listOf(WallImageItem(0, 0, 0, url = defaultImageUrl))},
+                hashtags = extractHashtags(response.text)
             )
         }
+}
+
+
+private fun getHeadline(messageText: String): String {
+    val regex = Regex(".*?[.!?\\s](?=\\p{Punct}|\\p{So}|\\p{Sc}|\\s|\\z)")
+    val match = regex.find(messageText)
+    return match?.value ?: messageText
+}
+
+private fun extractHashtags(text: String): List<String> {
+    val hashtagPattern = "#\\w+".toRegex()
+    return hashtagPattern.findAll(text)
+        .map { it.value }
+        .toList()
+}
+
+private fun removeHeadlineAndHashtags(text: String): String {
+    val headline = getHeadline(text)
+    val textWithoutHeadline = text.removePrefix(headline).trim()
+
+    val hashtagPattern = "#\\w+".toRegex()
+    val textWithoutHashtags = hashtagPattern.replace(textWithoutHeadline, "").trim()
+
+    return textWithoutHashtags
 }

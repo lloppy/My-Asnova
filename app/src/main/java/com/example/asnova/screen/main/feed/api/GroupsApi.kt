@@ -1,6 +1,5 @@
 package com.example.asnova.screen.main.feed.api
 
-import com.example.asnova.screen.main.feed.VkResponse
 import retrofit2.http.GET
 import retrofit2.http.Query
 

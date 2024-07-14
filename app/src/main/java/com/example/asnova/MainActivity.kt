@@ -29,7 +29,6 @@ import com.example.asnova.screen.log_in.LogInViewModel
 import com.example.asnova.screen.log_in.SignInScreen
 import com.example.asnova.screen.log_in.services.GoogleAuthUiClient
 import com.example.asnova.screen.main.MainScreen
-import com.example.asnova.screen.main.feed.VkClient
 import com.example.asnova.screen.splash.SplashScreen
 import com.example.asnova.ui.theme.AsnovaTheme
 import com.example.asnova.utils.LOG_IN
