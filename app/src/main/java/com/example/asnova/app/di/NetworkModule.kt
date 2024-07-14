@@ -1,8 +1,6 @@
 package com.example.asnova.app.di
 
 import com.example.asnova.screen.main.feed.api.GroupsApi
-import com.example.asnova.screen.main.feed.api.GroupsRepository
-import com.example.asnova.screen.main.feed.api.VkGroupsRepository
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import dagger.Module
 import dagger.Provides
@@ -20,6 +18,16 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 class NetworkModule {
+    @Provides
+    @Singleton
+    fun provideGroupsApi(
+        okHttpClient: OkHttpClient,
+        converterFactory: Converter.Factory
+    ): GroupsApi = Retrofit.Builder()
+        .client(okHttpClient)
+        .addConverterFactory(converterFactory)
+        .baseUrl("https://api.vk.com/method/")
+        .build().create(GroupsApi::class.java)
 
     @Provides
     fun provideWallId(): Int {
@@ -28,15 +36,7 @@ class NetworkModule {
 
     @Provides
     fun provideAccessToken(): String {
-        // https://api.vk.com/method/wall.get?owner_id=--221091451&count=10&offset=0&extended=1&fields=photo_50,name&access_token=2c7485642c7485642c748564202f6dcfcc22c742c7485644afaf2742c0714f09e3fa61a&v=5.131
-        // https://api.vk.com/method/wall.get?owner_id=-221091451&access_token=2c7485642c7485642c748564202f6dcfcc22c742c7485644afaf2742c0714f09e3fa61a&v=5.131
         return "2c7485642c7485642c748564202f6dcfcc22c742c7485644afaf2742c0714f09e3fa61a"
-    }
-
-    @Provides
-    @Singleton
-    fun provideJson(): Json {
-        return Json { ignoreUnknownKeys = true }
     }
 
     @ExperimentalSerializationApi
@@ -50,5 +50,4 @@ class NetworkModule {
     fun provideOkHttpClient(): OkHttpClient = OkHttpClient.Builder()
         .protocols(listOf(Protocol.HTTP_1_1))
         .build()
-
 }
