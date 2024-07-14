@@ -50,6 +50,8 @@ import com.example.asnova.screen.main.feed.components.PostListDivider
 import com.example.asnova.utils.SkeletonScreen
 import com.example.asnova.utils.navigation.Router
 import com.example.asnova.utils.shimmerEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -102,7 +104,6 @@ fun FeedScreen(
     ) { padding ->
         FeedContext(padding, viewModel, listState)
     }
-
 }
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -112,12 +113,11 @@ fun FeedContext(
     viewModel: FeedScreenViewModel,
     listState: LazyListState
 ) {
-    val state = viewModel.state.value
+    val state by viewModel.state
 
     // Refresh
     val isRefreshing by remember { mutableStateOf(false) }
     val stateRefresh = rememberPullRefreshState(isRefreshing, { viewModel.pullToRefresh() })
-
 
     Box(
         modifier = Modifier.padding(top = padding.calculateTopPadding(), bottom = 90.dp)

@@ -138,6 +138,8 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.3")
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.3")
 
+    implementation("androidx.compose.runtime:runtime-livedata:1.0.5")
+
     // VK auth
     val sdkVersion = "2.0.0"
     implementation("com.vk.id:vkid:${sdkVersion}")
