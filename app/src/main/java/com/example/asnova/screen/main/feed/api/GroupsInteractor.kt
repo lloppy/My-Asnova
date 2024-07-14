@@ -16,7 +16,7 @@ class GroupsInteractor @Inject constructor(
         val count = 10
         val fields = listOf("photo_50", "name")
         val extended = 1
-        return groupsRepository.getWallById(id, offset, count, extended, fields)
+        return groupsRepository.getWallById(-id, offset, count, extended, fields)
             .map { it.copy(text = parseText(it.text)) }
     }
     private fun parseText(text: String): String {

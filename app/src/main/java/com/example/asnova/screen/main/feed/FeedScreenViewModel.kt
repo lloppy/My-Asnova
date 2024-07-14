@@ -39,7 +39,7 @@ class FeedScreenViewModel @Inject constructor(
     }
 
 
-    fun onUpdateWall() = viewModelScope.launch {
+    private fun onUpdateWall() = viewModelScope.launch {
         try {
             val list = wallItems.value?.toMutableList() ?: mutableListOf()
             val loadedData = groupsInteractor.getGroupWall(wallId, 0)

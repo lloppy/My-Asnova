@@ -11,6 +11,7 @@ class VkGroupsRepository @Inject constructor(
     private val groupsApi: GroupsApi
 
 ) : GroupsRepository {
+    private val accessToken = "2c7485642c7485642c748564202f6dcfcc22c742c7485644afaf2742c0714f09e3fa61a"
     override suspend fun getWallById(
         groupId: Int,
         offset: Int,
@@ -18,14 +19,28 @@ class VkGroupsRepository @Inject constructor(
         extended: Int?,
         fields: List<String>?
     ): List<WallItem> {
-        val wall = groupsApi.getWallById(
-            "5.131",
-            groupId,
-            offset,
-            count,
-            extended,
-            fields?.joinToString(",")
+        val url = "https://api.vk.com/method/wall.get?" +
+                "owner_id=$groupId&" +
+                "count=$count&" +
+                "offset=$offset&" +
+                "extended=${extended ?: 0}&" +
+                "fields=${fields?.joinToString(",")}&" +
+                "access_token=$accessToken&" +
+                "v=5.131"
+        Log.d("vk_info", "Request URL: $url")
+
+        val wall = groupsApi.getWall(
+            version = "5.131",
+            ownerId = groupId,
+            accessToken = accessToken,
+            offset = offset,
+            count = count,
+            extended = extended,
+            fields = fields?.joinToString(",")
         )
+
+        Log.d("vk_info", "Response received: $wall")
+
         return getResponseOrThrow(wall).mapToDomain()
 
     }
@@ -36,6 +51,7 @@ class VkGroupsRepository @Inject constructor(
                 response.error.errorCode,
                 response.error.errorMsg
             )
+
             response.response != null -> return response.response
             else -> throw JSONException("Unknown JSON")
         }
