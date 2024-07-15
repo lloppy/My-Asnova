@@ -101,7 +101,7 @@ fun BottomNavigationBar(navController: NavController) {
     AnimatedBottomBar(
         bottomBarHeight = 90.dp,
         modifier = Modifier
-            .shadow(6.dp, RoundedCornerShape(topStart = 40.dp, topEnd = 40.dp)),
+            .shadow(8.dp, RoundedCornerShape(topStart = 40.dp, topEnd = 40.dp)),
         selectedItem = selectedItem,
         itemSize = items.take(3).size,
         contentColor = Color.White,
