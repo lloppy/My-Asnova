@@ -19,7 +19,6 @@ import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -57,8 +56,8 @@ fun FeedScreen(
     val listState = rememberLazyListState()
 
     val state by viewModel.state
-    val news by viewModel.wallItems.observeAsState()
-    val ohranaWallItems by viewModel.ohranaWallItems.observeAsState(emptyList())
+    val asnovaNews by viewModel.wallItems.observeAsState()
+    val ohranaNews by viewModel.ohranaWallItems.observeAsState(emptyList())
 
     // Refresh
     val isRefreshing by remember { mutableStateOf(false) }
@@ -116,9 +115,9 @@ fun FeedScreen(
                     .pullRefresh(stateRefresh),
                 state = listState
             ) {
-                val currentNews = when(selectedThreeSegment) {
-                    "Asnovapro" -> news
-                    "Охрана труда" -> ohranaWallItems
+                val currentNews = when (selectedThreeSegment) {
+                    "Asnovapro" -> asnovaNews
+                    "Охрана труда" -> ohranaNews
                     else -> emptyList()
                 }
 
