@@ -11,17 +11,15 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -46,7 +44,7 @@ import com.example.asnova.utils.SkeletonScreen
 import com.example.asnova.utils.navigation.Router
 import com.example.asnova.utils.shimmerEffect
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun FeedScreen(
     userData: UserData?,
@@ -58,9 +56,9 @@ fun FeedScreen(
     // FAB
     val listState = rememberLazyListState()
 
-
     val state by viewModel.state
     val news by viewModel.wallItems.observeAsState()
+    val ohranaWallItems by viewModel.ohranaWallItems.observeAsState(emptyList())
 
     // Refresh
     val isRefreshing by remember { mutableStateOf(false) }
@@ -118,7 +116,13 @@ fun FeedScreen(
                     .pullRefresh(stateRefresh),
                 state = listState
             ) {
-                news?.let { newsList ->
+                val currentNews = when(selectedThreeSegment) {
+                    "Asnovapro" -> news
+                    "Охрана труда" -> ohranaWallItems
+                    else -> emptyList()
+                }
+
+                currentNews?.let { newsList ->
                     items(newsList.size) { index ->
                         if (index != 0) {
                             FeedItemView(

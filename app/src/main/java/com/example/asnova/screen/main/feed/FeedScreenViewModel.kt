@@ -21,13 +21,14 @@ class FeedScreenViewModel @Inject constructor(
     private val _showMessage = SingleLiveEvent<String>()
     val showMessage: LiveData<String> = _showMessage
 
-    private var wallId: Int = 162375388
-
     private val _state = mutableStateOf(FeedState())
     val state: State<FeedState> = _state
 
     private val _wallItems = MutableLiveData<List<WallItem>>()
     val wallItems: LiveData<List<WallItem>> get() = _wallItems
+
+    private val _ohranaWallItems = MutableLiveData<List<WallItem>>()
+    val ohranaWallItems: LiveData<List<WallItem>> get() = _ohranaWallItems
 
     private val _isLoading = MutableLiveData(false)
     val isLoading: LiveData<Boolean> get() = _isLoading
@@ -39,38 +40,79 @@ class FeedScreenViewModel @Inject constructor(
     val showStartProgress: LiveData<Boolean> get() = _showStartProgress
 
     init {
-        onUpdateWall()
-        onDownloadMore()
+        onUpdateWall(wallId = 162375388)
+        onUpdateWall(wallId = 80108699)
+        onDownloadMore(wallId = 162375388)
+        onDownloadMore(wallId = 80108699)
     }
 
-    private fun onUpdateWall() = viewModelScope.launch {
+    private fun onUpdateWall(wallId: Int) = viewModelScope.launch {
         try {
-            val list = wallItems.value?.toMutableList() ?: mutableListOf()
-            val loadedData = groupsInteractor.getGroupWall(wallId, 0)
-            Log.d("vk_info", "Loaded ${loadedData.size} items: $loadedData")
-            if (list.isEmpty()) {
-                _wallItems.value = loadedData.sortedByDescending { it.date }
+            val list = if (wallId == 162375388) {
+                _wallItems.value?.toMutableList() ?: mutableListOf()
             } else {
-                _wallItems.value = list.apply { addAll(loadedData) }
-                    .distinctBy { it.id }.sortedByDescending { it.date }
+                _ohranaWallItems.value?.toMutableList() ?: mutableListOf()
             }
+
+            val loadedData = groupsInteractor.getGroupWall(wallId, 0)
+
+            when (wallId) {
+                162375388 -> {
+                    if (list.isEmpty()) {
+                        _wallItems.value = loadedData.sortedByDescending { it.date }
+                    } else {
+                        _wallItems.value = list.apply { addAll(loadedData) }
+                            .distinctBy { it.id }.sortedByDescending { it.date }
+                    }
+                }
+
+                80108699 -> {
+                    if (list.isEmpty()) {
+                        _ohranaWallItems.value = loadedData.sortedByDescending { it.date }
+                    } else {
+                        _ohranaWallItems.value = list.apply { addAll(loadedData) }
+                            .distinctBy { it.id }.sortedByDescending { it.date }
+                    }
+                }
+            }
+
         } catch (e: Exception) {
             Log.e("vk_info", "Error fetching wall data: ${e.message}", e)
             _showMessage.postValue(e.message ?: "Unknown error occurred")
         }
     }
 
-    fun onDownloadMore(fromStart: Boolean = false) = viewModelScope.launch {
+    fun onDownloadMore(fromStart: Boolean = false, wallId: Int) = viewModelScope.launch {
         try {
             _isLoading.value = true
-            val list = wallItems.value?.toMutableList() ?: mutableListOf()
+            val list = if (wallId == 162375388) {
+                _wallItems.value?.toMutableList() ?: mutableListOf()
+            } else if (wallId == 80108699) {
+                _ohranaWallItems.value?.toMutableList() ?: mutableListOf()
+            } else {
+                mutableListOf()
+            }
+
             if (list.isEmpty()) _showStartProgress.value = true
-            val offset = if (fromStart) 0 else wallItems.value?.size ?: 0
+            val offset = if (fromStart) 0 else list.size
             val loadedData = groupsInteractor.getGroupWall(wallId, offset)
             if (loadedData.isEmpty()) _downloadMore.value = false
-            if (fromStart) _wallItems.value = loadedData.sortedByDescending { it.date }
-            else _wallItems.value = list.apply { addAll(loadedData) }
-                .distinctBy { it.id }.sortedByDescending { it.date }
+
+            when (wallId) {
+                162375388 -> {
+                    if (fromStart) _wallItems.value = loadedData.sortedByDescending { it.date }
+                    else _wallItems.value = list.apply { addAll(loadedData) }.distinctBy { it.id }
+                        .sortedByDescending { it.date }
+                }
+
+                80108699 -> {
+                    if (fromStart) _ohranaWallItems.value =
+                        loadedData.sortedByDescending { it.date }
+                    else _ohranaWallItems.value =
+                        list.apply { addAll(loadedData) }.distinctBy { it.id }
+                            .sortedByDescending { it.date }
+                }
+            }
         } catch (e: Exception) {
             _showMessage.postValue(e.message ?: "Unknown error occurred")
         } finally {
@@ -79,12 +121,12 @@ class FeedScreenViewModel @Inject constructor(
         }
     }
 
-
     fun pullToRefresh() {
         if (isLoading.value != true) {
-
-            onUpdateWall()
-            onDownloadMore(true)
+            onUpdateWall(wallId = 162375388)
+            onUpdateWall(wallId = 80108699)
+            onDownloadMore(fromStart = true, wallId = 162375388)
+            onDownloadMore(fromStart = true, wallId = 80108699)
         }
     }
 }

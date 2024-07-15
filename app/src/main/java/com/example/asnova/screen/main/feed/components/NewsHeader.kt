@@ -78,13 +78,13 @@ fun NewsHeader(
             CurrentDateText()
             Spacer(modifier = Modifier.height(12.dp))
             Text(
-                text = "Добро пожаловать${if (userData?.username.isNullOrEmpty()) "!" else ",\n${userData!!.username}"}",
+                //Добро пожаловать
+                text = "С возвращением${if (userData?.username.isNullOrEmpty()) "!" else ",\n${userData!!.username}"}",
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold,
             )
         }
     }
-
 }
 
 
