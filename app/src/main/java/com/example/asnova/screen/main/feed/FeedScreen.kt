@@ -123,14 +123,9 @@ fun FeedScreen(
 
                 currentNews?.let { newsList ->
                     items(newsList.size) { index ->
-                        if (index != 0) {
-                            FeedItemView(
-                                feedItem = newsList[index],
-                                index = index
-                            ) {}
-                        } else {
+                        if (index == 0) {
                             NewsHeader(
-                                userData = userData,
+                                userData = userData
                             )
 
                             Column(
@@ -149,14 +144,19 @@ fun FeedScreen(
                                 }
                                 Spacer(modifier = Modifier.height(16.dp))
                             }
-                            NewsArticleCardTop(
-                                newsItem = newsList[index],
-                                modifier = Modifier.clickable(onClick = {
-                                    //  externalRouter.routeTo("${Screen.NewsArticle.route}/${item.id}")
-                                })
-                            ) {}
+//                            NewsArticleCardTop(
+//                                newsItem = newsList[index],
+//                                modifier = Modifier.clickable(onClick = {
+//                                    //  externalRouter.routeTo("${Screen.NewsArticle.route}/${item.id}")
+//                                })
+//                            ) {}
                             Spacer(modifier = Modifier.padding(24.dp))
                         }
+                        FeedItemView(
+                            feedItem = newsList[index],
+                            index = index
+                        ) {}
+
                         // PostListDivider()
                     }
                     item {

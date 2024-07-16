@@ -56,9 +56,11 @@ class VkGroupsRepository @Inject constructor(
     }
 
     fun GroupWallResponse.mapToDomain(): List<WallItem> =
-        this.items.map { response ->
-            var posterName = ""
-            var posterThumbnail = ""
+        this.items
+            .filter { it.text.isNotBlank() }
+            .map { response ->
+                var posterName = ""
+                var posterThumbnail = ""
 
             this.groups.filter { abs(it.id) == abs(response.fromId) }.getOrNull(0)?.let {
                 posterName = it.name
@@ -103,7 +105,7 @@ private fun getHeadline(messageText: String): String {
 }
 
 private fun extractHashtags(text: String): List<String> {
-    val hashtagPattern = "#\\w+".toRegex()
+    val hashtagPattern = "#(?!_lp_block)\\w+".toRegex()
     return hashtagPattern.findAll(text)
         .map { it.value }
         .toList()
