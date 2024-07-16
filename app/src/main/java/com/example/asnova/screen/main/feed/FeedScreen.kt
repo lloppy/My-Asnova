@@ -10,13 +10,13 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -27,7 +27,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -40,10 +40,7 @@ import com.example.asnova.screen.main.feed.components.NewsHeader
 import com.example.asnova.screen.main.feed.components.SegmentText
 import com.example.asnova.screen.main.feed.components.SegmentedControl
 import com.example.asnova.ui.theme.backgroundAsnova
-import com.example.asnova.utils.SkeletonScreen
 import com.example.asnova.utils.navigation.Router
-import com.example.asnova.utils.shimmerEffect
-import com.example.asnova.utils.toastMessage
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -60,10 +57,8 @@ fun FeedScreen(
     val asnovaNews by viewModel.wallItems.observeAsState()
     val ohranaNews by viewModel.ohranaWallItems.observeAsState(emptyList())
 
-    val isRefreshing by viewModel.isRefreshing.observeAsState(false)
-    val stateRefresh = rememberPullRefreshState(refreshing = isRefreshing, onRefresh = {
-        viewModel.pullToRefresh()
-    })
+    val isRefreshing by remember { mutableStateOf(false) }
+    val stateRefresh = rememberPullRefreshState(isRefreshing, { viewModel.pullToRefresh() })
 
     val threeSegments = remember { listOf("Моя группа", "Asnovapro", "Охрана труда") }
     var selectedThreeSegment by remember { mutableStateOf(threeSegments[1]) }
@@ -75,90 +70,62 @@ fun FeedScreen(
             .background(backgroundAsnova)
             .padding(bottom = 90.dp)
     ) {
-
-        SkeletonScreen(
-            isLoading = state.loading,
-            skeleton = {
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp)
-                ) {
-                    items(2) {
-                        Box(
-                            modifier = Modifier
-                                .height(180.dp)
-                                .fillMaxSize()
-                                .clip(shape = MaterialTheme.shapes.medium)
-                                .shimmerEffect()
-                        )
-                        Spacer(Modifier.height(16.dp))
-                        Box(
-                            modifier = Modifier
-                                .height(16.dp)
-                                .width(150.dp)
-                                .clip(shape = MaterialTheme.shapes.medium)
-                                .shimmerEffect()
-                        )
-                        Spacer(Modifier.height(16.dp))
-                        Box(
-                            modifier = Modifier
-                                .height(16.dp)
-                                .width(50.dp)
-                                .clip(shape = MaterialTheme.shapes.medium)
-                                .shimmerEffect()
-                        )
-                        Spacer(Modifier.height(16.dp))
-                    }
-                }
-            }
-        ) {
-            LazyColumn(
+        if (state.loading) {
+            CircularProgressIndicator(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .pullRefresh(stateRefresh),
-                state = listState
-            ) {
-                val currentNews = when (selectedThreeSegment) {
-                    "Asnovapro" -> asnovaNews
-                    "Охрана труда" -> ohranaNews
-                    else -> emptyList()
-                }
+                    .fillMaxWidth(0.1f)
+                    .padding(top = 45.dp)
+                    .align(Alignment.Center),
+                color = Color.Gray
+            )
+        }
 
-                currentNews?.let { newsList ->
-                    items(newsList.size) { index ->
-                        if (index == 0) {
-                            NewsHeader(userData = userData)
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .pullRefresh(stateRefresh),
+            state = listState
+        ) {
+            val currentNews = when (selectedThreeSegment) {
+                "Asnovapro" -> asnovaNews
+                "Охрана труда" -> ohranaNews
+                else -> emptyList()
+            }
 
-                            Column(modifier = Modifier.padding(start = 16.dp, end = 16.dp)) {
-                                SegmentedControl(
-                                    threeSegments, selectedThreeSegment,
-                                    onSegmentSelected = { selectedThreeSegment = it },
-                                    modifier = Modifier.height(50.dp)
-                                ) { SegmentText(it, selectedThreeSegment == it) }
-                            }
-                            Spacer(modifier = Modifier.padding(12.dp))
+            currentNews?.let { newsList ->
+                items(newsList.size) { index ->
+                    if (index == 0) {
+                        NewsHeader(userData = userData)
+
+                        Column(modifier = Modifier.padding(start = 16.dp, end = 16.dp)) {
+                            SegmentedControl(
+                                threeSegments, selectedThreeSegment,
+                                onSegmentSelected = { selectedThreeSegment = it },
+                                modifier = Modifier.height(50.dp)
+                            ) { SegmentText(it, selectedThreeSegment == it) }
                         }
+                        Spacer(modifier = Modifier.padding(12.dp))
+                    }
 
-                        FeedItemView(
-                            feedItem = newsList[index],
-                            index = index
-                        ) {
-                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(newsList[index].postUrl))
-                            context.startActivity(intent)
-                        }
+                    FeedItemView(
+                        feedItem = newsList[index],
+                        index = index
+                    ) {
+                        val intent =
+                            Intent(Intent.ACTION_VIEW, Uri.parse(newsList[index].postUrl))
+                        context.startActivity(intent)
+                    }
 
-                        if (index == newsList.size - 1) {
-                            viewModel.onDownloadMore(
-                                wallId = getWallIdBySegment(
-                                    selectedThreeSegment
-                                )
+                    if (index == newsList.size - 1) {
+                        viewModel.onDownloadMore(
+                            wallId = getWallIdBySegment(
+                                selectedThreeSegment
                             )
-                        }
+                        )
                     }
-                    item {
-                        Spacer(modifier = Modifier.padding(24.dp))
-                    }
+                }
+                item {
+                    Spacer(modifier = Modifier.padding(24.dp))
                 }
             }
         }
@@ -173,9 +140,14 @@ fun FeedScreen(
                     .align(Alignment.Center)
             )
         }
-        PullRefreshIndicator(isRefreshing, stateRefresh, Modifier.align(Alignment.TopCenter))
+        PullRefreshIndicator(
+            isRefreshing,
+            stateRefresh,
+            Modifier.align(Alignment.TopCenter)
+        )
     }
 }
+
 
 private fun getWallIdBySegment(segment: String): Int {
     return when (segment) {

@@ -10,6 +10,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.asnova.screen.main.feed.api.GroupsInteractor
 import com.example.asnova.screen.main.feed.api.SingleLiveEvent
 import com.example.asnova.screen.main.feed.api.WallItem
+import com.example.asnova.screen.main.schedule.AsnovaScheduleState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -27,12 +28,6 @@ class FeedScreenViewModel @Inject constructor(
     private val _ohranaWallItems = MutableLiveData<List<WallItem>>()
     val ohranaWallItems: LiveData<List<WallItem>> get() = _ohranaWallItems
 
-    private val _isLoading = MutableLiveData(false)
-    val isLoading: LiveData<Boolean> get() = _isLoading
-
-    private val _isRefreshing = MutableLiveData(false)
-    val isRefreshing: LiveData<Boolean> get() = _isRefreshing
-
     private val _downloadMore = MutableLiveData(true)
     val downloadMore: LiveData<Boolean> get() = _downloadMore
 
@@ -45,8 +40,6 @@ class FeedScreenViewModel @Inject constructor(
     init {
         onUpdateWall(wallId = 162375388)
         onUpdateWall(wallId = 80108699)
-        onDownloadMore(wallId = 162375388)
-        onDownloadMore(wallId = 80108699)
     }
 
     private fun onUpdateWall(wallId: Int) = viewModelScope.launch {
@@ -56,7 +49,6 @@ class FeedScreenViewModel @Inject constructor(
             } else {
                 _ohranaWallItems.value?.toMutableList() ?: mutableListOf()
             }
-
             val loadedData = groupsInteractor.getGroupWall(wallId, 0)
 
             when (wallId) {
@@ -87,7 +79,8 @@ class FeedScreenViewModel @Inject constructor(
 
     fun onDownloadMore(fromStart: Boolean = false, wallId: Int) = viewModelScope.launch {
         try {
-            _isLoading.value = true
+            _state.value = FeedState(loading = true)
+
             val list = if (wallId == 162375388) {
                 _wallItems.value?.toMutableList() ?: mutableListOf()
             } else if (wallId == 80108699) {
@@ -119,19 +112,19 @@ class FeedScreenViewModel @Inject constructor(
         } catch (e: Exception) {
             Log.e("vk_info", "Error fetching wall data: ${e.message}", e)
             _showMessage.postValue(e.message ?: "Unknown error occurred")
+            _state.value = FeedState(error = e.message ?: "An unexpected error occurred")
+
         } finally {
-            _isLoading.value = false
+            _state.value = FeedState(loading = false)
             _showStartProgress.value = false
         }
     }
 
     fun pullToRefresh() = viewModelScope.launch {
-        _isRefreshing.postValue(true)
         try {
             onUpdateWall(162375388)
             onUpdateWall(80108699)
-        } finally {
-            _isRefreshing.postValue(false)
+        } catch (_: Exception) {
         }
     }
 }
