@@ -18,9 +18,6 @@ import javax.inject.Inject
 class FeedScreenViewModel @Inject constructor(
     private val groupsInteractor: GroupsInteractor
 ) : ViewModel() {
-    private val _showMessage = SingleLiveEvent<String>()
-    val showMessage: LiveData<String> = _showMessage
-
     private val _state = mutableStateOf(FeedState())
     val state: State<FeedState> = _state
 
@@ -33,11 +30,17 @@ class FeedScreenViewModel @Inject constructor(
     private val _isLoading = MutableLiveData(false)
     val isLoading: LiveData<Boolean> get() = _isLoading
 
+    private val _isRefreshing = MutableLiveData(false)
+    val isRefreshing: LiveData<Boolean> get() = _isRefreshing
+
     private val _downloadMore = MutableLiveData(true)
     val downloadMore: LiveData<Boolean> get() = _downloadMore
 
     private val _showStartProgress = MutableLiveData(true)
     val showStartProgress: LiveData<Boolean> get() = _showStartProgress
+
+    private val _showMessage = SingleLiveEvent<String>()
+    val showMessage: LiveData<String> = _showMessage
 
     init {
         onUpdateWall(wallId = 162375388)
@@ -114,19 +117,21 @@ class FeedScreenViewModel @Inject constructor(
                 }
             }
         } catch (e: Exception) {
+            Log.e("vk_info", "Error fetching wall data: ${e.message}", e)
             _showMessage.postValue(e.message ?: "Unknown error occurred")
         } finally {
-            _showStartProgress.value = false
             _isLoading.value = false
+            _showStartProgress.value = false
         }
     }
 
-    fun pullToRefresh() {
-        if (isLoading.value != true) {
-            onUpdateWall(wallId = 162375388)
-            onUpdateWall(wallId = 80108699)
-            onDownloadMore(fromStart = true, wallId = 162375388)
-            onDownloadMore(fromStart = true, wallId = 80108699)
+    fun pullToRefresh() = viewModelScope.launch {
+        _isRefreshing.postValue(true)
+        try {
+            onUpdateWall(162375388)
+            onUpdateWall(80108699)
+        } finally {
+            _isRefreshing.postValue(false)
         }
     }
 }

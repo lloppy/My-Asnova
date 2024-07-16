@@ -52,16 +52,16 @@ fun FeedScreen(
     lifecycleOwner: LifecycleOwner,
     viewModel: FeedScreenViewModel = hiltViewModel()
 ) {
-    // FAB
     val listState = rememberLazyListState()
 
     val state by viewModel.state
     val asnovaNews by viewModel.wallItems.observeAsState()
     val ohranaNews by viewModel.ohranaWallItems.observeAsState(emptyList())
 
-    // Refresh
-    val isRefreshing by remember { mutableStateOf(false) }
-    val stateRefresh = rememberPullRefreshState(isRefreshing, { viewModel.pullToRefresh() })
+    val isRefreshing by viewModel.isRefreshing.observeAsState(false)
+    val stateRefresh = rememberPullRefreshState(refreshing = isRefreshing, onRefresh = {
+        viewModel.pullToRefresh()
+    })
 
     val threeSegments = remember { listOf("Моя группа", "Asnovapro", "Охрана труда") }
     var selectedThreeSegment by remember { mutableStateOf(threeSegments[1]) }
@@ -126,8 +126,7 @@ fun FeedScreen(
                         if (index == 0) {
                             NewsHeader(userData = userData)
 
-                            Column(modifier = Modifier.padding(start = 16.dp, end = 16.dp))
-                            {
+                            Column(modifier = Modifier.padding(start = 16.dp, end = 16.dp)) {
                                 SegmentedControl(
                                     threeSegments, selectedThreeSegment,
                                     onSegmentSelected = { selectedThreeSegment = it },
@@ -135,13 +134,16 @@ fun FeedScreen(
                                 ) { SegmentText(it, selectedThreeSegment == it) }
                             }
                             Spacer(modifier = Modifier.padding(12.dp))
-//                          NewsArticleCardTop(newsItem = newsList[index], modifier = Modifier.clickable(onClick = { externalRouter.routeTo("${Screen.NewsArticle.route}/${item.id}") })) {}
                         }
 
                         FeedItemView(
                             feedItem = newsList[index],
                             index = index
                         ) {}
+
+                        if (index == newsList.size - 1) {
+                            viewModel.onDownloadMore(wallId = getWallIdBySegment(selectedThreeSegment))
+                        }
                     }
                     item {
                         Spacer(modifier = Modifier.padding(24.dp))
@@ -161,5 +163,13 @@ fun FeedScreen(
             )
         }
         PullRefreshIndicator(isRefreshing, stateRefresh, Modifier.align(Alignment.TopCenter))
+    }
+}
+
+private fun getWallIdBySegment(segment: String): Int {
+    return when (segment) {
+        "Asnovapro" -> 162375388
+        "Охрана труда" -> 80108699
+        else -> 0
     }
 }
