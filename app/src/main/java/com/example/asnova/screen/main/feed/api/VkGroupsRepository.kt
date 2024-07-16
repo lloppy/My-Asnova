@@ -2,6 +2,7 @@ package com.example.asnova.screen.main.feed.api
 
 import android.util.Log
 import org.json.JSONException
+import java.util.Date
 import javax.inject.Inject
 import kotlin.math.abs
 
@@ -78,7 +79,7 @@ class VkGroupsRepository @Inject constructor(
                 withoutTitle = removeHeadlineAndHashtags(response.text),
                 posterName,
                 posterThumbnail,
-                response.date,
+                date = Date(response.date * 1000L),
                 response.likes.userLikes,
                 response.likes.count,
                 response.attachments.filter { it.type == "photo" }.map {

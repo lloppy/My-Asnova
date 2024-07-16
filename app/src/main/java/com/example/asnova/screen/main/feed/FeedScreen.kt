@@ -124,40 +124,24 @@ fun FeedScreen(
                 currentNews?.let { newsList ->
                     items(newsList.size) { index ->
                         if (index == 0) {
-                            NewsHeader(
-                                userData = userData
-                            )
+                            NewsHeader(userData = userData)
 
-                            Column(
-                                modifier = Modifier.padding(
-                                    start = 16.dp,
-                                    end = 16.dp
-                                )
-                            ) {
+                            Column(modifier = Modifier.padding(start = 16.dp, end = 16.dp))
+                            {
                                 SegmentedControl(
-                                    threeSegments,
-                                    selectedThreeSegment,
+                                    threeSegments, selectedThreeSegment,
                                     onSegmentSelected = { selectedThreeSegment = it },
                                     modifier = Modifier.height(50.dp)
-                                ) {
-                                    SegmentText(it, selectedThreeSegment == it)
-                                }
-                                Spacer(modifier = Modifier.height(16.dp))
+                                ) { SegmentText(it, selectedThreeSegment == it) }
                             }
-//                            NewsArticleCardTop(
-//                                newsItem = newsList[index],
-//                                modifier = Modifier.clickable(onClick = {
-//                                    //  externalRouter.routeTo("${Screen.NewsArticle.route}/${item.id}")
-//                                })
-//                            ) {}
-                            Spacer(modifier = Modifier.padding(24.dp))
+                            Spacer(modifier = Modifier.padding(12.dp))
+//                          NewsArticleCardTop(newsItem = newsList[index], modifier = Modifier.clickable(onClick = { externalRouter.routeTo("${Screen.NewsArticle.route}/${item.id}") })) {}
                         }
+
                         FeedItemView(
                             feedItem = newsList[index],
                             index = index
                         ) {}
-
-                        // PostListDivider()
                     }
                     item {
                         Spacer(modifier = Modifier.padding(24.dp))
