@@ -43,7 +43,7 @@ fun FeedItemView(
 ) {
     Column(
         modifier = Modifier
-            .padding(horizontal = 28.dp)
+            .padding(horizontal = 24.dp)
             .padding(vertical = 12.dp)
             .clickable(
                 onClick = {
@@ -129,11 +129,7 @@ fun FeedItemImage(
     modifier: Modifier = Modifier,
 ) {
     if (LocalInspectionMode.current) {
-        Box(
-            modifier = modifier
-                .size(width)
-                .background(Color.Green),
-        )
+        Box(modifier = modifier.size(width).background(Color.Green),)
     } else {
         AsyncImage(
             model = newsItem.images.first().url,

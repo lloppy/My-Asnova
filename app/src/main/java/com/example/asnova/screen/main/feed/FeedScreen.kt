@@ -1,7 +1,8 @@
 package com.example.asnova.screen.main.feed
 
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -27,6 +28,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -34,7 +36,6 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.navigation.NavController
 import com.example.asnova.data.UserData
 import com.example.asnova.screen.main.feed.components.FeedItemView
-import com.example.asnova.screen.main.feed.components.NewsArticleCardTop
 import com.example.asnova.screen.main.feed.components.NewsHeader
 import com.example.asnova.screen.main.feed.components.SegmentText
 import com.example.asnova.screen.main.feed.components.SegmentedControl
@@ -42,6 +43,7 @@ import com.example.asnova.ui.theme.backgroundAsnova
 import com.example.asnova.utils.SkeletonScreen
 import com.example.asnova.utils.navigation.Router
 import com.example.asnova.utils.shimmerEffect
+import com.example.asnova.utils.toastMessage
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -65,6 +67,8 @@ fun FeedScreen(
 
     val threeSegments = remember { listOf("Моя группа", "Asnovapro", "Охрана труда") }
     var selectedThreeSegment by remember { mutableStateOf(threeSegments[1]) }
+
+    val context = LocalContext.current
 
     Box(
         modifier = Modifier
@@ -139,10 +143,17 @@ fun FeedScreen(
                         FeedItemView(
                             feedItem = newsList[index],
                             index = index
-                        ) {}
+                        ) {
+                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(newsList[index].postUrl))
+                            context.startActivity(intent)
+                        }
 
                         if (index == newsList.size - 1) {
-                            viewModel.onDownloadMore(wallId = getWallIdBySegment(selectedThreeSegment))
+                            viewModel.onDownloadMore(
+                                wallId = getWallIdBySegment(
+                                    selectedThreeSegment
+                                )
+                            )
                         }
                     }
                     item {

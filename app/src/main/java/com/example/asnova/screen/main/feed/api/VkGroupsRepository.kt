@@ -11,7 +11,9 @@ class VkGroupsRepository @Inject constructor(
     private val groupsApi: GroupsApi
 
 ) : GroupsRepository {
-    private val accessToken = "2c7485642c7485642c748564202f6dcfcc22c742c7485644afaf2742c0714f09e3fa61a"
+    private val accessToken =
+        "2c7485642c7485642c748564202f6dcfcc22c742c7485644afaf2742c0714f09e3fa61a"
+
     override suspend fun getWallById(
         groupId: Int,
         offset: Int,
@@ -38,10 +40,9 @@ class VkGroupsRepository @Inject constructor(
             extended = extended,
             fields = fields?.joinToString(",")
         )
-
         Log.d("vk_info", "Response received: $wall")
 
-        return getResponseOrThrow(wall).mapToDomain()
+        return getResponseOrThrow(wall).mapToDomain(wall.response?.groups?.first()?.screenName ?: "asnovapro")
     }
 
     private fun <R : Any> getResponseOrThrow(response: VkResponse<R>): R {
@@ -56,46 +57,47 @@ class VkGroupsRepository @Inject constructor(
         }
     }
 
-    fun GroupWallResponse.mapToDomain(): List<WallItem> =
+    fun GroupWallResponse.mapToDomain(screenName: String): List<WallItem> =
         this.items
             .filter { it.text.isNotBlank() }
             .map { response ->
                 var posterName = ""
                 var posterThumbnail = ""
 
-            this.groups.filter { abs(it.id) == abs(response.fromId) }.getOrNull(0)?.let {
-                posterName = it.name
-                posterThumbnail = it.photo50
-            } ?: this.profiles.filter { abs(it.id) == abs(response.fromId) }.getOrNull(0)?.let {
-                posterName = "${it.firstName} ${it.lastName}"
-                posterThumbnail = it.photo50
-            }
-            val defaultImageUrl = "https://sun9-78.userapi.com/impg/Ir5UOUAUw9qczne8EVGjGw_wWvEK_Dsv_awN9Q/qguEM4hhSLA.jpg?size=1953x989&quality=96&sign=86ca45843194e357c1ea8ba559dc6117&type=album"
+                this.groups.filter { abs(it.id) == abs(response.fromId) }.getOrNull(0)?.let {
+                    posterName = it.name
+                    posterThumbnail = it.photo50
+                } ?: this.profiles.filter { abs(it.id) == abs(response.fromId) }.getOrNull(0)?.let {
+                    posterName = "${it.firstName} ${it.lastName}"
+                    posterThumbnail = it.photo50
+                }
+                val defaultImageUrl = "https://sun9-78.userapi.com/impg/Ir5UOUAUw9qczne8EVGjGw_wWvEK_Dsv_awN9Q/qguEM4hhSLA.jpg?size=1953x989&quality=96&sign=86ca45843194e357c1ea8ba559dc6117&type=album"
 
-            WallItem(
-                response.id,
-                response.text,
-                title = getHeadline(response.text),
-                withoutTitle = removeHeadlineAndHashtags(response.text),
-                posterName,
-                posterThumbnail,
-                date = Date(response.date * 1000L),
-                response.likes.userLikes,
-                response.likes.count,
-                response.attachments.filter { it.type == "photo" }.map {
-                    WallImageItem(
-                        it.photo.id,
-                        it.photo.sizes.filter { resized -> resized.type == "r" }
-                            .getOrNull(0)?.height ?: 0,
-                        it.photo.sizes.filter { resized -> resized.type == "r" }
-                            .getOrNull(0)?.width ?: 0,
-                        it.photo.sizes.filter { resized -> resized.type == "r" }
-                            .getOrNull(0)?.url ?: ""
-                    )
-                }.ifEmpty { listOf(WallImageItem(0, 0, 0, url = defaultImageUrl))},
-                hashtags = extractHashtags(response.text)
-            )
-        }
+                WallItem(
+                    response.id,
+                    response.text,
+                    title = getHeadline(response.text),
+                    withoutTitle = removeHeadlineAndHashtags(response.text),
+                    posterName,
+                    posterThumbnail,
+                    date = Date(response.date * 1000L),
+                    response.likes.userLikes,
+                    response.likes.count,
+                    response.attachments.filter { it.type == "photo" }.map {
+                        WallImageItem(
+                            it.photo.id,
+                            it.photo.sizes.filter { resized -> resized.type == "r" }
+                                .getOrNull(0)?.height ?: 0,
+                            it.photo.sizes.filter { resized -> resized.type == "r" }
+                                .getOrNull(0)?.width ?: 0,
+                            it.photo.sizes.filter { resized -> resized.type == "r" }
+                                .getOrNull(0)?.url ?: ""
+                        )
+                    }.ifEmpty { listOf(WallImageItem(0, 0, 0, url = defaultImageUrl)) },
+                    hashtags = extractHashtags(response.text),
+                    postUrl = "https://vk.com/${screenName}?w=wall${response.ownerId}_${response.id}"
+                )
+            }
 }
 
 

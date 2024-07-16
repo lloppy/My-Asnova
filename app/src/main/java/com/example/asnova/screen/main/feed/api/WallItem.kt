@@ -13,7 +13,8 @@ data class WallItem(
     var userLikes: Int,
     var likesCount: Int,
     val images: List<WallImageItem>,
-    val hashtags: List<String> = emptyList()
+    val hashtags: List<String> = emptyList(),
+    val postUrl: String
 )
 
 data class WallImageItem(
