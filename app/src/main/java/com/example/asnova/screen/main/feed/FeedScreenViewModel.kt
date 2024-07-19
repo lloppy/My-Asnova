@@ -29,7 +29,7 @@ class FeedScreenViewModel @Inject constructor(
     private val _state = mutableStateOf(FeedState())
     val state: State<FeedState> = _state
 
-    private var selectedSegment by mutableStateOf("Охрана труда")
+    private var selectedSegment by mutableStateOf("Asnovapro")
 
     init {
         loadNewsForSegment(selectedSegment)

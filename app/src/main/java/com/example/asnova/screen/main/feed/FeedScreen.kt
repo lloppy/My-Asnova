@@ -60,7 +60,7 @@ fun FeedScreen(
     val stateRefresh = rememberPullRefreshState(isRefreshing, { viewModel.pullToRefresh() })
 
     val threeSegments = remember { listOf("Моя группа", "Asnovapro", "Охрана труда") }
-    var selectedThreeSegment by remember { mutableStateOf(threeSegments[2]) }
+    var selectedThreeSegment by remember { mutableStateOf(threeSegments[1]) }
 
     val context = LocalContext.current
 
