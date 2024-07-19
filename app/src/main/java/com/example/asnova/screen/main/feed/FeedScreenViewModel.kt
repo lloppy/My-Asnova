@@ -11,7 +11,6 @@ import com.asnova.domain.usecase.GetAsnovaNewsUseCase
 import com.asnova.domain.usecase.GetSafetyNewsUseCase
 import com.asnova.domain.usecase.OnDownloadMoreAsnovaNewsUseCase
 import com.asnova.model.Resource
-import com.asnova.model.WallItem
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -25,33 +24,27 @@ class FeedScreenViewModel @Inject constructor(
     private val _state = mutableStateOf(FeedState())
     val state: State<FeedState> = _state
 
-    private val _wallItems = MutableLiveData<List<WallItem>>()
-    val wallItems: LiveData<List<WallItem>> get() = _wallItems
-
-    private val _safetyWallItems = MutableLiveData<List<WallItem>>()
-    val safetyWallItems: LiveData<List<WallItem>> get() = _safetyWallItems
-
     private val _downloadMore = MutableLiveData(true)
     val downloadMore: LiveData<Boolean> get() = _downloadMore
 
 
     init {
-//        onUpdateWall(wallId = 162375388)
-//        onUpdateWall(wallId = 80108699)
         loadAsnovaNews()
+        loadSafetyNews()
     }
 
     private fun loadAsnovaNews() {
         getAsnovaNewsUseCase(callback = { result ->
             when (result) {
                 is Resource.Success -> {
-                    _state.value = FeedState(value = result.data?.distinctBy { it.id }?.sortedByDescending { it.date }
+                    _state.value = FeedState(asnovaNews = result.data?.distinctBy { it.id }
+                        ?.sortedByDescending { it.date }
                         ?: emptyList())
+                    Log.e("vk_info", "asnovaNews size is " + _state.value.asnovaNews.size)
                 }
 
                 is Resource.Error -> {
-                    _state.value =
-                        FeedState(error = result.message ?: "An unexpected error occurred")
+                    _state.value = FeedState(error = result.message ?: "An unexpected error occurred")
                 }
 
                 is Resource.Loading -> {
@@ -61,8 +54,34 @@ class FeedScreenViewModel @Inject constructor(
         })
     }
 
-    fun onDownloadMore() {
-        val currentList = _state.value.value.toMutableList()
+    private fun loadSafetyNews() {
+        getSafetyNewsUseCase(callback = { result ->
+            when (result) {
+                is Resource.Success -> {
+                    _state.value = FeedState(safetyNews = result.data?.distinctBy { it.id }
+                        ?.sortedByDescending { it.date }
+                        ?: emptyList())
+                    Log.e("vk_info", "safetyNews size is " + _state.value.safetyNews.size)
+                }
+
+                is Resource.Error -> {
+                    _state.value = FeedState(error = result.message ?: "An unexpected error occurred")
+                }
+
+                is Resource.Loading -> {
+                    _state.value = FeedState(loading = true)
+                }
+            }
+        })
+    }
+
+    fun onDownloadMore(selectedThreeSegment: String) {
+        val currentList = when (selectedThreeSegment) {
+            "Asnovapro" -> _state.value.asnovaNews.toMutableList()
+            "Охрана труда" -> _state.value.safetyNews.toMutableList()
+            else -> _state.value.asnovaNews.toMutableList()
+        }
+
 
         onDownloadMoreAsnovaNewsUseCase(
             offset = currentList.size,
@@ -71,16 +90,33 @@ class FeedScreenViewModel @Inject constructor(
                     is Resource.Success -> {
                         val loadedData = result.data ?: emptyList()
 
-                        _state.value = FeedState(
-                            value = currentList.apply { addAll(loadedData) }
-                                .distinctBy { it.id }
-                                .sortedByDescending { it.date }
-                        )
+                        _state.value = when (selectedThreeSegment) {
+                            "Asnovapro" -> FeedState(
+                                asnovaNews = currentList.apply { addAll(loadedData) }
+                                    .distinctBy { it.id }
+                                    .sortedByDescending { it.date }
+                            )
+
+                            "Охрана труда" -> FeedState(
+                                safetyNews = currentList.apply { addAll(loadedData) }
+                                    .distinctBy { it.id }
+                                    .sortedByDescending { it.date }
+                            )
+
+                            else -> FeedState(
+                                asnovaNews = currentList.apply { addAll(loadedData) }
+                                    .distinctBy { it.id }
+                                    .sortedByDescending { it.date }
+                            )
+                        }
+
                         Log.e("vk_info", "onDownloadMore")
                     }
 
                     is Resource.Error -> {
-                        _state.value = FeedState(error = result.message ?: "An unexpected onDownloadMore error occurred")
+                        _state.value = FeedState(
+                            error = result.message ?: "An unexpected onDownloadMore error occurred"
+                        )
                     }
 
                     is Resource.Loading -> {

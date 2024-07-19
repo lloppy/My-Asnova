@@ -31,10 +31,8 @@ class NewsRepositoryImpl @Inject constructor(
 
 ) : NewsRepository {
     // https://dev.vk.com/ru/method/groups
-    private val accessToken =
-        "2c7485642c7485642c748564202f6dcfcc22c742c7485644afaf2742c0714f09e3fa61a"
-    val defaultImageUrl =
-        "https://sun9-78.userapi.com/impg/Ir5UOUAUw9qczne8EVGjGw_wWvEK_Dsv_awN9Q/qguEM4hhSLA.jpg?size=1953x989&quality=96&sign=86ca45843194e357c1ea8ba559dc6117&type=album"
+    private val accessToken = "2c7485642c7485642c748564202f6dcfcc22c742c7485644afaf2742c0714f09e3fa61a"
+    val defaultImageUrl = "https://sun9-78.userapi.com/impg/Ir5UOUAUw9qczne8EVGjGw_wWvEK_Dsv_awN9Q/qguEM4hhSLA.jpg?size=1953x989&quality=96&sign=86ca45843194e357c1ea8ba559dc6117&type=album"
 
     private val _database: FirebaseFirestore = FirebaseFirestore.getInstance()
     private val _databaseReference: CollectionReference = _database.collection("news")
@@ -237,7 +235,72 @@ class NewsRepositoryImpl @Inject constructor(
     }
 
     override fun getSafetyNewsUseCase(callback: (Resource<List<WallItem>>) -> Unit) {
-        TODO("Not yet implemented")
+        callback(Resource.Loading())
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val version = "5.131"
+                val ownerId = -80108699
+                val count = 10
+                val offset = 0
+                val extended = 1
+                val fields = null
+
+                val wallResponse = groupsApi.getWall(
+                    version = version,
+                    ownerId = ownerId,
+                    accessToken = accessToken,
+                    count = count,
+                    offset = offset,
+                    extended = extended,
+                    fields = fields
+                )
+
+                withContext(Dispatchers.Main) {
+                    if (wallResponse.error != null) {
+                        callback(Resource.Error(wallResponse.error.errorMsg))
+                    } else {
+                        val asnovaNewsList =
+                            wallResponse.response?.items?.filter { it.text.isNotBlank() }
+                                ?.map { response ->
+                                    WallItem(
+                                        response.id,
+                                        response.text,
+                                        title = getHeadline(response.text),
+                                        withoutTitle = removeHeadlineAndHashtags(response.text),
+                                        date = Date(response.date * 1000L),
+                                        response.likes.userLikes,
+                                        response.likes.count,
+                                        response.attachments.filter { it.type == "photo" }.map {
+                                            WallImageItem(
+                                                it.photo.id,
+                                                it.photo.sizes.filter { resized -> resized.type == "r" }
+                                                    .getOrNull(0)?.height ?: 0,
+                                                it.photo.sizes.filter { resized -> resized.type == "r" }
+                                                    .getOrNull(0)?.width ?: 0,
+                                                it.photo.sizes.filter { resized -> resized.type == "r" }
+                                                    .getOrNull(0)?.url ?: ""
+                                            )
+                                        }.ifEmpty {
+                                            listOf(
+                                                WallImageItem(
+                                                    0,
+                                                    0,
+                                                    0,
+                                                    url = defaultImageUrl
+                                                )
+                                            )
+                                        },
+                                        hashtags = extractHashtags(response.text),
+                                        postUrl = "https://vk.com/asnova1005?w=wall${response.ownerId}_${response.id}"
+                                    )
+                                } ?: listOf()
+                        callback(Resource.Success(asnovaNewsList))
+                    }
+                }
+            } catch (e: FirebaseException) {
+                callback(Resource.Error("Something happened on the server side"))
+            }
+        }
     }
 
     override fun onDownloadMoreAsnovaNewsUseCase(

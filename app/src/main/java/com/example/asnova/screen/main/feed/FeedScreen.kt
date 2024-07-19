@@ -54,16 +54,13 @@ fun FeedScreen(
     viewModel: FeedScreenViewModel = hiltViewModel()
 ) {
     val listState = rememberLazyListState()
-
     val state by viewModel.state
-    val asnovaNews by viewModel.wallItems.observeAsState()
-    val safetyNews by viewModel.safetyWallItems.observeAsState(emptyList())
 
     val isRefreshing by remember { mutableStateOf(false) }
     val stateRefresh = rememberPullRefreshState(isRefreshing, { viewModel.pullToRefresh() })
 
     val threeSegments = remember { listOf("Моя группа", "Asnovapro", "Охрана труда") }
-    var selectedThreeSegment by remember { mutableStateOf(threeSegments[1]) }
+    var selectedThreeSegment by remember { mutableStateOf(threeSegments[2]) }
 
     val context = LocalContext.current
 
@@ -110,13 +107,19 @@ fun FeedScreen(
                 }
             }
         ) {
+            val currentNews = when (selectedThreeSegment) {
+                "Asnovapro" -> state.asnovaNews
+                "Охрана труда" -> state.safetyNews
+                else -> state.asnovaNews
+            }
+
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
                     .pullRefresh(stateRefresh),
                 state = listState
             ) {
-                items(state.value.size) { index ->
+                items(currentNews.size) { index ->
                     if (index == 0) {
                         NewsHeader(userData = userData)
 
@@ -131,15 +134,20 @@ fun FeedScreen(
                     }
 
                     FeedItemView(
-                        feedItem = state.value[index],
+                        feedItem = currentNews[index],
                         index = index
                     ) {
-                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(state.value[index].postUrl))
+                        val intent = when (selectedThreeSegment) {
+                            "Asnovapro" -> Intent(Intent.ACTION_VIEW, Uri.parse(state.asnovaNews[index].postUrl))
+                            "Охрана труда" -> Intent(Intent.ACTION_VIEW, Uri.parse(state.safetyNews[index].postUrl))
+                            else -> Intent(Intent.ACTION_VIEW, Uri.parse(state.asnovaNews[index].postUrl))
+                        }
+
                         context.startActivity(intent)
                     }
 
-                    if (index == state.value.size - 1) {
-                        viewModel.onDownloadMore()
+                    if (index == state.asnovaNews.size - 1 || index == state.safetyNews.size - 1) {
+                        viewModel.onDownloadMore(selectedThreeSegment)
                     }
                 }
                 item {
@@ -164,13 +172,5 @@ fun FeedScreen(
             Modifier.align(Alignment.TopCenter)
         )
     }
-}
 
-
-private fun getWallIdBySegment(segment: String): Int {
-    return when (segment) {
-        "Asnovapro" -> 162375388
-        "Охрана труда" -> 80108699
-        else -> 0
-    }
 }

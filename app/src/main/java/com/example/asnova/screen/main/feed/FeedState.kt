@@ -3,7 +3,8 @@ package com.example.asnova.screen.main.feed
 import com.asnova.model.WallItem
 
 data class FeedState(
-    val value: List<WallItem> = emptyList(),
+    val asnovaNews: List<WallItem> = emptyList(),
+    val safetyNews: List<WallItem> = emptyList(),
     val error: String = "",
     val loading: Boolean = false
 )
