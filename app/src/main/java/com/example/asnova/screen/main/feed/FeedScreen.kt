@@ -21,7 +21,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -72,37 +71,33 @@ fun FeedScreen(
         SkeletonScreen(
             isLoading = state.loading,
             skeleton = {
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp)
-                ) {
-                    items(2)
-                    {
+                LazyColumn(modifier = Modifier.fillMaxSize()) {
+                    items(3) { index ->
+                        if (index == 0) {
+                            NewsHeader(userData = userData)
+
+                            Column(modifier = Modifier.padding(start = 16.dp, end = 16.dp)) {
+                                SegmentedControl(
+                                    threeSegments, selectedThreeSegment,
+                                    onSegmentSelected = {
+                                        selectedThreeSegment = it
+                                        viewModel.onSegmentChange(it)
+                                    },
+                                    modifier = Modifier.height(50.dp)
+                                ) { SegmentText(it, selectedThreeSegment == it) }
+                            }
+                            Spacer(modifier = Modifier.padding(12.dp))
+                        }
+
                         Box(
                             modifier = Modifier
-                                .height(180.dp)
-                                .fillMaxSize()
+                                .height(130.dp)
+                                .fillMaxWidth()
+                                .padding(horizontal = 24.dp)
+                                .padding(vertical = 12.dp)
                                 .clip(shape = MaterialTheme.shapes.medium)
                                 .shimmerEffect()
                         )
-                        Spacer(Modifier.height(16.dp))
-                        Box(
-                            modifier = Modifier
-                                .height(16.dp)
-                                .width(150.dp)
-                                .clip(shape = MaterialTheme.shapes.medium)
-                                .shimmerEffect()
-                        )
-                        Spacer(Modifier.height(16.dp))
-                        Box(
-                            modifier = Modifier
-                                .height(16.dp)
-                                .width(50.dp)
-                                .clip(shape = MaterialTheme.shapes.medium)
-                                .shimmerEffect()
-                        )
-                        Spacer(Modifier.height(16.dp))
                     }
                 }
             }
@@ -134,7 +129,8 @@ fun FeedScreen(
                         feedItem = state.news[index],
                         index = index
                     ) {
-                        val intent =  Intent(Intent.ACTION_VIEW, Uri.parse(state.news[index].postUrl))
+                        val intent =
+                            Intent(Intent.ACTION_VIEW, Uri.parse(state.news[index].postUrl))
                         context.startActivity(intent)
                     }
 

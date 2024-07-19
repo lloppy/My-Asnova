@@ -15,8 +15,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.unit.IntSize
+import com.example.asnova.ui.theme.grayAsnova
+import com.example.asnova.ui.theme.greenAsnova
+import com.example.asnova.ui.theme.lightGreenAsnova
 
 @Composable
 fun SkeletonScreen(
@@ -45,9 +49,11 @@ fun Modifier.shimmerEffect(): Modifier = composed {
     background(
         brush = Brush.linearGradient(
             colors = listOf(
-                MaterialTheme.colorScheme.surfaceVariant,
-                MaterialTheme.colorScheme.surface,
-                MaterialTheme.colorScheme.surfaceVariant,
+                // lightGreenAsnova,
+                grayAsnova,
+                Color.White,
+                grayAsnova
+                //  lightGreenAsnova,
             ),
             start = Offset(startOffsetX, 0f),
             end = Offset(startOffsetX + size.width, size.height.toFloat())
