@@ -55,11 +55,6 @@ fun NewsArticleCardTop(
     modifier: Modifier,
     onClickAddToFavorites: @Composable () -> Unit
 ) {
-    val typography = MaterialTheme.typography
-
-    val sdf = SimpleDateFormat("dd.MM HH:mm", Locale.getDefault())
-    //  val formattedDate = sdf.format(Date(newsItem.date * 1000))
-
     var isClicked by remember { mutableStateOf(false) }
 
     Column(
@@ -68,8 +63,7 @@ fun NewsArticleCardTop(
             .padding(16.dp)
             .clickable { isClicked = true }
     ) {
-        val defaultImageUrl =
-            "https://sun9-78.userapi.com/impg/Ir5UOUAUw9qczne8EVGjGw_wWvEK_Dsv_awN9Q/qguEM4hhSLA.jpg?size=1953x989&quality=96&sign=86ca45843194e357c1ea8ba559dc6117&type=album"
+        val defaultImageUrl = "https://sun9-78.userapi.com/impg/Ir5UOUAUw9qczne8EVGjGw_wWvEK_Dsv_awN9Q/qguEM4hhSLA.jpg?size=1953x989&quality=96&sign=86ca45843194e357c1ea8ba559dc6117&type=album"
 
         SubcomposeAsyncImage(
             model = if (newsItem.images.isNullOrEmpty()) defaultImageUrl else newsItem.images.first().url,

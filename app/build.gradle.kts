@@ -147,7 +147,10 @@ dependencies {
     // navigation bar
     implementation("com.canopas.compose-animated-navigationbar:bottombar:1.0.1")
 
-    //  implementation("com.google.accompanist:accompanist-gesture:0.20.2")
+     // implementation("com.google.accompanist:accompanist-gesture:0.20.2")
+    val accompanistVersion = "0.34.0"
+    implementation("com.google.accompanist:accompanist-navigation-animation:$accompanistVersion")
+
 
     // Networking
     implementation("com.squareup.okhttp3:okhttp:4.9.3")

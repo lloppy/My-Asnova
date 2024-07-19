@@ -12,9 +12,13 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ChatBubble
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MediumTopAppBar
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -51,6 +55,7 @@ fun ProfileSettingsScreen(
     lifecycleOwner: LifecycleOwner,
     userData: UserData?,
     onSignOut: () -> Unit,
+    onNavigateToChats: () -> Unit,
     viewModel: ProfileScreenViewModel = hiltViewModel()
 ) {
     Scaffold(
@@ -65,6 +70,16 @@ fun ProfileSettingsScreen(
                         fontWeight = FontWeight.Bold,
                         textAlign = TextAlign.Center
                     )
+                },
+                actions = {
+                    IconButton(onClick = {
+                        onNavigateToChats.invoke()
+                    }) {
+                        Icon(
+                            imageVector = Icons.Filled.ChatBubble,
+                            contentDescription = "Localized description"
+                        )
+                    }
                 }
             )
         }

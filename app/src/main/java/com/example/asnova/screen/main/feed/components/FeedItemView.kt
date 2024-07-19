@@ -3,10 +3,15 @@ package com.example.asnova.screen.main.feed.components
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
@@ -29,11 +34,13 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.asnova.model.WallItem
 import com.example.asnova.ui.theme.grayAsnova
+import java.text.SimpleDateFormat
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
 import java.time.temporal.ChronoUnit
 import java.util.Date
+import java.util.Locale
 
 @Composable
 fun FeedItemView(
@@ -43,8 +50,9 @@ fun FeedItemView(
 ) {
     Column(
         modifier = Modifier
-            .padding(horizontal = 24.dp)
-            .padding(vertical = 12.dp)
+            .padding(horizontal = 18.dp)
+            .padding(vertical = 14.dp)
+            .clip(RoundedCornerShape(8.dp))
             .clickable(
                 onClick = {
                     onFeedItemClick(
@@ -58,32 +66,47 @@ fun FeedItemView(
             )
     ) {
         Row(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(FeedItemHeight),
             verticalAlignment = Alignment.Top
         ) {
             FeedItemImage(
-                modifier = Modifier.weight(0.5f),
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxHeight(),
                 newsItem = feedItem,
-                width = 96.dp,
+                width = 200.dp
             )
             Column(
                 modifier = Modifier
-                    .padding(start = 16.dp)
                     .weight(1f)
+                    .fillMaxHeight()
+                    .padding(start = 12.dp, end = 6.dp, top = 8.dp),
+                verticalArrangement = Arrangement.SpaceBetween,
+                horizontalAlignment = Alignment.Start
             ) {
-                Text(
-                    text = feedItem.title,
-                    fontSize = 16.sp,
-                    style = MaterialTheme.typography.bodyMedium,
-                )
+                Column {
+                    Text(
+                        text = feedItem.title,
+                        maxLines = 5,
+                        overflow = TextOverflow.Ellipsis,
+                        fontSize = 16.sp,
+                        modifier = Modifier.padding(start = 4.dp),
+                        style = MaterialTheme.typography.bodyLarge,
+                    )
+                    Spacer(modifier = Modifier.height(12.dp))
 
+                    HashtagsRow(feedItem)
+                }
+
+                Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = formatRelativeDate(feedItem.date),
-                    modifier = Modifier.padding(top = 4.dp),
+                    text = formatRelativeDate(feedItem.date) + "  ·  ${formatTime(feedItem.date)}",
+                    modifier = Modifier.padding(start = 4.dp),
                     color = Color.Gray,
                     style = MaterialTheme.typography.bodySmall,
                 )
-                HashtagsRow(feedItem)
             }
         }
     }
@@ -102,7 +125,6 @@ private fun HashtagsRow(
                 if (feedItem.hashtags.size == 1 || index != 0) {
                     Text(
                         modifier = Modifier
-                            .padding(4.dp)
                             .background(
                                 color = grayAsnova,
                                 shape = RoundedCornerShape(16.dp)
@@ -129,7 +151,11 @@ fun FeedItemImage(
     modifier: Modifier = Modifier,
 ) {
     if (LocalInspectionMode.current) {
-        Box(modifier = modifier.size(width).background(Color.Green),)
+        Box(
+            modifier = modifier
+                .size(width)
+                .background(Color.Green),
+        )
     } else {
         AsyncImage(
             model = newsItem.images.first().url,
@@ -137,7 +163,7 @@ fun FeedItemImage(
             contentScale = ContentScale.Crop,
             modifier = modifier
                 .size(width)
-                .clip(RoundedCornerShape(8.dp)),
+                .clip(RoundedCornerShape(8.dp))
         )
     }
 }
@@ -163,3 +189,10 @@ private fun formatRelativeDate(date: Date): String {
         else -> "$daysBetween дней назад"
     }
 }
+
+private fun formatTime(date: Date): String {
+    val formatter = SimpleDateFormat("HH:mm", Locale.getDefault())
+    return formatter.format(date)
+}
+
+val FeedItemHeight = 220.dp

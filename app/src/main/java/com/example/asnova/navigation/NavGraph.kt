@@ -26,6 +26,7 @@ import androidx.navigation.compose.composable
 import com.example.asnova.MainActivity
 import com.example.asnova.screen.log_in.services.GoogleAuthUiClient
 import com.example.asnova.screen.main.feed.FeedScreen
+import com.example.asnova.screen.main.profile_settings.ChatScreen
 import com.example.asnova.screen.main.profile_settings.ProfileSettingsScreen
 import com.example.asnova.screen.main.schedule.ScheduleScreen
 import com.example.asnova.utils.navigation.Router
@@ -73,18 +74,22 @@ fun SetupNavGraph(
                 lifecycleScope = lifecycleScope,
                 lifecycleOwner = lifecycleOwner,
                 userData = googleAuthUiClient.getSignedInUser(),
+                onNavigateToChats = {
+                    navHostController.navigate(Screen.Chats.route)
+                },
                 onSignOut = {
                     lifecycleScope.launch {
                         googleAuthUiClient.signOut()
-                        toastMessage(
-                            context, "Выход из аккаунта завершен"
-                        )
+                        toastMessage(context, "Выход из аккаунта завершен")
                     }
                     if (context is MainActivity) {
                         context.restartApp()
                     }
                 }
             )
+        }
+        composable(Screen.Chats.route) {
+            ChatScreen()
         }
     }
 }
@@ -100,8 +105,7 @@ fun BottomNavigationBar(navController: NavController) {
 
     AnimatedBottomBar(
         bottomBarHeight = bottomBarHeight,
-        modifier = Modifier
-            .shadow(8.dp, RoundedCornerShape(topStart = 40.dp, topEnd = 40.dp)),
+        modifier = Modifier.shadow(8.dp, RoundedCornerShape(topStart = 40.dp, topEnd = 40.dp)),
         selectedItem = selectedItem,
         itemSize = items.take(3).size,
         contentColor = Color.White,
@@ -131,8 +135,8 @@ fun BottomNavigationBar(navController: NavController) {
                         }
                     }
                 },
-                imageVector = navigationItem.icon!!, //ImageVector.vectorResource(id = navigationItem.iconId),
-                label = navigationItem.route.toString(),
+                imageVector = navigationItem.icon!!,
+                label = navigationItem.route,
                 visibleItem = VisibleItem.ICON,
                 itemStyle = ItemStyle.STYLE4,
                 iconColor = Color.Black

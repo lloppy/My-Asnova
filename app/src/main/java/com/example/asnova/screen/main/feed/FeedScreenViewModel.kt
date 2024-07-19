@@ -119,6 +119,6 @@ class FeedScreenViewModel @Inject constructor(
         }
     }
     fun pullToRefresh() = viewModelScope.launch {
-
+        loadNewsForSegment(selectedSegment)
     }
 }

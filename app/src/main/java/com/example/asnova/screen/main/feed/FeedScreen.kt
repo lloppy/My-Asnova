@@ -35,6 +35,7 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.navigation.NavController
 import com.example.asnova.data.UserData
 import com.example.asnova.navigation.bottomBarHeight
+import com.example.asnova.screen.main.feed.components.FeedItemHeight
 import com.example.asnova.screen.main.feed.components.FeedItemView
 import com.example.asnova.screen.main.feed.components.HeaderSection
 import com.example.asnova.screen.main.feed.components.NewsHeader
@@ -88,10 +89,10 @@ fun FeedScreen(
                     items(3) {
                         Box(
                             modifier = Modifier
-                                .height(130.dp)
                                 .fillMaxWidth()
                                 .padding(horizontal = 24.dp)
                                 .padding(vertical = 12.dp)
+                                .height(FeedItemHeight)
                                 .clip(shape = MaterialTheme.shapes.medium)
                                 .shimmerEffect()
                         )
