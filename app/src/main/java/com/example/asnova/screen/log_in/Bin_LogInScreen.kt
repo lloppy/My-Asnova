@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.asnova.R
+import com.example.asnova.navigation.bottomBarHeight
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -45,7 +46,7 @@ fun LogInScreenArchive(navHostController: NavHostController, route: String) {
 @Composable
 fun LogInContent(padding: PaddingValues) {
     Box(
-        modifier = Modifier.padding(top = padding.calculateTopPadding(), bottom = 90.dp)
+        modifier = Modifier.padding(top = padding.calculateTopPadding(), bottom = bottomBarHeight)
     ) {
         Text(text = "LogInScreen")
     }

@@ -99,7 +99,7 @@ fun BottomNavigationBar(navController: NavController) {
     var selectedItem by remember { mutableIntStateOf(0) }
 
     AnimatedBottomBar(
-        bottomBarHeight = 90.dp,
+        bottomBarHeight = bottomBarHeight,
         modifier = Modifier
             .shadow(8.dp, RoundedCornerShape(topStart = 40.dp, topEnd = 40.dp)),
         selectedItem = selectedItem,
@@ -140,3 +140,5 @@ fun BottomNavigationBar(navController: NavController) {
         }
     }
 }
+
+val bottomBarHeight = 90.dp

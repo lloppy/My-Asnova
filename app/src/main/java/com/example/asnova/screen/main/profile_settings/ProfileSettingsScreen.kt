@@ -39,6 +39,7 @@ import androidx.lifecycle.LifecycleOwner
 import coil.compose.AsyncImage
 import com.example.asnova.R
 import com.example.asnova.data.UserData
+import com.example.asnova.navigation.bottomBarHeight
 import com.example.asnova.utils.navigation.Router
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -84,7 +85,7 @@ fun LogInContent(
     onSignOut: () -> Unit
 ) {
     Box(
-        modifier = Modifier.padding(top = padding.calculateTopPadding(), bottom = 90.dp)
+        modifier = Modifier.padding(top = padding.calculateTopPadding(), bottom = bottomBarHeight)
     ) {
         Column(
             modifier = Modifier

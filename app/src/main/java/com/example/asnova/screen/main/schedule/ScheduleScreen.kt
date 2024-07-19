@@ -52,6 +52,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.LifecycleOwner
 import com.example.asnova.R
+import com.example.asnova.navigation.bottomBarHeight
 import com.example.asnova.screen.main.schedule.components.ModalBottomSheet
 import com.example.asnova.screen.main.schedule.components.ScheduleScreenSkeleton
 import com.example.asnova.utils.SkeletonScreen
@@ -118,7 +119,7 @@ fun LogInContent(
     val currentDate = LocalDate.now()
     val dateList = List(7) { index -> currentDate.plusDays(index.toLong()) }
 
-    Column(Modifier.padding(top = padding.calculateTopPadding(), bottom = 90.dp)) {
+    Column(Modifier.padding(top = padding.calculateTopPadding(), bottom = bottomBarHeight)) {
         LazyRow(Modifier.padding(horizontal = 24.dp))
         {
             items(dateList)

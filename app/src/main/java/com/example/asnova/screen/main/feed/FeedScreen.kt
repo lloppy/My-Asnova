@@ -34,7 +34,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.LifecycleOwner
 import androidx.navigation.NavController
 import com.example.asnova.data.UserData
+import com.example.asnova.navigation.bottomBarHeight
 import com.example.asnova.screen.main.feed.components.FeedItemView
+import com.example.asnova.screen.main.feed.components.HeaderSection
 import com.example.asnova.screen.main.feed.components.NewsHeader
 import com.example.asnova.screen.main.feed.components.SegmentText
 import com.example.asnova.screen.main.feed.components.SegmentedControl
@@ -66,29 +68,24 @@ fun FeedScreen(
     Box(
         modifier = Modifier
             .background(backgroundAsnova)
-            .padding(bottom = 90.dp)
+            .padding(bottom = bottomBarHeight)
     ) {
         SkeletonScreen(
             isLoading = state.loading,
             skeleton = {
                 LazyColumn(modifier = Modifier.fillMaxSize()) {
-                    items(3) { index ->
-                        if (index == 0) {
-                            NewsHeader(userData = userData)
-
-                            Column(modifier = Modifier.padding(start = 16.dp, end = 16.dp)) {
-                                SegmentedControl(
-                                    threeSegments, selectedThreeSegment,
-                                    onSegmentSelected = {
-                                        selectedThreeSegment = it
-                                        viewModel.onSegmentChange(it)
-                                    },
-                                    modifier = Modifier.height(50.dp)
-                                ) { SegmentText(it, selectedThreeSegment == it) }
+                    item {
+                        HeaderSection(
+                            userData = userData,
+                            threeSegments = threeSegments,
+                            selectedSegment = selectedThreeSegment,
+                            onSegmentSelected = {
+                                selectedThreeSegment = it
+                                viewModel.onSegmentChange(it)
                             }
-                            Spacer(modifier = Modifier.padding(12.dp))
-                        }
-
+                        )
+                    }
+                    items(3) {
                         Box(
                             modifier = Modifier
                                 .height(130.dp)
@@ -108,29 +105,23 @@ fun FeedScreen(
                     .pullRefresh(stateRefresh),
                 state = listState
             ) {
-                items(state.news.size) { index ->
-                    if (index == 0) {
-                        NewsHeader(userData = userData)
-
-                        Column(modifier = Modifier.padding(start = 16.dp, end = 16.dp)) {
-                            SegmentedControl(
-                                threeSegments, selectedThreeSegment,
-                                onSegmentSelected = {
-                                    selectedThreeSegment = it
-                                    viewModel.onSegmentChange(it)
-                                },
-                                modifier = Modifier.height(50.dp)
-                            ) { SegmentText(it, selectedThreeSegment == it) }
+                item {
+                    HeaderSection(
+                        userData = userData,
+                        threeSegments = threeSegments,
+                        selectedSegment = selectedThreeSegment,
+                        onSegmentSelected = {
+                            selectedThreeSegment = it
+                            viewModel.onSegmentChange(it)
                         }
-                        Spacer(modifier = Modifier.padding(12.dp))
-                    }
-
+                    )
+                }
+                items(state.news.size) { index ->
                     FeedItemView(
                         feedItem = state.news[index],
                         index = index
                     ) {
-                        val intent =
-                            Intent(Intent.ACTION_VIEW, Uri.parse(state.news[index].postUrl))
+                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(state.news[index].postUrl))
                         context.startActivity(intent)
                     }
 
@@ -160,5 +151,4 @@ fun FeedScreen(
             Modifier.align(Alignment.TopCenter)
         )
     }
-
 }
