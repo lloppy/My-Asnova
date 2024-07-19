@@ -11,8 +11,7 @@ class VkGroupsRepository @Inject constructor(
     private val groupsApi: GroupsApi
 
 ) : GroupsRepository {
-    private val accessToken =
-        "2c7485642c7485642c748564202f6dcfcc22c742c7485644afaf2742c0714f09e3fa61a"
+    private val accessToken = "2c7485642c7485642c748564202f6dcfcc22c742c7485644afaf2742c0714f09e3fa61a"
 
     override suspend fun getWallById(
         groupId: Int,

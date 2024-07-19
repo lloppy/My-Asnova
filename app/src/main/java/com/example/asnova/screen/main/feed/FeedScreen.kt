@@ -70,15 +70,15 @@ fun FeedScreen(
             .background(backgroundAsnova)
             .padding(bottom = 90.dp)
     ) {
-        if (state.loading) {
-            CircularProgressIndicator(
-                modifier = Modifier
-                    .fillMaxWidth(0.1f)
-                    .padding(top = 45.dp)
-                    .align(Alignment.Center),
-                color = Color.Gray
-            )
-        }
+//        if (state.loading) {
+//            CircularProgressIndicator(
+//                modifier = Modifier
+//                    .fillMaxWidth(0.1f)
+//                    .padding(top = 60.dp)
+//                    .align(Alignment.Center),
+//                color = Color.Gray
+//            )
+//        }
 
         LazyColumn(
             modifier = Modifier

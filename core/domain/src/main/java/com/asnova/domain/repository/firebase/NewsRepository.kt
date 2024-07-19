@@ -8,5 +8,4 @@ interface NewsRepository {
     fun getNewsArticlesByOrder(order: String, callback: (Resource<List<NewsItem>>) -> Unit)
     fun getNewsItemById(id: String, callback: (Resource<NewsItem>) -> Unit)
     fun deleteNewsItemById(id: String, callback: (Resource<Boolean>) -> Unit)
-    fun getVKNewsArticles(callback: (Resource<List<NewsItem>>) -> Unit)
 }

@@ -30,15 +30,6 @@ class NewsRepositoryImpl @Inject constructor() : NewsRepository {
     private val _databaseReference: CollectionReference = _database.collection("news")
     private val _storage: FirebaseStorage = Firebase.storage
     private val _storageReference: StorageReference = _storage.reference
-
-    private val newsUrl = "https://asnova.pro"
-    // asnova  "https://oauth.vk.com/authorize?" + "client_id=51985947" + "&redirect_uri=https://oauth.vk.com/blank.html" + "&group_ids=162375388" + "&display=page" + "&scope=wall,photos,groups" + "&response_type=token" + "&v=5.131"
-    // chineese  "https://oauth.vk.com/authorize?" + "client_id=51985947" + "&redirect_uri=https://oauth.vk.com/blank.html" + "&group_ids=221091451" + "&display=page" + "&scope=wall,photos,groups" + "&response_type=token" + "&v=5.131"
-    // asnova https://oauth.vk.com/authorize?client_id=51985947&group_ids=162375388&display=page&redirect_uri=https://oauth.vk.com/blank.html&scope=wall,groups&response_type=token&v=5.131
-    // chineese https://oauth.vk.com/authorize?client_id=51985947&group_ids=221091451&display=page&redirect_uri=https://oauth.vk.com/blank.html&scope=wall,groups&response_type=token&v=5.131
-
-    // vk1.a.kqcfhxbPlKsLzyIqoNzSSmonCRSyg5RlSeypPry1_JQTOqGlCALd_ySQzKnZP1foLfhgQThN4dZ0LOChaPmr1CVY6419FJM5x71u0lwgw8b4hW2Gd1IwM65b7miAhnMqrKlp-3CRAvtHNruhtosDVR6aHc1zBvwOz2HlPIlu00nfxiBBxyGVWbEwPUccuiyl47OiLlGHFcrrwJc7sRKliQ
-
     override fun addNewsItem(newsItem: NewsItem, callback: (Resource<Boolean>) -> Unit) {
         callback(Resource.Loading())
         val id = _databaseReference.document().id
@@ -102,41 +93,6 @@ class NewsRepositoryImpl @Inject constructor() : NewsRepository {
         } catch (e: FirebaseException) {
             callback(Resource.Error(e.message.toString()))
         }
-    }
-
-    override fun getVKNewsArticles(callback: (Resource<List<NewsItem>>) -> Unit) {
-        callback(Resource.Loading())
-        CoroutineScope(Dispatchers.IO).launch {
-            try {
-                val doc = Jsoup.connect(newsUrl).get()
-
-                Log.e("newsTag", doc.title())
-                Log.e("newsTag", doc.data())
-
-                val newsItems = mutableListOf<NewsItem>()
-                val newsItem = NewsItem(
-                    image = "https://asnova.pro/thumb/2/5DD6qxOMlnoQps2Rxbj3wA/400r/d/l.jpg",
-                    title = doc.title(),
-                    published = parseDate(),
-                    content = doc.title(),
-                    authors = listOf("Author Name"),
-                    gallery = emptyList(),
-                    tags = listOf("Tag1", "Tag2"),
-                    id = "124"
-                )
-
-                newsItems.add(newsItem)
-
-                withContext(Dispatchers.Main) {
-                    callback(Resource.Success(newsItems))
-                }
-            } catch (e: Exception) {
-                withContext(Dispatchers.Main) {
-                    callback(Resource.Error("Failed to fetch news: ${e.message}"))
-                }
-            }
-        }
-
     }
 
     override fun getNewsArticlesByOrder(

@@ -10,14 +10,13 @@ import androidx.lifecycle.viewModelScope
 import com.example.asnova.screen.main.feed.api.GroupsInteractor
 import com.example.asnova.screen.main.feed.api.SingleLiveEvent
 import com.example.asnova.screen.main.feed.api.WallItem
-import com.example.asnova.screen.main.schedule.AsnovaScheduleState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class FeedScreenViewModel @Inject constructor(
-    private val groupsInteractor: GroupsInteractor
+    private val groupsInteractor: GroupsInteractor,
 ) : ViewModel() {
     private val _state = mutableStateOf(FeedState())
     val state: State<FeedState> = _state
