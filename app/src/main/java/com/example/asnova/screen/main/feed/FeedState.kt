@@ -1,9 +1,9 @@
 package com.example.asnova.screen.main.feed
 
-import com.example.asnova.data.NewsItem
+import com.asnova.model.WallItem
 
 data class FeedState(
-    val value: List<NewsItem> = emptyList(),
+    val value: List<WallItem> = emptyList(),
     val error: String = "",
     val loading: Boolean = false
 )

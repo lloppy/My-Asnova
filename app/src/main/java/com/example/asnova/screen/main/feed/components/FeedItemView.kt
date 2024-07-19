@@ -27,7 +27,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
-import com.example.asnova.screen.main.feed.api.WallItem
+import com.asnova.model.WallItem
 import com.example.asnova.ui.theme.grayAsnova
 import java.time.Instant
 import java.time.LocalDate

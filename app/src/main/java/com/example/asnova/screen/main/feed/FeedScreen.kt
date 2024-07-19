@@ -10,13 +10,13 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -27,7 +27,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -40,7 +40,9 @@ import com.example.asnova.screen.main.feed.components.NewsHeader
 import com.example.asnova.screen.main.feed.components.SegmentText
 import com.example.asnova.screen.main.feed.components.SegmentedControl
 import com.example.asnova.ui.theme.backgroundAsnova
+import com.example.asnova.utils.SkeletonScreen
 import com.example.asnova.utils.navigation.Router
+import com.example.asnova.utils.shimmerEffect
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -55,7 +57,7 @@ fun FeedScreen(
 
     val state by viewModel.state
     val asnovaNews by viewModel.wallItems.observeAsState()
-    val ohranaNews by viewModel.ohranaWallItems.observeAsState(emptyList())
+    val safetyNews by viewModel.safetyWallItems.observeAsState(emptyList())
 
     val isRefreshing by remember { mutableStateOf(false) }
     val stateRefresh = rememberPullRefreshState(isRefreshing, { viewModel.pullToRefresh() })
@@ -70,30 +72,51 @@ fun FeedScreen(
             .background(backgroundAsnova)
             .padding(bottom = 90.dp)
     ) {
-//        if (state.loading) {
-//            CircularProgressIndicator(
-//                modifier = Modifier
-//                    .fillMaxWidth(0.1f)
-//                    .padding(top = 60.dp)
-//                    .align(Alignment.Center),
-//                color = Color.Gray
-//            )
-//        }
-
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .pullRefresh(stateRefresh),
-            state = listState
-        ) {
-            val currentNews = when (selectedThreeSegment) {
-                "Asnovapro" -> asnovaNews
-                "Охрана труда" -> ohranaNews
-                else -> emptyList()
+        SkeletonScreen(
+            isLoading = state.loading,
+            skeleton = {
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
+                ) {
+                    items(2)
+                    {
+                        Box(
+                            modifier = Modifier
+                                .height(180.dp)
+                                .fillMaxSize()
+                                .clip(shape = MaterialTheme.shapes.medium)
+                                .shimmerEffect()
+                        )
+                        Spacer(Modifier.height(16.dp))
+                        Box(
+                            modifier = Modifier
+                                .height(16.dp)
+                                .width(150.dp)
+                                .clip(shape = MaterialTheme.shapes.medium)
+                                .shimmerEffect()
+                        )
+                        Spacer(Modifier.height(16.dp))
+                        Box(
+                            modifier = Modifier
+                                .height(16.dp)
+                                .width(50.dp)
+                                .clip(shape = MaterialTheme.shapes.medium)
+                                .shimmerEffect()
+                        )
+                        Spacer(Modifier.height(16.dp))
+                    }
+                }
             }
-
-            currentNews?.let { newsList ->
-                items(newsList.size) { index ->
+        ) {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .pullRefresh(stateRefresh),
+                state = listState
+            ) {
+                items(state.value.size) { index ->
                     if (index == 0) {
                         NewsHeader(userData = userData)
 
@@ -108,20 +131,15 @@ fun FeedScreen(
                     }
 
                     FeedItemView(
-                        feedItem = newsList[index],
+                        feedItem = state.value[index],
                         index = index
                     ) {
-                        val intent =
-                            Intent(Intent.ACTION_VIEW, Uri.parse(newsList[index].postUrl))
+                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(state.value[index].postUrl))
                         context.startActivity(intent)
                     }
 
-                    if (index == newsList.size - 1) {
-                        viewModel.onDownloadMore(
-                            wallId = getWallIdBySegment(
-                                selectedThreeSegment
-                            )
-                        )
+                    if (index == state.value.size - 1) {
+                        viewModel.onDownloadMore()
                     }
                 }
                 item {

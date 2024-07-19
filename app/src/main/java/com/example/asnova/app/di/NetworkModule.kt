@@ -1,6 +1,6 @@
 package com.example.asnova.app.di
 
-import com.example.asnova.screen.main.feed.api.GroupsApi
+import com.asnova.firebase.api.GroupsApi
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import dagger.Module
 import dagger.Provides

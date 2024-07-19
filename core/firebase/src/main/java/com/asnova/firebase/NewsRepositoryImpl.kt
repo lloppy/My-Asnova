@@ -1,10 +1,12 @@
 package com.asnova.firebase
 
 import android.net.Uri
-import android.util.Log
 import com.asnova.domain.repository.firebase.NewsRepository
+import com.asnova.firebase.api.GroupsApi
 import com.asnova.model.NewsItem
 import com.asnova.model.Resource
+import com.asnova.model.WallImageItem
+import com.asnova.model.WallItem
 import com.google.android.gms.tasks.Task
 import com.google.android.gms.tasks.Tasks
 import com.google.firebase.Firebase
@@ -20,12 +22,20 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.jsoup.Jsoup
+import java.util.Date
 import java.util.UUID
 import javax.inject.Inject
 
-class NewsRepositoryImpl @Inject constructor() : NewsRepository {
+class NewsRepositoryImpl @Inject constructor(
+    private val groupsApi: GroupsApi
+
+) : NewsRepository {
     // https://dev.vk.com/ru/method/groups
+    private val accessToken =
+        "2c7485642c7485642c748564202f6dcfcc22c742c7485644afaf2742c0714f09e3fa61a"
+    val defaultImageUrl =
+        "https://sun9-78.userapi.com/impg/Ir5UOUAUw9qczne8EVGjGw_wWvEK_Dsv_awN9Q/qguEM4hhSLA.jpg?size=1953x989&quality=96&sign=86ca45843194e357c1ea8ba559dc6117&type=album"
+
     private val _database: FirebaseFirestore = FirebaseFirestore.getInstance()
     private val _databaseReference: CollectionReference = _database.collection("news")
     private val _storage: FirebaseStorage = Firebase.storage
@@ -61,32 +71,32 @@ class NewsRepositoryImpl @Inject constructor() : NewsRepository {
                 if (it.isSuccessful) {
                     _storageReference.child("images/${id}/${uuid}")
                         .putFile(Uri.parse(newsItem.image)).addOnSuccessListener {
-                        _storageReference.child("images/${id}/${uuid}").downloadUrl.addOnSuccessListener { uri ->
-                            imageUri = uri.toString()
-                        }.addOnCompleteListener { task ->
-                            if (task.isSuccessful) {
-                                val article = com.asnova.firebase.model.NewsItem(
-                                    image = imageUri,
-                                    title = newsItem.title,
-                                    published = Timestamp.now(),
-                                    content = newsItem.content,
-                                    authors = newsItem.authors,
-                                    tags = newsItem.tags,
-                                    gallery = gallery,
-                                    id = id
-                                )
-                                _databaseReference.document(article.id).set(article)
-                                    .addOnCompleteListener { task2 ->
-                                        if (task2.isSuccessful) {
-                                            callback(Resource.Success(data = true))
-                                        } else
-                                            callback(Resource.Success(data = false))
-                                    }.addOnFailureListener { exception ->
-                                    callback(Resource.Error(exception.message.toString()))
+                            _storageReference.child("images/${id}/${uuid}").downloadUrl.addOnSuccessListener { uri ->
+                                imageUri = uri.toString()
+                            }.addOnCompleteListener { task ->
+                                if (task.isSuccessful) {
+                                    val article = com.asnova.firebase.model.NewsItem(
+                                        image = imageUri,
+                                        title = newsItem.title,
+                                        published = Timestamp.now(),
+                                        content = newsItem.content,
+                                        authors = newsItem.authors,
+                                        tags = newsItem.tags,
+                                        gallery = gallery,
+                                        id = id
+                                    )
+                                    _databaseReference.document(article.id).set(article)
+                                        .addOnCompleteListener { task2 ->
+                                            if (task2.isSuccessful) {
+                                                callback(Resource.Success(data = true))
+                                            } else
+                                                callback(Resource.Success(data = false))
+                                        }.addOnFailureListener { exception ->
+                                            callback(Resource.Error(exception.message.toString()))
+                                        }
                                 }
                             }
                         }
-                    }
                 }
             }
 
@@ -126,8 +136,8 @@ class NewsRepositoryImpl @Inject constructor() : NewsRepository {
                 } else
                     callback(Resource.Error("No news")) // TODO: Must be return ErrorState
             }.addOnFailureListener {
-            callback(Resource.Error("Something happened on the server side")) // TODO: Must be return ErrorState
-        }
+                callback(Resource.Error("Something happened on the server side")) // TODO: Must be return ErrorState
+            }
     }
 
     override fun getNewsItemById(id: String, callback: (Resource<NewsItem>) -> Unit) {
@@ -149,23 +159,180 @@ class NewsRepositoryImpl @Inject constructor() : NewsRepository {
                     callback(Resource.Success(newsItem))
                 }
             } else {
-                callback(Resource.Error("This article was not found")) // TODO: Must be return ErrorState
+                callback(Resource.Error("This article was not found"))
             }
         }.addOnFailureListener {
-            callback(Resource.Error(it.message.toString())) // TODO: Must be return ErrorState
+            callback(Resource.Error(it.message.toString()))
         }
     }
 
-    override fun deleteNewsItemById(id: String, callback: (Resource<Boolean>) -> Unit) {
+    override fun getAsnovaNewsUseCase(callback: (Resource<List<WallItem>>) -> Unit) {
+        callback(Resource.Loading())
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val version = "5.131"
+                val ownerId = -162375388
+                val count = 10
+                val offset = 0
+                val extended = 1
+                val fields = null
+
+                val wallResponse = groupsApi.getWall(
+                    version = version,
+                    ownerId = ownerId,
+                    accessToken = accessToken,
+                    count = count,
+                    offset = offset,
+                    extended = extended,
+                    fields = fields
+                )
+
+                withContext(Dispatchers.Main) {
+                    if (wallResponse.error != null) {
+                        callback(Resource.Error(wallResponse.error.errorMsg))
+                    } else {
+                        val asnovaNewsList =
+                            wallResponse.response?.items?.filter { it.text.isNotBlank() }
+                                ?.map { response ->
+                                    WallItem(
+                                        response.id,
+                                        response.text,
+                                        title = getHeadline(response.text),
+                                        withoutTitle = removeHeadlineAndHashtags(response.text),
+                                        date = Date(response.date * 1000L),
+                                        response.likes.userLikes,
+                                        response.likes.count,
+                                        response.attachments.filter { it.type == "photo" }.map {
+                                            WallImageItem(
+                                                it.photo.id,
+                                                it.photo.sizes.filter { resized -> resized.type == "r" }
+                                                    .getOrNull(0)?.height ?: 0,
+                                                it.photo.sizes.filter { resized -> resized.type == "r" }
+                                                    .getOrNull(0)?.width ?: 0,
+                                                it.photo.sizes.filter { resized -> resized.type == "r" }
+                                                    .getOrNull(0)?.url ?: ""
+                                            )
+                                        }.ifEmpty {
+                                            listOf(
+                                                WallImageItem(
+                                                    0,
+                                                    0,
+                                                    0,
+                                                    url = defaultImageUrl
+                                                )
+                                            )
+                                        },
+                                        hashtags = extractHashtags(response.text),
+                                        postUrl = "https://vk.com/asnovapro?w=wall${response.ownerId}_${response.id}"
+                                    )
+                                } ?: listOf()
+
+                        callback(Resource.Success(asnovaNewsList))
+                    }
+                }
+            } catch (e: FirebaseException) {
+                callback(Resource.Error("Something happened on the server side"))
+            }
+        }
+    }
+
+    override fun getSafetyNewsUseCase(callback: (Resource<List<WallItem>>) -> Unit) {
         TODO("Not yet implemented")
     }
 
-    private fun parseDate(dateString: String): Long {
-        // TODO: Implement date parsing logic
-        return System.currentTimeMillis()
-    }
+    override fun onDownloadMoreAsnovaNewsUseCase(
+        offset: Int,
+        callback: (Resource<List<WallItem>>) -> Unit
+    ) {
+        callback(Resource.Loading())
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val version = "5.131"
+                val ownerId = -162375388
+                val count = 10
+                val extended = 1
+                val fields = null
 
-    private fun parseDate(): Long {
-        return System.currentTimeMillis()
+                val wallResponse = groupsApi.getWall(
+                    version = version,
+                    ownerId = ownerId,
+                    accessToken = accessToken,
+                    count = count,
+                    offset = offset,
+                    extended = extended,
+                    fields = fields
+                )
+
+                withContext(Dispatchers.Main) {
+                    if (wallResponse.error != null) {
+                        callback(Resource.Error(wallResponse.error.errorMsg))
+                    } else {
+                        val asnovaNewsList =
+                            wallResponse.response?.items?.filter { it.text.isNotBlank() }
+                                ?.map { response ->
+                                    WallItem(
+                                        response.id,
+                                        response.text,
+                                        title = getHeadline(response.text),
+                                        withoutTitle = removeHeadlineAndHashtags(response.text),
+                                        date = Date(response.date * 1000L),
+                                        response.likes.userLikes,
+                                        response.likes.count,
+                                        response.attachments.filter { it.type == "photo" }.map {
+                                            WallImageItem(
+                                                it.photo.id,
+                                                it.photo.sizes.filter { resized -> resized.type == "r" }
+                                                    .getOrNull(0)?.height ?: 0,
+                                                it.photo.sizes.filter { resized -> resized.type == "r" }
+                                                    .getOrNull(0)?.width ?: 0,
+                                                it.photo.sizes.filter { resized -> resized.type == "r" }
+                                                    .getOrNull(0)?.url ?: ""
+                                            )
+                                        }.ifEmpty {
+                                            listOf(
+                                                WallImageItem(
+                                                    0,
+                                                    0,
+                                                    0,
+                                                    url = defaultImageUrl
+                                                )
+                                            )
+                                        },
+                                        hashtags = extractHashtags(response.text),
+                                        postUrl = "https://vk.com/asnovapro?w=wall${response.ownerId}_${response.id}"
+                                    )
+                                } ?: listOf()
+
+                        callback(Resource.Success(asnovaNewsList))
+                    }
+                }
+            } catch (e: FirebaseException) {
+                callback(Resource.Error("Something happened on the server side"))
+            }
+        }
     }
 }
+
+private fun getHeadline(messageText: String): String {
+    val regex = Regex(".*?[.!?\\s](?=\\p{Punct}|\\p{So}|\\p{Sc}|\\s|\\z)")
+    val match = regex.find(messageText)
+    return match?.value ?: messageText
+}
+
+private fun extractHashtags(text: String): List<String> {
+    val hashtagPattern = "#(?!_lp_block)\\w+".toRegex()
+    return hashtagPattern.findAll(text)
+        .map { it.value }
+        .toList()
+}
+
+private fun removeHeadlineAndHashtags(text: String): String {
+    val headline = getHeadline(text)
+    val textWithoutHeadline = text.removePrefix(headline).trim()
+
+    val hashtagPattern = "#\\w+".toRegex()
+    val textWithoutHashtags = hashtagPattern.replace(textWithoutHeadline, "").trim()
+
+    return textWithoutHashtags
+}
+

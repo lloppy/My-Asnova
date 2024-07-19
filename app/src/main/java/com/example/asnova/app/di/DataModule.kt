@@ -15,6 +15,7 @@ import com.asnova.domain.repository.storage.ThemeSettingStorage
 import com.asnova.firebase.NewsRepositoryImpl
 import com.asnova.firebase.ScheduleRepositoryImpl
 import com.asnova.firebase.UserRepositoryImpl
+import com.asnova.firebase.api.GroupsApi
 import com.asnova.storage.IsAuthedUserStorageImpl
 import com.asnova.storage.LanguageSettingStorageImpl
 import com.asnova.storage.NotificationsSettingStorageImpl
@@ -22,9 +23,6 @@ import com.asnova.storage.ScheduleStateRepositoryImpl
 import com.asnova.storage.ScheduleStateStorageImpl
 import com.asnova.storage.ThemeSettingRepositoryImpl
 import com.asnova.storage.ThemeSettingStorageImpl
-import com.example.asnova.screen.main.feed.api.GroupsApi
-import com.example.asnova.screen.main.feed.api.GroupsRepository
-import com.example.asnova.screen.main.feed.api.VkGroupsRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -37,15 +35,10 @@ import javax.inject.Singleton
 class DataModule {
     @Provides
     @Singleton
-    fun provideGroupsRepository(
-        fileUtils: com.example.asnova.screen.main.feed.api.FileUtils,
+    fun provideNewsRepository(
         groupsApi: GroupsApi
-    ): GroupsRepository = VkGroupsRepository(fileUtils, groupsApi)
-
-    @Provides
-    @Singleton
-    fun provideNewsRepository(): NewsRepository {
-        return NewsRepositoryImpl()
+    ): NewsRepository {
+        return NewsRepositoryImpl(groupsApi)
     }
 
     @Provides

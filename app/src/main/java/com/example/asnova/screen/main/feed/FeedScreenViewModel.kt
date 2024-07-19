@@ -7,16 +7,20 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.asnova.screen.main.feed.api.GroupsInteractor
-import com.example.asnova.screen.main.feed.api.SingleLiveEvent
-import com.example.asnova.screen.main.feed.api.WallItem
+import com.asnova.domain.usecase.GetAsnovaNewsUseCase
+import com.asnova.domain.usecase.GetSafetyNewsUseCase
+import com.asnova.domain.usecase.OnDownloadMoreAsnovaNewsUseCase
+import com.asnova.model.Resource
+import com.asnova.model.WallItem
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class FeedScreenViewModel @Inject constructor(
-    private val groupsInteractor: GroupsInteractor,
+    private val getSafetyNewsUseCase: GetSafetyNewsUseCase,
+    private val onDownloadMoreAsnovaNewsUseCase: OnDownloadMoreAsnovaNewsUseCase,
+    private val getAsnovaNewsUseCase: GetAsnovaNewsUseCase
 ) : ViewModel() {
     private val _state = mutableStateOf(FeedState())
     val state: State<FeedState> = _state
@@ -24,106 +28,69 @@ class FeedScreenViewModel @Inject constructor(
     private val _wallItems = MutableLiveData<List<WallItem>>()
     val wallItems: LiveData<List<WallItem>> get() = _wallItems
 
-    private val _ohranaWallItems = MutableLiveData<List<WallItem>>()
-    val ohranaWallItems: LiveData<List<WallItem>> get() = _ohranaWallItems
+    private val _safetyWallItems = MutableLiveData<List<WallItem>>()
+    val safetyWallItems: LiveData<List<WallItem>> get() = _safetyWallItems
 
     private val _downloadMore = MutableLiveData(true)
     val downloadMore: LiveData<Boolean> get() = _downloadMore
 
-    private val _showStartProgress = MutableLiveData(true)
-    val showStartProgress: LiveData<Boolean> get() = _showStartProgress
-
-    private val _showMessage = SingleLiveEvent<String>()
-    val showMessage: LiveData<String> = _showMessage
 
     init {
-        onUpdateWall(wallId = 162375388)
-        onUpdateWall(wallId = 80108699)
+//        onUpdateWall(wallId = 162375388)
+//        onUpdateWall(wallId = 80108699)
+        loadAsnovaNews()
     }
 
-    private fun onUpdateWall(wallId: Int) = viewModelScope.launch {
-        try {
-            val list = if (wallId == 162375388) {
-                _wallItems.value?.toMutableList() ?: mutableListOf()
-            } else {
-                _ohranaWallItems.value?.toMutableList() ?: mutableListOf()
-            }
-            val loadedData = groupsInteractor.getGroupWall(wallId, 0)
-
-            when (wallId) {
-                162375388 -> {
-                    if (list.isEmpty()) {
-                        _wallItems.value = loadedData.sortedByDescending { it.date }
-                    } else {
-                        _wallItems.value = list.apply { addAll(loadedData) }
-                            .distinctBy { it.id }.sortedByDescending { it.date }
-                    }
+    private fun loadAsnovaNews() {
+        getAsnovaNewsUseCase(callback = { result ->
+            when (result) {
+                is Resource.Success -> {
+                    _state.value = FeedState(value = result.data?.distinctBy { it.id }?.sortedByDescending { it.date }
+                        ?: emptyList())
                 }
 
-                80108699 -> {
-                    if (list.isEmpty()) {
-                        _ohranaWallItems.value = loadedData.sortedByDescending { it.date }
-                    } else {
-                        _ohranaWallItems.value = list.apply { addAll(loadedData) }
-                            .distinctBy { it.id }.sortedByDescending { it.date }
-                    }
+                is Resource.Error -> {
+                    _state.value =
+                        FeedState(error = result.message ?: "An unexpected error occurred")
+                }
+
+                is Resource.Loading -> {
+                    _state.value = FeedState(loading = true)
                 }
             }
-
-        } catch (e: Exception) {
-            Log.e("vk_info", "Error fetching wall data: ${e.message}", e)
-            _showMessage.postValue(e.message ?: "Unknown error occurred")
-        }
+        })
     }
 
-    fun onDownloadMore(fromStart: Boolean = false, wallId: Int) = viewModelScope.launch {
-        try {
-            _state.value = FeedState(loading = true)
+    fun onDownloadMore() {
+        val currentList = _state.value.value.toMutableList()
 
-            val list = if (wallId == 162375388) {
-                _wallItems.value?.toMutableList() ?: mutableListOf()
-            } else if (wallId == 80108699) {
-                _ohranaWallItems.value?.toMutableList() ?: mutableListOf()
-            } else {
-                mutableListOf()
-            }
+        onDownloadMoreAsnovaNewsUseCase(
+            offset = currentList.size,
+            callback = { result ->
+                when (result) {
+                    is Resource.Success -> {
+                        val loadedData = result.data ?: emptyList()
 
-            if (list.isEmpty()) _showStartProgress.value = true
-            val offset = if (fromStart) 0 else list.size
-            val loadedData = groupsInteractor.getGroupWall(wallId, offset)
-            if (loadedData.isEmpty()) _downloadMore.value = false
+                        _state.value = FeedState(
+                            value = currentList.apply { addAll(loadedData) }
+                                .distinctBy { it.id }
+                                .sortedByDescending { it.date }
+                        )
+                        Log.e("vk_info", "onDownloadMore")
+                    }
 
-            when (wallId) {
-                162375388 -> {
-                    if (fromStart) _wallItems.value = loadedData.sortedByDescending { it.date }
-                    else _wallItems.value = list.apply { addAll(loadedData) }.distinctBy { it.id }
-                        .sortedByDescending { it.date }
+                    is Resource.Error -> {
+                        _state.value = FeedState(error = result.message ?: "An unexpected onDownloadMore error occurred")
+                    }
+
+                    is Resource.Loading -> {
+                        // _state.value = FeedState(loading = true)
+                    }
                 }
-
-                80108699 -> {
-                    if (fromStart) _ohranaWallItems.value =
-                        loadedData.sortedByDescending { it.date }
-                    else _ohranaWallItems.value =
-                        list.apply { addAll(loadedData) }.distinctBy { it.id }
-                            .sortedByDescending { it.date }
-                }
-            }
-        } catch (e: Exception) {
-            Log.e("vk_info", "Error fetching wall data: ${e.message}", e)
-            _showMessage.postValue(e.message ?: "Unknown error occurred")
-            _state.value = FeedState(error = e.message ?: "An unexpected error occurred")
-
-        } finally {
-            _state.value = FeedState(loading = false)
-            _showStartProgress.value = false
-        }
+            })
     }
 
     fun pullToRefresh() = viewModelScope.launch {
-        try {
-            onUpdateWall(162375388)
-            onUpdateWall(80108699)
-        } catch (_: Exception) {
-        }
+
     }
 }

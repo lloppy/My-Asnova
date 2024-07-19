@@ -1,4 +1,4 @@
-package com.example.asnova.screen.main.feed.api
+package com.asnova.firebase.api
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

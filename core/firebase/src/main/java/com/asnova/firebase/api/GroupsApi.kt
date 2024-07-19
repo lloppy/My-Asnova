@@ -1,4 +1,4 @@
-package com.example.asnova.screen.main.feed.api
+package com.asnova.firebase.api
 
 import retrofit2.http.GET
 import retrofit2.http.Query
@@ -18,6 +18,7 @@ interface GroupsApi {
      * @param fields Список дополнительных полей профилей и групп, которые необходимо вернуть.
      * @return Ответ от VK API с данными записей со стены сообщества.
      */
+
     @GET("wall.get")
     suspend fun getWall(
         @Query("v") version: String,

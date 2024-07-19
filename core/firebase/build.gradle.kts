@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.jetbrains.kotlin.android)
     id("com.google.gms.google-services")
+    kotlin("plugin.serialization") version "2.0.0"
 }
 
 android {
@@ -62,6 +63,15 @@ dependencies {
     implementation("org.ehcache:ehcache:3.9.7")
 
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
+
+    // Networking
+    implementation("com.squareup.okhttp3:okhttp:4.9.3")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
+
+    val retrofitVersion = "2.9.0"
+    implementation("com.squareup.retrofit2:retrofit:$retrofitVersion")
+    implementation("com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:0.8.0")
+    implementation("com.squareup.okhttp3:logging-interceptor:4.9.1")
 
 
 }

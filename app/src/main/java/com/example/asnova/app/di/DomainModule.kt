@@ -13,15 +13,18 @@ import com.asnova.domain.usecase.AddNewsArticleUseCase
 import com.asnova.domain.usecase.AddNewsItemToFavoritesUseCase
 import com.asnova.domain.usecase.CreateUserWithEmailAndPasswordUseCase
 import com.asnova.domain.usecase.GetAllFavoritesUseCase
+import com.asnova.domain.usecase.GetAsnovaNewsUseCase
 import com.asnova.domain.usecase.GetIsAuthedUserUseCase
 import com.asnova.domain.usecase.GetLanguageSettingUseCase
 import com.asnova.domain.usecase.GetNewsByOrderUseCase
 import com.asnova.domain.usecase.GetNewsItemByIdUseCase
 import com.asnova.domain.usecase.GetNotificationsSettingUseCase
+import com.asnova.domain.usecase.GetSafetyNewsUseCase
 import com.asnova.domain.usecase.GetScheduleStateUseCase
 import com.asnova.domain.usecase.GetScheduleUseCase
 import com.asnova.domain.usecase.GetThemeSettingUseCase
 import com.asnova.domain.usecase.IsAuthedUserUseCase
+import com.asnova.domain.usecase.OnDownloadMoreAsnovaNewsUseCase
 import com.asnova.domain.usecase.PullRequestUserUseCase
 import com.asnova.domain.usecase.SaveAuthStatusUseCase
 import com.asnova.domain.usecase.SaveLanguageSettingUseCase
@@ -67,10 +70,31 @@ class DomainModule {
     }
 
     @Provides
+    fun provideGetSafetyNewsUseCase(
+        repository: NewsRepository
+    ): GetSafetyNewsUseCase {
+        return GetSafetyNewsUseCase(repository)
+    }
+
+    @Provides
+    fun provideGetAsnovaNewsUseCase(
+        repository: NewsRepository
+    ): GetAsnovaNewsUseCase {
+        return GetAsnovaNewsUseCase(repository)
+    }
+
+    @Provides
     fun provideGetNewsItemByIdUseCase(
         repository: NewsRepository
     ): GetNewsItemByIdUseCase {
         return GetNewsItemByIdUseCase(repository)
+    }
+
+    @Provides
+    fun provideOnDownloadMoreAsnovaNewsUseCase(
+        repository: NewsRepository
+    ): OnDownloadMoreAsnovaNewsUseCase {
+        return OnDownloadMoreAsnovaNewsUseCase(repository)
     }
 
     @Provides

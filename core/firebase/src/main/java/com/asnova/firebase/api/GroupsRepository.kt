@@ -1,4 +1,6 @@
-package com.example.asnova.screen.main.feed.api
+package com.asnova.firebase.api
+
+import com.asnova.model.WallItem
 
 interface GroupsRepository {
     suspend fun getWallById(

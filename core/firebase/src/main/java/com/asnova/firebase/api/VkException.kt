@@ -1,6 +1,6 @@
-package com.example.asnova.screen.main.feed.api
+package com.asnova.firebase.api
 
-class VkException(val errorCode: Int, val errMessage: String) : Exception(errMessage) {
+class VkException(private val errorCode: Int, private val errorMessage: String) : Exception(errorMessage) {
     override val message: String
         get() = getMessageById(errorCode)
 
@@ -41,7 +41,7 @@ class VkException(val errorCode: Int, val errMessage: String) : Exception(errMes
             500 -> "Действие запрещено. Вы должны включить переводы голосов в настройках приложения"
             600 -> "Нет прав на выполнение данных операций с рекламным кабинетом"
             603 -> "Произошла ошибка при работе с рекламным кабинетом"
-            else -> errMessage
+            else -> errorMessage
         }
     }
 }

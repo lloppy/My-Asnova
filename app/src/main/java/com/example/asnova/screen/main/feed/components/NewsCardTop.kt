@@ -35,7 +35,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.SubcomposeAsyncImage
-import com.example.asnova.screen.main.feed.api.WallItem
 import com.example.asnova.ui.theme.grayAsnova
 import com.example.asnova.utils.shimmerEffect
 import java.text.SimpleDateFormat
@@ -45,6 +44,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.verticalScroll
 import coil.compose.rememberAsyncImagePainter
+import com.asnova.model.WallItem
 
 
 @OptIn(ExperimentalMaterial3Api::class)

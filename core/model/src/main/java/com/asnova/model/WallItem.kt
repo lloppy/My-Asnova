@@ -1,4 +1,4 @@
-package com.example.asnova.screen.main.feed.api
+package com.asnova.model
 
 import java.util.Date
 
@@ -7,8 +7,6 @@ data class WallItem(
     val text: String,
     val title: String,
     val withoutTitle: String,
-    val posterName: String,
-    val posterThumbnail: String,
     val date: Date,
     var userLikes: Int,
     var likesCount: Int,
