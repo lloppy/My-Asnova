@@ -25,6 +25,7 @@ import com.asnova.domain.usecase.GetScheduleUseCase
 import com.asnova.domain.usecase.GetThemeSettingUseCase
 import com.asnova.domain.usecase.IsAuthedUserUseCase
 import com.asnova.domain.usecase.OnDownloadMoreAsnovaNewsUseCase
+import com.asnova.domain.usecase.OnDownloadMoreSafetyNewsUseCase
 import com.asnova.domain.usecase.PullRequestUserUseCase
 import com.asnova.domain.usecase.SaveAuthStatusUseCase
 import com.asnova.domain.usecase.SaveLanguageSettingUseCase
@@ -95,6 +96,13 @@ class DomainModule {
         repository: NewsRepository
     ): OnDownloadMoreAsnovaNewsUseCase {
         return OnDownloadMoreAsnovaNewsUseCase(repository)
+    }
+
+    @Provides
+    fun provideOnDownloadMoreSafetyNewsUseCase(
+        repository: NewsRepository
+    ): OnDownloadMoreSafetyNewsUseCase {
+        return OnDownloadMoreSafetyNewsUseCase(repository)
     }
 
     @Provides

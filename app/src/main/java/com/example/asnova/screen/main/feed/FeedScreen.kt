@@ -107,26 +107,23 @@ fun FeedScreen(
                 }
             }
         ) {
-            val currentNews = when (selectedThreeSegment) {
-                "Asnovapro" -> state.asnovaNews
-                "Охрана труда" -> state.safetyNews
-                else -> state.asnovaNews
-            }
-
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
                     .pullRefresh(stateRefresh),
                 state = listState
             ) {
-                items(currentNews.size) { index ->
+                items(state.news.size) { index ->
                     if (index == 0) {
                         NewsHeader(userData = userData)
 
                         Column(modifier = Modifier.padding(start = 16.dp, end = 16.dp)) {
                             SegmentedControl(
                                 threeSegments, selectedThreeSegment,
-                                onSegmentSelected = { selectedThreeSegment = it },
+                                onSegmentSelected = {
+                                    selectedThreeSegment = it
+                                    viewModel.onSegmentChange(it)
+                                },
                                 modifier = Modifier.height(50.dp)
                             ) { SegmentText(it, selectedThreeSegment == it) }
                         }
@@ -134,20 +131,15 @@ fun FeedScreen(
                     }
 
                     FeedItemView(
-                        feedItem = currentNews[index],
+                        feedItem = state.news[index],
                         index = index
                     ) {
-                        val intent = when (selectedThreeSegment) {
-                            "Asnovapro" -> Intent(Intent.ACTION_VIEW, Uri.parse(state.asnovaNews[index].postUrl))
-                            "Охрана труда" -> Intent(Intent.ACTION_VIEW, Uri.parse(state.safetyNews[index].postUrl))
-                            else -> Intent(Intent.ACTION_VIEW, Uri.parse(state.asnovaNews[index].postUrl))
-                        }
-
+                        val intent =  Intent(Intent.ACTION_VIEW, Uri.parse(state.news[index].postUrl))
                         context.startActivity(intent)
                     }
 
-                    if (index == state.asnovaNews.size - 1 || index == state.safetyNews.size - 1) {
-                        viewModel.onDownloadMore(selectedThreeSegment)
+                    if (index == state.news.size - 1) {
+                        viewModel.onDownloadMore()
                     }
                 }
                 item {

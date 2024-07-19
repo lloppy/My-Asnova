@@ -10,7 +10,11 @@ interface NewsRepository {
     fun getNewsArticlesByOrder(order: String, callback: (Resource<List<NewsItem>>) -> Unit)
     fun getNewsItemById(id: String, callback: (Resource<NewsItem>) -> Unit)
 
+    // Get news
     fun getAsnovaNewsUseCase(callback: (Resource<List<WallItem>>) -> Unit)
     fun getSafetyNewsUseCase(callback: (Resource<List<WallItem>>) -> Unit)
+
+    // download more news
     fun onDownloadMoreAsnovaNewsUseCase(offset: Int, callback: (Resource<List<WallItem>>) -> Unit)
+    fun onDownloadMoreSafetyNewsUseCase(offset: Int, callback: (Resource<List<WallItem>>) -> Unit)
 }
