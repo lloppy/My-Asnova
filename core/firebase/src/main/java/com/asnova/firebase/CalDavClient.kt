@@ -12,6 +12,8 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.ZoneId
+import java.time.ZoneOffset
+import java.time.format.DateTimeFormatter
 import java.util.Date
 
 /*
@@ -52,11 +54,25 @@ class CalDavClient(
 
         val events: List<VEvent> = calendar.components.filterIsInstance<VEvent>()
         return events.map { event ->
+            Log.e("calendar_info", "CREATED " + event.getProperty<Property>(Property.CREATED)?.value.toString())
+            Log.e("calendar_info", "DTSTART " + event.getProperty<Property>(Property.DTSTART)?.value.toString())
+            Log.e("calendar_info", "DTEND " + event.getProperty<Property>(Property.DTEND)?.value.toString())
+
+            Log.e("calendar_info", "\n" )
+
+
+            Log.e("calendar_info", "parseDate CREATED " + parseDate(event.getProperty<Property>(Property.CREATED)?.value))
+            Log.e("calendar_info", "parseDate DTSTART " + parseDate(event.getProperty<Property>(Property.DTSTART)?.value))
+            Log.e("calendar_info", "parseDate DTEND " + parseDate(event.getProperty<Property>(Property.DTEND)?.value))
+
+            Log.e("calendar_info", "__________________" )
+
+
             com.asnova.model.AsnovaSchedule(
                 summary = event.getProperty<Property>(Property.SUMMARY)?.value,
-//                created = event.getProperty<Property>(Property.CREATED)?.value,
-//                start = event.getProperty<Property>(Property.DTSTART)?.value,
-//                end = event.getProperty<Property>(Property.DTEND)?.value,
+                created = parseDate(event.getProperty<Property>(Property.CREATED)?.value),
+                start = parseDate(event.getProperty<Property>(Property.DTSTART)?.value),
+                end = parseDate(event.getProperty<Property>(Property.DTEND)?.value),
 //                location = event.getProperty<Property>(Property.LOCATION)?.value,
 //                description = event.getProperty<Property>(Property.DESCRIPTION)?.value,
 //                status = event.getProperty<Property>(Property.STATUS)?.value,
@@ -67,12 +83,26 @@ class CalDavClient(
         }
     }
 
-    private fun convertDateToLocalDate(dateStr: String): LocalDateTime {
-        try {
-            val date = Date(dateStr)
-            return LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault())
+    fun parseDate(dateStr: String?): LocalDateTime {
+        val createdFormatter = DateTimeFormatter.ofPattern("yyyyMMdd'T'HHmmss'Z'")
+        val fallbackDate = LocalDateTime.of(2004, 4, 17, 0, 0)
+
+        if (dateStr.isNullOrEmpty()) return fallbackDate
+
+        return try {
+            when {
+                dateStr.endsWith("Z") -> LocalDateTime.parse(dateStr, createdFormatter).atOffset(ZoneOffset.UTC).toLocalDateTime()
+                else -> {
+                    val datePart = dateStr.substring(0, 8)
+                    val timePart = dateStr.substring(9)
+                    val date = LocalDate.parse(datePart, DateTimeFormatter.BASIC_ISO_DATE)
+                    val time = LocalTime.parse(timePart, DateTimeFormatter.ofPattern("HHmmss"))
+                    LocalDateTime.of(date, time)
+                }
+            }
         } catch (e: Exception) {
-            return LocalDateTime.now()
+            fallbackDate
         }
     }
+
 }

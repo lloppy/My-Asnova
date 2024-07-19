@@ -44,9 +44,9 @@ class ScheduleScreenViewModel @Inject constructor(
                     val temp = mutableListOf<AsnovaSchedule>()
                     for (item in _state.value.value)
                     {
-                        if (selectedDateMutableState.value?.dayOfMonth == item.date.dayOfMonth &&
-                            selectedDateMutableState.value?.monthValue == item.date.monthValue &&
-                            selectedDateMutableState.value?.year == item.date.year)
+                        if (selectedDateMutableState.value?.dayOfMonth == item.start.dayOfMonth &&
+                            selectedDateMutableState.value?.monthValue == item.start.monthValue &&
+                            selectedDateMutableState.value?.year == item.start.year)
                         {
                             temp.add(item)
                         }

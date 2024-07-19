@@ -105,7 +105,9 @@ class ScheduleRepositoryImpl @Inject constructor(
                 val scheduleList = calDavClient.getScheduleList()
 
                 Log.d("calendar_info", "Success: ${scheduleList.size} items")
-                scheduleList.forEach { Log.d("calendar_info", it.summary.toString()) }
+                scheduleList.forEach {
+                    Log.d("calendar_info", it.summary.toString())
+                }
 
                 withContext(Dispatchers.Main) {
                     callback(Resource.Success(scheduleList))

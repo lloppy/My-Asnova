@@ -1,6 +1,7 @@
 package com.asnova.model
 
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.LocalTime
 
 data class Schedule(
@@ -20,13 +21,13 @@ data class Schedule(
 data class AsnovaSchedule(
     val uid: String,
     val summary: String?,
-    val date: LocalDate = LocalDate.now(),
+    val created: LocalDateTime,
+    val start: LocalDateTime,
+    val end: LocalDateTime,
     val task: ScheduleTask = ScheduleTask(),
     val grade: Int = 1,
     val homeWork: List<String> = emptyList()
-//    val created: String?,
-//    val start: String?,
-//    val end: String?,
+
 //    val location: String?,
 //    val description: String?,
 //    val status: String?,
