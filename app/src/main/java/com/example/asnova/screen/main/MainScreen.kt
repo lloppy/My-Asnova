@@ -8,6 +8,7 @@ import androidx.lifecycle.LifecycleCoroutineScope
 import androidx.lifecycle.LifecycleOwner
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.example.asnova.R
 import com.example.asnova.navigation.BottomNavigationBar
 import com.example.asnova.navigation.Screen
 import com.example.asnova.navigation.SetupNavGraph
@@ -44,7 +45,18 @@ fun MainScreen(
             lifecycleScope = lifecycleScope,
             lifecycleOwner = lifecycleOwner,
             router = router,
+            pictureBackgroundId = randomPicture(),
             googleAuthUiClient = googleAuthUiClient
         )
     }
 }
+
+private fun randomPicture(): Int {
+    val pictures = listOf(
+        R.drawable.asnova_future_gen,
+        R.drawable.asnova_future_gen2
+    )
+
+    return pictures.random()
+}
+

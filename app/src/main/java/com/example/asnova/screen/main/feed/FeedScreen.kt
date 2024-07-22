@@ -53,6 +53,7 @@ fun FeedScreen(
     externalRouter: Router,
     navController: NavController,
     lifecycleOwner: LifecycleOwner,
+    pictureBackgroundId: Int,
     viewModel: FeedScreenViewModel = hiltViewModel()
 ) {
     val listState = rememberLazyListState()
@@ -80,6 +81,7 @@ fun FeedScreen(
                             userData = userData,
                             threeSegments = threeSegments,
                             selectedSegment = selectedThreeSegment,
+                            pictureBackgroundId = pictureBackgroundId,
                             onSegmentSelected = {
                                 selectedThreeSegment = it
                                 viewModel.onSegmentChange(it)
@@ -111,6 +113,7 @@ fun FeedScreen(
                         userData = userData,
                         threeSegments = threeSegments,
                         selectedSegment = selectedThreeSegment,
+                        pictureBackgroundId = pictureBackgroundId,
                         onSegmentSelected = {
                             selectedThreeSegment = it
                             viewModel.onSegmentChange(it)

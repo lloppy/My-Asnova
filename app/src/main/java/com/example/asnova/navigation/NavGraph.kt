@@ -24,6 +24,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.asnova.MainActivity
+import com.example.asnova.R
 import com.example.asnova.screen.log_in.services.GoogleAuthUiClient
 import com.example.asnova.screen.main.feed.FeedScreen
 import com.example.asnova.screen.main.profile_settings.ChatScreen
@@ -43,6 +44,7 @@ import kotlinx.coroutines.launch
 fun SetupNavGraph(
     navHostController: NavHostController,
     context: Context,
+    pictureBackgroundId: Int,
     googleAuthUiClient: GoogleAuthUiClient,
     lifecycleScope: LifecycleCoroutineScope,
     lifecycleOwner: LifecycleOwner,
@@ -57,6 +59,7 @@ fun SetupNavGraph(
                 userData = googleAuthUiClient.getSignedInUser(),
                 externalRouter = router,
                 navController = navHostController,
+                pictureBackgroundId = pictureBackgroundId,
                 lifecycleOwner = lifecycleOwner
             )
         }

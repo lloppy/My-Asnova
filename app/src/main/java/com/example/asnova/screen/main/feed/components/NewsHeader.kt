@@ -1,5 +1,6 @@
 package com.example.asnova.screen.main.feed.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -52,7 +53,8 @@ fun NewsHeader(
                 overflow = TextOverflow.Ellipsis,
                 fontSize = 16.sp,
                 style = MaterialTheme.typography.titleSmall,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
+                color = Color.LightGray
             )
 
             if (userData?.profilePictureUrl != null) {
@@ -80,6 +82,7 @@ fun NewsHeader(
                 text = "С возвращением${if (userData?.username.isNullOrEmpty()) "!" else ",\n${userData!!.username}"}",
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold,
+                color = Color.White
             )
         }
     }
@@ -96,7 +99,7 @@ fun CurrentDateText() {
 
     Text(
         text = dateString.replaceFirstChar { if (it.isLowerCase()) it.titlecase(locale) else it.toString() },
-        color = Color.Gray,
+        color = Color.LightGray,
         style = MaterialTheme.typography.bodyLarge,
     )
 }

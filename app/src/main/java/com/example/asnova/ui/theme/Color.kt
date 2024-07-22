@@ -16,3 +16,4 @@ val greenAsnova = Color(0xFF4dbd38)
 val lightGreenAsnova = Color(0x1A4DBD38)
 val grayAsnova = Color(0xFFf0f2f4) // f2f3f4
 val backgroundAsnova = Color(0xFFf6f8fa) // f6f8fa
+val darkAsnova = Color(0xFF1A1C1A) // 1A1C1A
