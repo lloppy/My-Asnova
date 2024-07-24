@@ -2,6 +2,7 @@ package com.example.asnova.app.di
 
 import CalDavClient
 import android.content.Context
+import android.content.SharedPreferences
 import com.asnova.domain.repository.firebase.NewsRepository
 import com.asnova.domain.repository.firebase.ScheduleRepository
 import com.asnova.domain.repository.firebase.UserRepository
@@ -19,6 +20,7 @@ import com.asnova.firebase.api.GroupsApi
 import com.asnova.storage.IsAuthedUserStorageImpl
 import com.asnova.storage.LanguageSettingStorageImpl
 import com.asnova.storage.NotificationsSettingStorageImpl
+import com.asnova.storage.SHARED_PREFS_USER_SETTING
 import com.asnova.storage.ScheduleStateRepositoryImpl
 import com.asnova.storage.ScheduleStateStorageImpl
 import com.asnova.storage.ThemeSettingRepositoryImpl
@@ -45,6 +47,11 @@ class DataModule {
         )
     }
 
+    @Provides
+    @Singleton
+    fun provideUserSharedPreferences(@ApplicationContext context: Context): SharedPreferences {
+        return context.getSharedPreferences(SHARED_PREFS_USER_SETTING, Context.MODE_PRIVATE)
+    }
 
     @Provides
     @Singleton
