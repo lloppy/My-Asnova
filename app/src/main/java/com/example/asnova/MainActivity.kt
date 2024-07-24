@@ -1,6 +1,7 @@
 package com.example.asnova
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -11,9 +12,6 @@ import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -21,11 +19,12 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.asnova.storage.KEY_USER_SETTING
+import com.asnova.storage.SHARED_PREFS_USER_SETTING
+import com.example.asnova.data.UserManager
 import com.example.asnova.navigation.Screen
-import com.example.asnova.screen.log_in.IsNotLogin.ALREADY_LOGIN
-import com.example.asnova.screen.log_in.IsNotLogin.NOT
-import com.example.asnova.screen.log_in.IsNotLogin.YET
 import com.example.asnova.screen.log_in.LogInViewModel
+import com.example.asnova.screen.log_in.SignInResult
 import com.example.asnova.screen.log_in.SignInScreen
 import com.example.asnova.screen.log_in.services.GoogleAuthUiClient
 import com.example.asnova.screen.main.MainScreen
@@ -35,41 +34,50 @@ import com.example.asnova.utils.LOG_IN
 import com.example.asnova.utils.navigation.createExternalRouter
 import com.example.asnova.utils.navigation.navigate
 import com.example.asnova.utils.toastMessage
-import com.google.android.gms.auth.api.identity.Identity
 import com.vk.id.VKID
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    @Inject
+    lateinit var googleAuthUiClient: GoogleAuthUiClient
+
     private lateinit var navController: NavHostController
 
-    private val googleAuthUiClient by lazy {
-        GoogleAuthUiClient(
-            context = applicationContext,
-            oneTapClient = Identity.getSignInClient(applicationContext)
-        )
-    }
 
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
+        val userSharedPreferences =
+            this.getSharedPreferences(SHARED_PREFS_USER_SETTING, Context.MODE_PRIVATE)
+        val user = userSharedPreferences.getString(KEY_USER_SETTING, false.toString())
+        UserManager.status = when (user) {
+            true.toString() -> true
+            false.toString() -> false
+            else -> false
+        }
+        Log.e("login_info", "User is $user")
+
         super.onCreate(savedInstanceState)
         VKID.init(this)
 
         setContent {
             AsnovaTheme {
                 navController = rememberNavController()
+                val viewModel = viewModel<LogInViewModel>()
 
-                var isNotLogin by remember {
-                    mutableStateOf(YET)
-                }
 
                 LaunchedEffect(key1 = Unit) {
                     if (googleAuthUiClient.getSignedInUser() != null) {
-                        isNotLogin = ALREADY_LOGIN
+                        viewModel.onSignInResult(
+                            SignInResult(
+                                data = googleAuthUiClient.getSignedInUser(),
+                                errorMessage = null
+                            )
+                        )
                         navController.navigate(Screen.Main.route)
                     } else {
-                        isNotLogin = NOT
                         Log.d(LOG_IN, "Not log in yet")
                     }
                 }
@@ -79,7 +87,6 @@ class MainActivity : ComponentActivity() {
                         SplashScreen(navHostController = navController, route = Screen.LogIn.route)
                     }
                     composable(Screen.LogIn.route) {
-                        val viewModel = viewModel<LogInViewModel>()
                         val state by viewModel.state.collectAsStateWithLifecycle()
                         val launcher = rememberLauncherForActivityResult(
                             contract = ActivityResultContracts.StartIntentSenderForResult(),
@@ -107,8 +114,9 @@ class MainActivity : ComponentActivity() {
                                 viewModel.resetState()
                             }
                         }
-                        //Если вы не вошли в систему, вы также можете управлять тем, что происходит при нажатии кнопки на странице входа.
-                        if (isNotLogin == NOT) {
+
+                        //Если не вошли в систему
+                        if (!state.isSignInSuccessful) {
                             SignInScreen(
                                 state = state,
                                 onSignInClick = {
@@ -139,17 +147,11 @@ class MainActivity : ComponentActivity() {
                             googleAuthUiClient = googleAuthUiClient,
                             router = createExternalRouter { screen, params ->
                                 navController.navigate(screen, params)
-                            })
+                            }
+                        )
                     }
                 }
             }
         }
-    }
-
-    fun restartApp() {
-        val intent = Intent(this, MainActivity::class.java)
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
-        startActivity(intent)
-        finish()
     }
 }

@@ -23,6 +23,8 @@ import com.asnova.storage.ScheduleStateRepositoryImpl
 import com.asnova.storage.ScheduleStateStorageImpl
 import com.asnova.storage.ThemeSettingRepositoryImpl
 import com.asnova.storage.ThemeSettingStorageImpl
+import com.example.asnova.screen.log_in.services.GoogleAuthUiClient
+import com.google.android.gms.auth.api.identity.Identity
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -33,6 +35,17 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 class DataModule {
+
+    @Provides
+    @Singleton
+    fun providesGoogleAuthUiClient(@ApplicationContext context: Context?): GoogleAuthUiClient {
+        return GoogleAuthUiClient(
+            context!!,
+            Identity.getSignInClient(context)
+        )
+    }
+
+
     @Provides
     @Singleton
     fun provideNewsRepository(

@@ -7,8 +7,7 @@ const val SHARED_PREFS_USER_SETTING = "shared_prefs_user_setting"
 const val KEY_USER_SETTING = "user_setting"
 
 class IsAuthedUserStorageImpl(context: Context) : IsAuthedUserStorage {
-    private val sharedPreferences =
-        context.getSharedPreferences(SHARED_PREFS_USER_SETTING, Context.MODE_PRIVATE)
+    private val sharedPreferences = context.getSharedPreferences(SHARED_PREFS_USER_SETTING, Context.MODE_PRIVATE)
     override fun save(status: String) {
         sharedPreferences.edit().putString(KEY_USER_SETTING, status).apply()
     }

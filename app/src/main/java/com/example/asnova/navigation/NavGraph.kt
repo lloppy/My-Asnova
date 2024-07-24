@@ -21,6 +21,7 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.LifecycleCoroutineScope
 import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -85,10 +86,7 @@ fun SetupNavGraph(
                 onSignOut = {
                     lifecycleScope.launch {
                         googleAuthUiClient.signOut()
-                        toastMessage(context, "Выход из аккаунта завершен")
-                    }
-                    if (context is MainActivity) {
-                        context.restartApp()
+                        navHostController.navigate(Screen.LogIn.route)
                     }
                 }
             )
