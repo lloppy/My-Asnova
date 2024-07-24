@@ -2,6 +2,7 @@ package com.example.asnova.navigation
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccessTime
+import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -18,8 +19,8 @@ sealed class Screen(val route: String, val iconId: Int, val icon: ImageVector? =
 
     object Schedule : Screen(
         route = "schedule_screen",
-        iconId = R.drawable.ic_schedule,
-        icon = Icons.Filled.AccessTime
+        iconId = R.drawable.ic_calendar,
+        icon = Icons.Filled.CalendarMonth
     )
 
     object ProfileSettings : Screen(

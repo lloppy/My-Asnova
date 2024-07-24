@@ -134,7 +134,7 @@ fun FeedScreen(
                     }
                 }
                 item {
-                    Spacer(modifier = Modifier.padding(24.dp))
+                    Spacer(modifier = Modifier.padding(22.dp))
                 }
             }
         }

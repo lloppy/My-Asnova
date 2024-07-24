@@ -12,6 +12,9 @@ import javax.inject.Inject
 class LogInViewModel @Inject constructor(
 
 ): ViewModel() {
+    // Справочник методов: https://id.vk.com/about/business/go/docs/ru/vkid/latest/vk-id/connection/api-integration/api-description#Dostup-prilozheniya-k-dannym-polzovatelya
+    // Настройка приложения: https://id.vk.com/about/business/go/docs/ru/vkid/latest/vk-id/connection/application-settings#Nastrojka-dostupov
+
     private val _state = MutableStateFlow(SignInState())
     val state = _state.asStateFlow()
 

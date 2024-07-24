@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
@@ -50,6 +51,7 @@ fun FeedItemView(
 ) {
     Column(
         modifier = Modifier
+            .height(210.dp)
             .padding(horizontal = 18.dp)
             .padding(vertical = 14.dp)
             .clip(RoundedCornerShape(8.dp))
@@ -73,7 +75,7 @@ fun FeedItemView(
         ) {
             FeedItemImage(
                 modifier = Modifier
-                    .weight(1f)
+                    .weight(1.1f)
                     .fillMaxHeight(),
                 newsItem = feedItem,
                 width = 200.dp
@@ -82,14 +84,14 @@ fun FeedItemView(
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxHeight()
-                    .padding(start = 12.dp, end = 6.dp, top = 8.dp),
+                    .padding(start = 10.dp, end = 10.dp, top = 8.dp),
                 verticalArrangement = Arrangement.SpaceBetween,
                 horizontalAlignment = Alignment.Start
             ) {
                 Column {
                     Text(
                         text = feedItem.title,
-                        maxLines = 5,
+                        maxLines = 4,
                         overflow = TextOverflow.Ellipsis,
                         fontSize = 16.sp,
                         modifier = Modifier.padding(start = 4.dp),
@@ -148,21 +150,21 @@ private fun HashtagsRow(
 fun FeedItemImage(
     newsItem: WallItem,
     width: Dp,
-    modifier: Modifier = Modifier,
+    modifier: Modifier = Modifier
 ) {
     if (LocalInspectionMode.current) {
         Box(
             modifier = modifier
                 .size(width)
-                .background(Color.Green),
+                .background(Color.Green)
         )
     } else {
         AsyncImage(
             model = newsItem.images.first().url,
-            contentDescription = null,
+            contentDescription = "news image",
             contentScale = ContentScale.Crop,
             modifier = modifier
-                .size(width)
+                .height(width).width(width)
                 .clip(RoundedCornerShape(8.dp))
         )
     }
