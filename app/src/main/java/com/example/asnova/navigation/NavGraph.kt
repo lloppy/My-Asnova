@@ -2,8 +2,10 @@ package com.example.asnova.navigation
 
 import android.content.Context
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -108,9 +110,10 @@ fun BottomNavigationBar(navController: NavController) {
 
     AnimatedBottomBar(
         bottomBarHeight = bottomBarHeight,
-        modifier = Modifier.shadow(8.dp, RoundedCornerShape(topStart = 40.dp, topEnd = 40.dp)),
+        modifier = Modifier
+            .shadow(8.dp, RoundedCornerShape(topStart = 40.dp, topEnd = 40.dp)),
         selectedItem = selectedItem,
-        itemSize = items.take(3).size,
+        itemSize = items.size,
         contentColor = Color.White,
         indicatorColor = Color.Black,
         indicatorStyle = IndicatorStyle.LINE,
@@ -120,11 +123,10 @@ fun BottomNavigationBar(navController: NavController) {
     ) {
         items.forEachIndexed { index, navigationItem ->
             val selected = index == selectedItem
+
+            if (index == 0) Spacer(modifier = Modifier.width(18.dp))
             BottomBarItem(
                 activeIndicatorColor = Color.Transparent,
-                modifier = Modifier.padding(22.dp)
-                    .padding(start = if (index == 0) 30.dp else 0.dp)
-                    .padding(end = if (index == 2) 30.dp else 0.dp),
                 selected = selected,
                 onClick = {
                     if (items[selectedItem].route != navigationItem.route) {
@@ -144,6 +146,7 @@ fun BottomNavigationBar(navController: NavController) {
                 itemStyle = ItemStyle.STYLE4,
                 iconColor = Color.Black
             )
+            if (index == items.size) Spacer(modifier = Modifier.width(18.dp))
         }
     }
 }

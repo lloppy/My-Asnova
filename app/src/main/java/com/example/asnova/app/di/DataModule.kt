@@ -62,11 +62,14 @@ class DataModule {
     @Provides
     @Singleton
     fun provideScheduleRepository(): ScheduleRepository {
+        // https://help.mail.ru/mail/security/protection/external/
+        // генерация пароля для внешних приложений: https://account.mail.ru/user/2-step-auth/passwords/
+
         return ScheduleRepositoryImpl(
             CalDavClient(
-                "https://calendar.mail.ru/principals/vk.com/ankudinovazaecologiy/calendars/e44497c4-4978-4518-81de-0530cf40c794/",
-                "ankudinovazaecologiy@vk.com",
-                "FYnERU8DZC1zvTm12NV3"
+                "https://calendar.mail.ru/principals/uc-ot.ru/mikhail/calendars/3bb28671-7672-4822-81d6-88806ee7b6cc/",
+                "mikhail@uc-ot.ru",
+                "cRcJLt8KqgR5QpLfQDiC"
             )
         )
     }

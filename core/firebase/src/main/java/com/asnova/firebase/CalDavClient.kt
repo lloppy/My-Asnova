@@ -30,7 +30,7 @@ class CalDavClient(
 ) {
     private val client = OkHttpClient()
 
-    fun fetchCalendarData(): String? {
+    private fun fetchCalendarData(): String? {
         val request = Request.Builder()
             .url(baseUrl)
             .header("Authorization", Credentials.basic(username, password))
@@ -41,7 +41,7 @@ class CalDavClient(
         }
     }
 
-    fun parseCalendarData(data: String): Calendar {
+    private fun parseCalendarData(data: String): Calendar {
         val stringReader = StringReader(data)
         val calendarBuilder = CalendarBuilder()
         return calendarBuilder.build(stringReader)
@@ -83,7 +83,7 @@ class CalDavClient(
         }
     }
 
-    fun parseDate(dateStr: String?): LocalDateTime {
+    private fun parseDate(dateStr: String?): LocalDateTime {
         val createdFormatter = DateTimeFormatter.ofPattern("yyyyMMdd'T'HHmmss'Z'")
         val fallbackDate = LocalDateTime.of(2004, 4, 17, 0, 0)
 
@@ -104,5 +104,4 @@ class CalDavClient(
             fallbackDate
         }
     }
-
 }
