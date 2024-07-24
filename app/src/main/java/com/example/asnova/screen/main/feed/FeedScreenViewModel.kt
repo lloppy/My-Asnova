@@ -5,6 +5,7 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -15,6 +16,8 @@ import com.asnova.domain.usecase.OnDownloadMoreAsnovaNewsUseCase
 import com.asnova.domain.usecase.OnDownloadMoreSafetyNewsUseCase
 import com.asnova.model.Resource
 import com.asnova.model.WallItem
+import com.example.asnova.screen.log_in.services.GoogleAuthUiClient
+import com.example.asnova.screen.main.profile_settings.ProfileScreenViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -24,7 +27,8 @@ class FeedScreenViewModel @Inject constructor(
     private val getSafetyNewsUseCase: GetSafetyNewsUseCase,
     private val onDownloadMoreAsnovaNewsUseCase: OnDownloadMoreAsnovaNewsUseCase,
     private val onDownloadMoreSafetyNewsUseCase: OnDownloadMoreSafetyNewsUseCase,
-    private val getAsnovaNewsUseCase: GetAsnovaNewsUseCase
+    private val getAsnovaNewsUseCase: GetAsnovaNewsUseCase,
+    private val googleAuthUiClient: GoogleAuthUiClient
 ) : ViewModel() {
     private val _state = mutableStateOf(FeedState())
     val state: State<FeedState> = _state
@@ -33,6 +37,10 @@ class FeedScreenViewModel @Inject constructor(
 
     init {
         loadNewsForSegment(selectedSegment)
+    }
+
+    fun getGoogleAuthUiClient(): GoogleAuthUiClient {
+        return googleAuthUiClient
     }
 
     private fun loadNewsForSegment(segment: String) {

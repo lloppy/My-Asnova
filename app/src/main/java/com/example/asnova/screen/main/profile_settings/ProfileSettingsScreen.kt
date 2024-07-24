@@ -45,6 +45,7 @@ import com.example.asnova.R
 import com.example.asnova.data.UserData
 import com.example.asnova.navigation.bottomBarHeight
 import com.example.asnova.utils.navigation.Router
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -53,8 +54,6 @@ fun ProfileSettingsScreen(
     context: Context,
     lifecycleScope: LifecycleCoroutineScope,
     lifecycleOwner: LifecycleOwner,
-    userData: UserData?,
-    onSignOut: () -> Unit,
     onNavigateToChats: () -> Unit,
     viewModel: ProfileScreenViewModel = hiltViewModel()
 ) {
@@ -86,11 +85,14 @@ fun ProfileSettingsScreen(
     ) { padding ->
         LogInContent(
             padding = padding,
-            userData = userData,
-            onSignOut = onSignOut
+            userData = viewModel.getGoogleAuthUiClient().getSignedInUser(),
+            onSignOut = {
+                lifecycleScope.launch {
+                    viewModel.signOut()
+                }
+            }
         )
     }
-
 }
 
 @Composable

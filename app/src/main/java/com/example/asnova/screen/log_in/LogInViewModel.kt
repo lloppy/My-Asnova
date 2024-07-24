@@ -7,7 +7,6 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.asnova.storage.KEY_USER_SETTING
-import com.example.asnova.data.UserData
 import com.example.asnova.data.UserManager
 import com.example.asnova.screen.log_in.services.GoogleAuthUiClient
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -31,23 +30,19 @@ class LogInViewModel @Inject constructor(
 
     init {
         checkIfUserIsSignedIn()
-        setUserStatusFromSharedPref()
+        getUserStatusFromSharedPref()
     }
 
-    private fun setUserStatusFromSharedPref(){
-        val user = userSharedPreferences.getString(KEY_USER_SETTING, false.toString())
-        UserManager.status = when (user) {
+    private fun getUserStatusFromSharedPref() {
+        val userStatus = userSharedPreferences.getString(KEY_USER_SETTING, false.toString())
+        UserManager.status = when (userStatus) {
             true.toString() -> true
             false.toString() -> false
             else -> false
         }
-        Log.e("login_info", "User is $user")
+        Log.e("login_info", "UserManager status is $userStatus")
     }
 
-
-    fun getGoogleAuthUiClient(): GoogleAuthUiClient {
-        return googleAuthUiClient
-    }
     private fun checkIfUserIsSignedIn() {
         viewModelScope.launch {
             googleAuthUiClient.getSignedInUser()?.let { user ->

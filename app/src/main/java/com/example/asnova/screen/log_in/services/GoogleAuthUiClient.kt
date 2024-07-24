@@ -79,7 +79,6 @@ class GoogleAuthUiClient(
         }
     }
 
-
     private fun buildSignInRequest(): BeginSignInRequest {
         return BeginSignInRequest.Builder()
             .setGoogleIdTokenRequestOptions(

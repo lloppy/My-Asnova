@@ -49,7 +49,6 @@ import com.example.asnova.utils.shimmerEffect
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun FeedScreen(
-    userData: UserData?,
     externalRouter: Router,
     navController: NavController,
     lifecycleOwner: LifecycleOwner,
@@ -66,6 +65,7 @@ fun FeedScreen(
     var selectedThreeSegment by remember { mutableStateOf(threeSegments[1]) }
 
     val context = LocalContext.current
+    val userData = viewModel.getGoogleAuthUiClient().getSignedInUser()
 
     Box(
         modifier = Modifier

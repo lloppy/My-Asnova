@@ -22,7 +22,6 @@ fun MainScreen(
     lifecycleScope: LifecycleCoroutineScope,
     lifecycleOwner: LifecycleOwner,
     router: Router,
-    googleAuthUiClient: GoogleAuthUiClient
 ) {
     val hideList = setOf(
         Screen.LogIn.route,
@@ -46,7 +45,6 @@ fun MainScreen(
             lifecycleOwner = lifecycleOwner,
             router = router,
             pictureBackgroundId = randomPicture(),
-            googleAuthUiClient = googleAuthUiClient
         )
     }
 }

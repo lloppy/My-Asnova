@@ -46,7 +46,6 @@ class MainActivity : ComponentActivity() {
 
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
-
         super.onCreate(savedInstanceState)
         VKID.init(this)
 
@@ -112,7 +111,6 @@ class MainActivity : ComponentActivity() {
                             context = this@MainActivity,
                             lifecycleScope = lifecycleScope,
                             lifecycleOwner = this@MainActivity,
-                            googleAuthUiClient = viewModel.getGoogleAuthUiClient(),
                             router = createExternalRouter { screen, params ->
                                 navController.navigate(screen, params)
                             }
