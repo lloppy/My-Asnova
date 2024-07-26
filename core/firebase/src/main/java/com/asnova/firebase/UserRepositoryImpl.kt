@@ -1,5 +1,6 @@
 package com.asnova.firebase
 
+import android.util.Log
 import com.asnova.domain.repository.firebase.UserRepository
 import com.asnova.model.Resource
 import com.asnova.model.User
@@ -18,67 +19,13 @@ class UserRepositoryImpl @Inject constructor() : UserRepository {
     private val _database: FirebaseFirestore = FirebaseFirestore.getInstance()
     private val _databaseReference: CollectionReference = _database.collection("users")
 
-    override fun createUserWithEmailAndPassword(
-        username: String,
-        email: String,
-        password: String,
-        callback: (Resource<User?>) -> Unit
-    ) {
-        _auth.createUserWithEmailAndPassword(email, password).addOnSuccessListener {
-            _auth.currentUser?.sendEmailVerification()
-                ?.addOnCompleteListener { sendEmailVerificationTask ->
-                    if (sendEmailVerificationTask.isSuccessful) {
-                        val currentUser = it.user
-                        if (currentUser != null) {
-                            val metadata = currentUser.metadata
-                            if (metadata != null) {
-                                val user = com.asnova.firebase.model.User(
-                                    uid = currentUser.uid,
-                                    isAnonymous = currentUser.isAnonymous,
-                                    photoUrl = currentUser.photoUrl.toString(),
-                                    displayName = username,
-                                    email = currentUser.email.toString(),
-                                    isEmailVerified = currentUser.isEmailVerified,
-                                    phoneNumber = currentUser.phoneNumber.toString(),
-                                    creationTimestamp = Timestamp(Date(metadata.creationTimestamp)),
-                                    lastSignInTimestamp = Timestamp(Date(metadata.lastSignInTimestamp)),
-                                    favorites = emptyList()
-                                )
-                                _databaseReference.document(currentUser.uid).set(user)
-                                    .addOnCompleteListener {
-                                        if (it.isSuccessful) {
-                                            pullRequest(callback = { user ->
-                                                callback(Resource.Success(user.data))
-                                            })
-                                        }
-                                    }
-                            }
-                        }
-                    }
-                }
-        }.addOnCompleteListener {
-        }.addOnFailureListener {
-        }
-    }
-
-    override fun signInUserWithEmailAndPassword(
-        email: String,
-        password: String,
-        callback: (Resource<User?>) -> Unit
-    ) {
-        _auth.signInWithEmailAndPassword(email, password).addOnSuccessListener { task ->
-            val user = task.user
-            if (user != null) {
-                pullRequest(callback = {
-                    callback(it)
-                })
-            }
-        }.addOnFailureListener {
-        }
-    }
-
     override fun signOutUser() {
+        Log.e("user_repository_info", "on signOutUser")
+        Log.e("user_repository_info", "current user was ${_auth.currentUser?.email}")
         _auth.signOut()
+        Log.e("user_repository_info", "current user after logOut ${_auth.currentUser}")
+        Log.e("user_repository_info", "current user email after logOut ${_auth.currentUser?.email.toString()}")
+
     }
 
     override fun isAuthedUser(callback: (Resource<Boolean>) -> Unit) {
@@ -115,21 +62,6 @@ class UserRepositoryImpl @Inject constructor() : UserRepository {
                 }
             }.addOnFailureListener { exception ->
                 callback(Resource.Error(exception.message.toString()))
-            }
-        }
-    }
-
-    override fun addNewsItemToFavorites(id: String, callback: (Resource<Boolean>) -> Unit) {
-        pullRequest {
-            val user = it.data
-            if (user != null) {
-                _databaseReference.document(user.uid).update("favorites", FieldValue.arrayUnion(id))
-                    .addOnCompleteListener { task ->
-                        if (task.isSuccessful)
-                            callback(Resource.Success(true))
-                        if (task.isCanceled)
-                            callback(Resource.Success(false))
-                    }
             }
         }
     }

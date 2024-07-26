@@ -10,8 +10,6 @@ import com.asnova.domain.repository.storage.ScheduleStateRepository
 import com.asnova.domain.repository.storage.ThemeSettingRepository
 import com.asnova.domain.usecase.AddNewLessonUseCase
 import com.asnova.domain.usecase.AddNewsArticleUseCase
-import com.asnova.domain.usecase.AddNewsItemToFavoritesUseCase
-import com.asnova.domain.usecase.CreateUserWithEmailAndPasswordUseCase
 import com.asnova.domain.usecase.GetAllFavoritesUseCase
 import com.asnova.domain.usecase.GetAsnovaNewsUseCase
 import com.asnova.domain.usecase.GetIsAuthedUserUseCase
@@ -32,7 +30,6 @@ import com.asnova.domain.usecase.SaveLanguageSettingUseCase
 import com.asnova.domain.usecase.SaveNotificationsSettingUseCase
 import com.asnova.domain.usecase.SaveScheduleStateUseCase
 import com.asnova.domain.usecase.SaveThemeSettingUseCase
-import com.asnova.domain.usecase.SignInUserWithEmailAndPasswordUseCase
 import com.asnova.domain.usecase.SignOutUserUseCase
 import dagger.Module
 import dagger.Provides
@@ -47,13 +44,6 @@ class DomainModule {
         repository: NewsRepository
     ): AddNewsArticleUseCase {
         return AddNewsArticleUseCase(repository)
-    }
-
-    @Provides
-    fun provideCreateUserWithEmailAndPasswordUseCase(
-        repository: UserRepository
-    ): CreateUserWithEmailAndPasswordUseCase {
-        return CreateUserWithEmailAndPasswordUseCase(repository)
     }
 
     @Provides
@@ -169,13 +159,6 @@ class DomainModule {
     }
 
     @Provides
-    fun provideSignInUserWithEmailAndPasswordUseCase(
-        userRepository: UserRepository
-    ): SignInUserWithEmailAndPasswordUseCase {
-        return SignInUserWithEmailAndPasswordUseCase(userRepository)
-    }
-
-    @Provides
     fun provideSignOutUserUseCase(
         userRepository: UserRepository
     ): SignOutUserUseCase {
@@ -208,13 +191,6 @@ class DomainModule {
         scheduleRepository: ScheduleRepository
     ): AddNewLessonUseCase {
         return AddNewLessonUseCase(scheduleRepository)
-    }
-
-    @Provides
-    fun provideAddNewsItemToFavoritesUseCase(
-        userRepository: UserRepository
-    ): AddNewsItemToFavoritesUseCase {
-        return AddNewsItemToFavoritesUseCase(userRepository)
     }
 
     @Provides

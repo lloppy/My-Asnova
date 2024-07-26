@@ -5,9 +5,6 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.asnova.domain.usecase.GetAsnovaNewsUseCase
@@ -17,19 +14,21 @@ import com.asnova.domain.usecase.OnDownloadMoreSafetyNewsUseCase
 import com.asnova.model.Resource
 import com.asnova.model.WallItem
 import com.example.asnova.screen.log_in.services.GoogleAuthUiClient
-import com.example.asnova.screen.main.profile_settings.ProfileScreenViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class FeedScreenViewModel @Inject constructor(
+    private val getAsnovaNewsUseCase: GetAsnovaNewsUseCase,
     private val getSafetyNewsUseCase: GetSafetyNewsUseCase,
+
     private val onDownloadMoreAsnovaNewsUseCase: OnDownloadMoreAsnovaNewsUseCase,
     private val onDownloadMoreSafetyNewsUseCase: OnDownloadMoreSafetyNewsUseCase,
-    private val getAsnovaNewsUseCase: GetAsnovaNewsUseCase,
+
     private val googleAuthUiClient: GoogleAuthUiClient
 ) : ViewModel() {
+
     private val _state = mutableStateOf(FeedState())
     val state: State<FeedState> = _state
 
@@ -94,6 +93,7 @@ class FeedScreenViewModel @Inject constructor(
                     handleDownloadMoreResult(result, currentList)
                 }
             )
+
             "Охрана труда" -> onDownloadMoreSafetyNewsUseCase(
                 offset = currentList.size,
                 callback = { result ->
@@ -103,7 +103,10 @@ class FeedScreenViewModel @Inject constructor(
         }
     }
 
-    private fun handleDownloadMoreResult(result: Resource<List<WallItem>>, currentList: MutableList<WallItem>) {
+    private fun handleDownloadMoreResult(
+        result: Resource<List<WallItem>>,
+        currentList: MutableList<WallItem>
+    ) {
         when (result) {
             is Resource.Success -> {
                 val loadedData = result.data ?: emptyList()
@@ -126,6 +129,7 @@ class FeedScreenViewModel @Inject constructor(
             }
         }
     }
+
     fun pullToRefresh() = viewModelScope.launch {
         loadNewsForSegment(selectedSegment)
     }
