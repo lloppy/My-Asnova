@@ -54,8 +54,7 @@ fun FeedItemView(
     Column(
         modifier = Modifier
             .height(210.dp)
-            .padding(horizontal = 18.dp)
-            .padding(vertical = 14.dp)
+            .padding(horizontal = 18.dp, vertical = 14.dp)
             .clip(RoundedCornerShape(8.dp))
             .clickable(
                 onClick = {
@@ -76,11 +75,11 @@ fun FeedItemView(
             verticalAlignment = Alignment.Top
         ) {
             FeedItemImage(
+                newsItem = feedItem,
+                width = 200.dp,
                 modifier = Modifier
                     .weight(1.1f)
-                    .fillMaxHeight(),
-                newsItem = feedItem,
-                width = 200.dp
+                    .fillMaxHeight()
             )
             Column(
                 modifier = Modifier
@@ -100,10 +99,8 @@ fun FeedItemView(
                         style = MaterialTheme.typography.bodyLarge,
                     )
                     Spacer(modifier = Modifier.height(12.dp))
-
                     HashtagsRow(feedItem)
                 }
-
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
                     text = formatRelativeDate(feedItem.date) + "  ·  ${formatTime(feedItem.date)}",
@@ -204,9 +201,7 @@ private fun formatRelativeDate(date: Date): String {
     val now = LocalDate.now()
     val givenDate = Instant.ofEpochMilli(date.time).atZone(ZoneId.systemDefault()).toLocalDate()
 
-    val daysBetween = ChronoUnit.DAYS.between(givenDate, now).toInt()
-
-    return when (daysBetween) {
+    return when (val daysBetween = ChronoUnit.DAYS.between(givenDate, now).toInt()) {
         0 -> "Сегодня"
         1 -> "Вчера"
         2 -> "Позавчера"

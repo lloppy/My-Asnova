@@ -1,14 +1,18 @@
 package com.example.asnova.screen.log_in
 
+import android.app.Activity
 import android.content.Intent
 import android.content.IntentSender
 import android.content.SharedPreferences
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.asnova.domain.usecase.CreateUserWithPhoneUseCase
 import com.asnova.domain.usecase.GetUserDataUseCase
 import com.asnova.domain.usecase.SignInUseCase
 import com.asnova.domain.usecase.SignInWithIntentUseCase
+import com.asnova.domain.usecase.SignInWithOtpUseCase
+import com.asnova.model.Resource
 import com.asnova.model.SignInResult
 import com.asnova.storage.KEY_USER_SETTING
 import com.example.asnova.data.UserManager
@@ -25,7 +29,10 @@ class LogInViewModel @Inject constructor(
     private val getUserDataUseCase: GetUserDataUseCase,
 
     private val signInUseCase: SignInUseCase,
-    private val signInWithIntentUseCase: SignInWithIntentUseCase
+    private val signInWithIntentUseCase: SignInWithIntentUseCase,
+
+    private val signInWithOtpUseCase: SignInWithOtpUseCase,
+    private val createUserWithPhoneUseCase: CreateUserWithPhoneUseCase
 
 ) : ViewModel() {
     // Справочник методов: https://id.vk.com/about/business/go/docs/ru/vkid/latest/vk-id/connection/api-integration/api-description#Dostup-prilozheniya-k-dannym-polzovatelya
@@ -37,6 +44,27 @@ class LogInViewModel @Inject constructor(
     init {
         checkIfUserIsSignedIn()
         getUserStatusFromSharedPref()
+    }
+
+    fun signInWithOtp(otp: String, verificationId: String) {
+        signInWithOtpUseCase(otp, verificationId) { resource ->
+            val (user, errorMessage) = when (resource) {
+                is Resource.Success -> {
+                    val signInResult = resource.data
+                    val user = signInResult?.data
+                    Pair(user, null)
+                }
+
+                is Resource.Error -> {
+                    Pair(null, resource.message)
+                }
+
+                else -> {
+                    Pair(null, "Unknown error")
+                }
+            }
+            onSignInResult(SignInResult(data = user, errorMessage = errorMessage))
+        }
     }
 
     private fun getUserStatusFromSharedPref() {
@@ -81,5 +109,11 @@ class LogInViewModel @Inject constructor(
 
     suspend fun signIn(): IntentSender? {
         return signInUseCase.invoke()
+    }
+
+    fun createUserWithPhone(mobile: String) {
+        createUserWithPhoneUseCase(mobile) {
+
+        }
     }
 }

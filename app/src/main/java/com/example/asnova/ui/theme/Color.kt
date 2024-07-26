@@ -10,9 +10,8 @@ val Purple40 = Color(0xFF6650a4)
 val PurpleGrey40 = Color(0xFF625b71)
 val Pink40 = Color(0xFF7D5260)
 
-
 val orangeMaterial = Color(0xFFF5982A)
-val greenAsnova = Color(0xFF4dbd38)
+val greenAsnova = Color(0xFF4dbd38) // 4dbd38
 val lightGreenAsnova = Color(0x1A4DBD38)
 val grayAsnova = Color(0xFFf0f2f4) // f2f3f4
 val backgroundAsnova = Color(0xFFf6f8fa) // f6f8fa

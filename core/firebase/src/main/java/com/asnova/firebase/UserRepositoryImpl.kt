@@ -1,5 +1,6 @@
 package com.asnova.firebase
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.IntentSender
@@ -10,13 +11,19 @@ import com.asnova.model.User
 import com.google.android.gms.auth.api.identity.BeginSignInRequest
 import com.google.android.gms.auth.api.identity.SignInClient
 import com.google.firebase.Firebase
+import com.google.firebase.FirebaseException
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
+import com.google.firebase.auth.PhoneAuthCredential
+import com.google.firebase.auth.PhoneAuthOptions
+import com.google.firebase.auth.PhoneAuthProvider
 import com.google.firebase.auth.auth
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.tasks.await
 import java.util.concurrent.CancellationException
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class UserRepositoryImpl @Inject constructor(
@@ -26,6 +33,7 @@ class UserRepositoryImpl @Inject constructor(
     private val _auth: FirebaseAuth = Firebase.auth
     private val _database: FirebaseFirestore = FirebaseFirestore.getInstance()
     private val _databaseReference: CollectionReference = _database.collection("users")
+    private lateinit var onVerificationCode: String
 
     override fun signOut() {
         _auth.signOut()
@@ -150,5 +158,64 @@ class UserRepositoryImpl @Inject constructor(
                 }
             }
         }
+    }
+
+    override fun signInWithOtp(otp: String, verificationId: String, callback: (Resource<SignInResult>) -> Unit) {
+        val credential = PhoneAuthProvider.getCredential(verificationId, otp)
+        _auth.signInWithCredential(credential)
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    val user = task.result?.user
+                    val result = SignInResult(
+                        data = user?.run {
+                            User(
+                                userId = uid,
+                                username = displayName,
+                                email = email,
+                                profilePictureUrl = photoUrl?.toString()
+                            )
+                        },
+                        errorMessage = null
+                    )
+                    callback(Resource.Success(result))
+                } else {
+                    callback(Resource.Error(task.exception?.message ?: "Unknown error"))
+                }
+            }
+    }
+
+    override fun createUserWithPhone(phone: String, callback: (Resource<String>) -> Unit) {
+        val activity = context as Activity
+        val options = PhoneAuthOptions.newBuilder(_auth)
+            .setPhoneNumber(phone)
+            .setTimeout(60L, TimeUnit.SECONDS)
+            .setActivity(activity)
+            .setCallbacks(object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
+                override fun onVerificationCompleted(credential: PhoneAuthCredential) {
+                    // Auto-retrieval scenario
+                    _auth.signInWithCredential(credential)
+                        .addOnCompleteListener { task ->
+                            if (task.isSuccessful) {
+                                callback(Resource.Success("Verification completed successfully"))
+                            } else {
+                                callback(Resource.Error(task.exception?.message ?: "Unknown error"))
+                            }
+                        }
+                }
+
+                override fun onVerificationFailed(e: FirebaseException) {
+                    callback(Resource.Error(e.message ?: "Verification failed"))
+                }
+
+                override fun onCodeSent(
+                    verificationId: String,
+                    token: PhoneAuthProvider.ForceResendingToken
+                ) {
+                    callback(Resource.Success(verificationId))
+                }
+            })
+            .build()
+
+        PhoneAuthProvider.verifyPhoneNumber(options)
     }
 }

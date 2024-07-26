@@ -11,6 +11,7 @@ import com.asnova.domain.repository.storage.ScheduleStateRepository
 import com.asnova.domain.repository.storage.ThemeSettingRepository
 import com.asnova.domain.usecase.AddNewLessonUseCase
 import com.asnova.domain.usecase.AddNewsArticleUseCase
+import com.asnova.domain.usecase.CreateUserWithPhoneUseCase
 import com.asnova.domain.usecase.GetAllFavoritesUseCase
 import com.asnova.domain.usecase.GetAsnovaNewsUseCase
 import com.asnova.domain.usecase.GetIsAuthedUserUseCase
@@ -34,6 +35,7 @@ import com.asnova.domain.usecase.SaveScheduleStateUseCase
 import com.asnova.domain.usecase.SaveThemeSettingUseCase
 import com.asnova.domain.usecase.SignInUseCase
 import com.asnova.domain.usecase.SignInWithIntentUseCase
+import com.asnova.domain.usecase.SignInWithOtpUseCase
 import com.asnova.domain.usecase.SignOutUserUseCase
 import dagger.Module
 import dagger.Provides
@@ -63,6 +65,20 @@ class DomainModule {
         userRepository: UserRepository
     ): SignInWithIntentUseCase {
         return SignInWithIntentUseCase(userRepository)
+    }
+
+    @Provides
+    fun provideCreateUserWithPhoneUseCase(
+        userRepository: UserRepository
+    ): CreateUserWithPhoneUseCase {
+        return CreateUserWithPhoneUseCase(userRepository)
+    }
+
+    @Provides
+    fun provideSignInWithOtpUseCase(
+        userRepository: UserRepository
+    ): SignInWithOtpUseCase {
+        return SignInWithOtpUseCase(userRepository)
     }
 
     @Provides

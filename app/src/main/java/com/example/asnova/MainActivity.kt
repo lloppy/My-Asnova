@@ -18,6 +18,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.asnova.navigation.Screen
 import com.example.asnova.screen.log_in.LogInViewModel
+import com.example.asnova.screen.log_in.OtpScreen
 import com.example.asnova.screen.log_in.SignInScreen
 import com.example.asnova.screen.main.MainScreen
 import com.example.asnova.screen.splash.SplashScreen
@@ -91,6 +92,9 @@ class MainActivity : ComponentActivity() {
                                         inclusive = true
                                     }
                                 }
+                            },
+                            goOtp = {
+                                navController.navigate(route = Screen.Otp.route)
                             }
                         )
                     }
@@ -103,6 +107,9 @@ class MainActivity : ComponentActivity() {
                                 navController.navigate(screen, params)
                             }
                         )
+                    }
+                    composable(Screen.Otp.route) {
+                        OtpScreen(state = state)
                     }
                 }
             }

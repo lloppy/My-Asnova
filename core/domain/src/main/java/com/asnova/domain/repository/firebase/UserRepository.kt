@@ -15,5 +15,7 @@ interface UserRepository {
 
     suspend fun signIn(): IntentSender?
     suspend fun signInWithIntent(intent: Intent): SignInResult
+    fun signInWithOtp(otp: String, verificationId: String, callback: (Resource<SignInResult>) -> Unit)
+    fun createUserWithPhone(phone: String, callback: (Resource<String>) -> Unit)
     fun signOut()
 }

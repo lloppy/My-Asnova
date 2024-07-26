@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
@@ -35,6 +36,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.asnova.R
+import com.example.asnova.ui.theme.greenAsnova
 import com.vk.id.multibranding.OAuthListWidget
 import com.vk.id.onetap.compose.onetap.sheet.OneTapBottomSheet
 import com.vk.id.onetap.compose.onetap.sheet.rememberOneTapBottomSheetState
@@ -43,7 +45,8 @@ import com.vk.id.onetap.compose.onetap.sheet.rememberOneTapBottomSheetState
 fun SignInScreen(
     state: SignInState,
     onSignInClick: () -> Unit,
-    goProfile: () -> Unit
+    goProfile: () -> Unit,
+    goOtp: () -> Unit
 ) {
     val context = LocalContext.current
     val bottomSheetState = rememberOneTapBottomSheetState()
@@ -129,6 +132,15 @@ fun SignInScreen(
                     },
                     serviceName = stringResource(R.string.service_name)
                 )
+                Spacer(modifier = Modifier.height(16.dp))
+
+                TextButton(onClick = { goOtp.invoke() }) {
+                    Text(
+                        text = stringResource(R.string.login_using_phone),
+                        color = greenAsnova,
+                        fontSize = 12.sp
+                    )
+                }
                 Spacer(modifier = Modifier.height(16.dp))
             }
         }
