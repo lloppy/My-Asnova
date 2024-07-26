@@ -25,10 +25,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
@@ -49,6 +49,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow.Companion.Ellipsis
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Density
@@ -68,7 +69,7 @@ private val TRACK_COLOR = grayAsnova
 private val PRESSED_TRACK_PADDING = 1.dp
 
 /** Padding inside individual segments. */
-private val SEGMENT_PADDING = 14.dp
+private val SEGMENT_PADDING = 6.dp // 14
 private val TEXT_SIZE = 12.sp
 
 /** Alpha to use to indicate pressed state when unselected segments are pressed. */
@@ -151,7 +152,14 @@ fun SegmentText(text: String, isSelected: Boolean) {
     val notSelectedColor = Color.Black
     val currentColor = if (isSelected) selectedColor else notSelectedColor
 
-    Text(text, maxLines = 1, overflow = Ellipsis, color = currentColor, fontSize = TEXT_SIZE)
+    Text(
+        text = text,
+        maxLines = 2,
+        overflow = Ellipsis,
+        color = currentColor,
+        fontSize = TEXT_SIZE,
+        textAlign = TextAlign.Center
+    )
 }
 
 /**
@@ -213,6 +221,7 @@ private fun <T> Segments(
     ) {
         Row(
             horizontalArrangement = spacedBy(TRACK_PADDING),
+            verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .fillMaxWidth()
                 .selectableGroup()

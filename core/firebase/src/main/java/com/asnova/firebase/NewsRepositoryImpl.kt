@@ -32,7 +32,6 @@ class NewsRepositoryImpl @Inject constructor(
 ) : NewsRepository {
     // https://dev.vk.com/ru/method/groups
     private val accessToken = "2c7485642c7485642c748564202f6dcfcc22c742c7485644afaf2742c0714f09e3fa61a"
-    val defaultImageUrl = "https://sun9-78.userapi.com/impg/Ir5UOUAUw9qczne8EVGjGw_wWvEK_Dsv_awN9Q/qguEM4hhSLA.jpg?size=1953x989&quality=96&sign=86ca45843194e357c1ea8ba559dc6117&type=album"
 
     private val _database: FirebaseFirestore = FirebaseFirestore.getInstance()
     private val _databaseReference: CollectionReference = _database.collection("news")
@@ -237,10 +236,10 @@ class NewsRepositoryImpl @Inject constructor(
                                     id = it.photo.id,
                                     height = it.photo.sizes.filter { resized -> resized.type == "r" }.getOrNull(0)?.height ?: 0,
                                     width = it.photo.sizes.filter { resized -> resized.type == "r" }.getOrNull(0)?.width ?: 0,
-                                    url = it.photo.sizes.filter { resized -> resized.type == "r" }.getOrNull(0)?.url ?: defaultImageUrl
+                                    url = it.photo.sizes.filter { resized -> resized.type == "r" }.getOrNull(0)?.url ?: DEFAULT_IMAGE_RESOURCE_URL
                                 )
                             }.ifEmpty {
-                                listOf(WallImageItem(0, 0, 0, defaultImageUrl))
+                                listOf(WallImageItem(0, 0, 0, DEFAULT_IMAGE_RESOURCE_URL))
                             },
                             hashtags = extractHashtags(response.text),
                             postUrl = "https://vk.com/$baseUrl?w=wall${response.ownerId}_${response.id}"
@@ -281,3 +280,4 @@ private fun removeHeadlineAndHashtags(text: String): String {
     return textWithoutHashtags
 }
 
+const val DEFAULT_IMAGE_RESOURCE_URL = "resource://ic_asnova_default_news"

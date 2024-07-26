@@ -1,5 +1,6 @@
 package com.example.asnova.screen.main.feed.components
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
@@ -9,7 +10,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -27,7 +27,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -159,14 +161,35 @@ fun FeedItemImage(
                 .background(Color.Green)
         )
     } else {
-        AsyncImage(
-            model = newsItem.images.first().url,
-            contentDescription = "news image",
-            contentScale = ContentScale.Crop,
-            modifier = modifier
-                .height(width).width(width)
-                .clip(RoundedCornerShape(8.dp))
-        )
+        val context = LocalContext.current
+        val imageUrl = newsItem.images.first().url
+
+        if (imageUrl.startsWith("resource://")) {
+            val resourceId = context.resources.getIdentifier(
+                imageUrl.removePrefix("resource://"),
+                "drawable",
+                context.packageName
+            )
+            Image(
+                painter = painterResource(id = resourceId),
+                contentDescription = "news image",
+                contentScale = ContentScale.Crop,
+                modifier = modifier
+                    .height(width)
+                    .width(width)
+                    .clip(RoundedCornerShape(8.dp))
+            )
+        } else {
+            AsyncImage(
+                model = imageUrl,
+                contentDescription = "news image",
+                contentScale = ContentScale.Crop,
+                modifier = modifier
+                    .height(width)
+                    .width(width)
+                    .clip(RoundedCornerShape(8.dp))
+            )
+        }
     }
 }
 

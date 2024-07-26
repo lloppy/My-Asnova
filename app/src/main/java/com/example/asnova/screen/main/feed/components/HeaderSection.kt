@@ -58,13 +58,17 @@ fun HeaderSection(
     ) {
         NewsHeader(userData = userData)
 
-        Column(modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 16.dp)) {
+        Column(
+            modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
+        ) {
             SegmentedControl(
                 segments = threeSegments,
                 selectedSegment = selectedSegment,
                 onSegmentSelected = onSegmentSelected,
-                modifier = Modifier.height(50.dp)
-            ) { SegmentText(it, selectedSegment == it) }
+                modifier = Modifier.height(52.dp)
+            ) {
+                SegmentText(it, selectedSegment == it)
+            }
         }
     }
 }
