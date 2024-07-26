@@ -12,7 +12,6 @@ import com.example.asnova.R
 import com.example.asnova.navigation.BottomNavigationBar
 import com.example.asnova.navigation.Screen
 import com.example.asnova.navigation.SetupNavGraph
-import com.example.asnova.screen.log_in.services.GoogleAuthUiClient
 import com.example.asnova.utils.navigation.Router
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -21,7 +20,7 @@ fun MainScreen(
     context: Context,
     lifecycleScope: LifecycleCoroutineScope,
     lifecycleOwner: LifecycleOwner,
-    router: Router,
+    router: Router
 ) {
     val hideList = setOf(
         Screen.LogIn.route,

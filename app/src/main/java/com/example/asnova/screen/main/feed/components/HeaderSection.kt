@@ -3,8 +3,6 @@ package com.example.asnova.screen.main.feed.components
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -14,20 +12,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.paint
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import com.example.asnova.R
-import com.example.asnova.data.UserData
+import com.asnova.model.User
 import com.example.asnova.navigation.bottomBarHeight
-import com.example.asnova.ui.theme.darkAsnova
-import com.google.firebase.annotations.concurrent.Background
 
 @Composable
 fun HeaderSection(
-    userData: UserData?,
+    userData: User?,
     threeSegments: List<String>,
     selectedSegment: String,
     pictureBackgroundId: Int,
@@ -36,13 +30,15 @@ fun HeaderSection(
     val configuration = LocalConfiguration.current
     val screenHeight = configuration.screenHeightDp.dp
 
-    val linear = Brush.linearGradient(listOf(
-        Color.Black.copy(alpha = 1f),
-        Color.Black.copy(alpha = 0.8f),
-        Color.Black.copy(alpha = 0.5f),
-        Color.Black.copy(alpha = 0.3f),
-        Color.Transparent
-    ))
+    val linear = Brush.linearGradient(
+        listOf(
+            Color.Black.copy(alpha = 1f),
+            Color.Black.copy(alpha = 0.8f),
+            Color.Black.copy(alpha = 0.5f),
+            Color.Black.copy(alpha = 0.3f),
+            Color.Transparent
+        )
+    )
 
     Column(
         modifier = Modifier
@@ -52,7 +48,11 @@ fun HeaderSection(
                 contentScale = ContentScale.Crop
             )
             .background(linear)
-            .height(screenHeight.minus(bottomBarHeight).minus(FeedItemHeight)),
+            .height(
+                screenHeight
+                    .minus(bottomBarHeight)
+                    .minus(FeedItemHeight)
+            ),
         verticalArrangement = Arrangement.SpaceBetween,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {

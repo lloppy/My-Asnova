@@ -1,5 +1,6 @@
 package com.example.asnova.app.di
 
+import android.content.Intent
 import com.asnova.domain.repository.firebase.NewsRepository
 import com.asnova.domain.repository.firebase.ScheduleRepository
 import com.asnova.domain.repository.firebase.UserRepository
@@ -31,11 +32,14 @@ import com.asnova.domain.usecase.SaveLanguageSettingUseCase
 import com.asnova.domain.usecase.SaveNotificationsSettingUseCase
 import com.asnova.domain.usecase.SaveScheduleStateUseCase
 import com.asnova.domain.usecase.SaveThemeSettingUseCase
+import com.asnova.domain.usecase.SignInUseCase
+import com.asnova.domain.usecase.SignInWithIntentUseCase
 import com.asnova.domain.usecase.SignOutUserUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ViewModelComponent
+import javax.inject.Singleton
 
 @Module
 @InstallIn(ViewModelComponent::class)
@@ -52,6 +56,20 @@ class DomainModule {
         userRepository: UserRepository
     ): GetUserDataUseCase {
         return GetUserDataUseCase(userRepository)
+    }
+
+    @Provides
+    fun provideSignInWithIntentUseCase(
+        userRepository: UserRepository
+    ): SignInWithIntentUseCase {
+        return SignInWithIntentUseCase(userRepository)
+    }
+
+    @Provides
+    fun provideSignInUseCase(
+        userRepository: UserRepository
+    ): SignInUseCase {
+        return SignInUseCase(userRepository)
     }
 
     @Provides

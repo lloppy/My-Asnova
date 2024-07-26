@@ -1,6 +1,5 @@
 package com.example.asnova.screen.main.feed.components
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -25,15 +24,15 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import com.asnova.model.User
 import com.example.asnova.R
-import com.example.asnova.data.UserData
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
 @Composable
 fun NewsHeader(
-    userData: UserData?
+    userData: User?
 ) {
     Column(
         modifier = Modifier

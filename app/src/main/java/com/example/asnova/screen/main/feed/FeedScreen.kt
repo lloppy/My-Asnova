@@ -4,13 +4,11 @@ import android.content.Intent
 import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.ExperimentalMaterialApi
@@ -20,6 +18,7 @@ import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -33,14 +32,12 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.LifecycleOwner
 import androidx.navigation.NavController
-import com.example.asnova.data.UserData
+import com.asnova.model.Resource
+import com.asnova.model.User
 import com.example.asnova.navigation.bottomBarHeight
 import com.example.asnova.screen.main.feed.components.FeedItemHeight
 import com.example.asnova.screen.main.feed.components.FeedItemView
 import com.example.asnova.screen.main.feed.components.HeaderSection
-import com.example.asnova.screen.main.feed.components.NewsHeader
-import com.example.asnova.screen.main.feed.components.SegmentText
-import com.example.asnova.screen.main.feed.components.SegmentedControl
 import com.example.asnova.ui.theme.backgroundAsnova
 import com.example.asnova.utils.SkeletonScreen
 import com.example.asnova.utils.navigation.Router
@@ -65,7 +62,23 @@ fun FeedScreen(
     var selectedThreeSegment by remember { mutableStateOf(threeSegments[1]) }
 
     val context = LocalContext.current
-    val userData = viewModel.getGoogleAuthUiClient().getSignedInUser()
+    var userData by remember { mutableStateOf<User?>(null) }
+
+    LaunchedEffect(Unit) {
+        viewModel.getUserData { resource ->
+            when (resource) {
+                is Resource.Success -> {
+                    userData = resource.data
+                }
+
+                is Resource.Error -> {
+                    // Handle error
+                }
+
+                else -> {}
+            }
+        }
+    }
 
     Box(
         modifier = Modifier
@@ -125,7 +138,8 @@ fun FeedScreen(
                         feedItem = state.news[index],
                         index = index
                     ) {
-                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(state.news[index].postUrl))
+                        val intent =
+                            Intent(Intent.ACTION_VIEW, Uri.parse(state.news[index].postUrl))
                         context.startActivity(intent)
                     }
 

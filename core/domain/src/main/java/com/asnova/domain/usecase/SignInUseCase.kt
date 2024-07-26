@@ -1,11 +1,13 @@
 package com.asnova.domain.usecase
 
+import android.content.IntentSender
 import com.asnova.domain.repository.firebase.UserRepository
 
-class SignOutUserUseCase(
+class SignInUseCase(
     private val userRepository: UserRepository
 ) {
-    operator fun invoke() {
-        return userRepository.signOut()
+    suspend operator fun invoke(): IntentSender?
+    {
+        return userRepository.signIn()
     }
 }

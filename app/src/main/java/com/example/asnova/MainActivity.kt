@@ -1,10 +1,7 @@
 package com.example.asnova
 
 import android.annotation.SuppressLint
-import android.content.Context
-import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
@@ -15,30 +12,21 @@ import androidx.compose.runtime.getValue
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.asnova.storage.KEY_USER_SETTING
-import com.asnova.storage.SHARED_PREFS_USER_SETTING
-import com.example.asnova.data.UserManager
 import com.example.asnova.navigation.Screen
 import com.example.asnova.screen.log_in.LogInViewModel
-import com.example.asnova.screen.log_in.SignInResult
 import com.example.asnova.screen.log_in.SignInScreen
-import com.example.asnova.screen.log_in.services.GoogleAuthUiClient
 import com.example.asnova.screen.main.MainScreen
 import com.example.asnova.screen.splash.SplashScreen
 import com.example.asnova.ui.theme.AsnovaTheme
-import com.example.asnova.utils.LOG_IN
 import com.example.asnova.utils.navigation.createExternalRouter
 import com.example.asnova.utils.navigation.navigate
-import com.example.asnova.utils.toastMessage
 import com.vk.id.VKID
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {

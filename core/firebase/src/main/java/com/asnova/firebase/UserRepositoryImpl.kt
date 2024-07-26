@@ -1,27 +1,34 @@
 package com.asnova.firebase
 
-import android.util.Log
+import android.content.Context
+import android.content.Intent
+import android.content.IntentSender
 import com.asnova.domain.repository.firebase.UserRepository
 import com.asnova.model.Resource
+import com.asnova.model.SignInResult
 import com.asnova.model.User
+import com.google.android.gms.auth.api.identity.BeginSignInRequest
+import com.google.android.gms.auth.api.identity.SignInClient
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.auth
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.tasks.await
+import java.util.concurrent.CancellationException
 import javax.inject.Inject
 
-class UserRepositoryImpl @Inject constructor() : UserRepository {
+class UserRepositoryImpl @Inject constructor(
+    private val context: Context,
+    private val oneTapClient: SignInClient
+) : UserRepository {
     private val _auth: FirebaseAuth = Firebase.auth
     private val _database: FirebaseFirestore = FirebaseFirestore.getInstance()
     private val _databaseReference: CollectionReference = _database.collection("users")
 
-    override fun signOutUser() {
-        Log.e("user_repository_info", "on signOutUser")
-        Log.e("user_repository_info", "current user was ${_auth.currentUser?.email}")
+    override fun signOut() {
         _auth.signOut()
-        Log.e("user_repository_info", "current user after logOut ${_auth.currentUser}")
-        Log.e("user_repository_info", "current user email after logOut ${_auth.currentUser?.email.toString()}")
     }
 
     override fun isAuthedUser(callback: (Resource<Boolean>) -> Unit) {
@@ -31,8 +38,6 @@ class UserRepositoryImpl @Inject constructor() : UserRepository {
     }
 
     override fun getUserData(callback: (Resource<User?>) -> Unit) {
-        Log.e("user_repository_info", "getUserDataUseCase")
-
         val user = _auth.currentUser?.let {
             User(
                 userId = it.uid,
@@ -41,9 +46,60 @@ class UserRepositoryImpl @Inject constructor() : UserRepository {
                 profilePictureUrl = it.photoUrl?.toString()
             )
         }
-        Log.e("user_repository_info", "user is ${user?.email}")
-
         callback(Resource.Success(user))
+    }
+
+    override suspend fun signIn(): IntentSender? {
+        val result = try {
+            oneTapClient.beginSignIn(
+                buildSignInRequest()
+            ).await()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            if (e is CancellationException) throw e
+            null
+        }
+        return result?.pendingIntent?.intentSender
+    }
+
+    private fun buildSignInRequest(): BeginSignInRequest {
+        return BeginSignInRequest.Builder()
+            .setGoogleIdTokenRequestOptions(
+                BeginSignInRequest.GoogleIdTokenRequestOptions.Builder()
+                    .setSupported(true)
+                    .setFilterByAuthorizedAccounts(false)
+                    .setServerClientId(context.getString(com.firebase.ui.auth.R.string.default_web_client_id))
+                    .build()
+            )
+            .setAutoSelectEnabled(true)
+            .build()
+    }
+
+    override suspend fun signInWithIntent(intent: Intent): SignInResult {
+        val credential = oneTapClient.getSignInCredentialFromIntent(intent)
+        val googleIdToken = credential.googleIdToken
+        val googleCredentials = GoogleAuthProvider.getCredential(googleIdToken, null)
+        return try {
+            val user = _auth.signInWithCredential(googleCredentials).await().user
+            SignInResult(
+                data = user?.run {
+                    User(
+                        userId = uid,
+                        username = displayName,
+                        email = email,
+                        profilePictureUrl = photoUrl?.toString()
+                    )
+                },
+                errorMessage = null
+            )
+        } catch (e: Exception) {
+            e.printStackTrace()
+            if (e is CancellationException) throw e
+            SignInResult(
+                data = null,
+                errorMessage = e.message
+            )
+        }
     }
 
     override fun pullRequest(callback: (Resource<User?>) -> Unit) {

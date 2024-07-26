@@ -6,9 +6,12 @@ import android.content.SharedPreferences
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.asnova.domain.usecase.GetUserDataUseCase
+import com.asnova.domain.usecase.SignInUseCase
+import com.asnova.domain.usecase.SignInWithIntentUseCase
+import com.asnova.model.SignInResult
 import com.asnova.storage.KEY_USER_SETTING
 import com.example.asnova.data.UserManager
-import com.example.asnova.screen.log_in.services.GoogleAuthUiClient
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -18,8 +21,11 @@ import javax.inject.Inject
 
 @HiltViewModel
 class LogInViewModel @Inject constructor(
-    private val googleAuthUiClient: GoogleAuthUiClient,
-    private val userSharedPreferences: SharedPreferences
+    private val userSharedPreferences: SharedPreferences,
+    private val getUserDataUseCase: GetUserDataUseCase,
+
+    private val signInUseCase: SignInUseCase,
+    private val signInWithIntentUseCase: SignInWithIntentUseCase
 
 ) : ViewModel() {
     // Справочник методов: https://id.vk.com/about/business/go/docs/ru/vkid/latest/vk-id/connection/api-integration/api-description#Dostup-prilozheniya-k-dannym-polzovatelya
@@ -45,8 +51,13 @@ class LogInViewModel @Inject constructor(
 
     private fun checkIfUserIsSignedIn() {
         viewModelScope.launch {
-            googleAuthUiClient.getSignedInUser()?.let { user ->
-                onSignInResult(SignInResult(data = user, errorMessage = null))
+            getUserDataUseCase.invoke { resource ->
+                val user = resource.data
+                if (user != null) {
+                    onSignInResult(SignInResult(data = user, errorMessage = null))
+                } else {
+                    onSignInResult(SignInResult(data = null, errorMessage = "User not signed in"))
+                }
             }
         }
     }
@@ -65,10 +76,10 @@ class LogInViewModel @Inject constructor(
     }
 
     suspend fun signInWithIntent(intent: Intent): SignInResult {
-        return googleAuthUiClient.signInWithIntent(intent)
+        return signInWithIntentUseCase.invoke(intent)
     }
 
     suspend fun signIn(): IntentSender? {
-        return googleAuthUiClient.signIn()
+        return signInUseCase.invoke()
     }
 }
