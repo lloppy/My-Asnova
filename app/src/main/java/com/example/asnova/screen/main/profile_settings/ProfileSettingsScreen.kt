@@ -23,6 +23,11 @@ import androidx.compose.material3.MediumTopAppBar
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -41,8 +46,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.LifecycleCoroutineScope
 import androidx.lifecycle.LifecycleOwner
 import coil.compose.AsyncImage
+import com.asnova.model.Resource
+import com.asnova.model.User
 import com.example.asnova.R
-import com.example.asnova.data.UserData
 import com.example.asnova.navigation.bottomBarHeight
 import com.example.asnova.utils.navigation.Router
 import kotlinx.coroutines.launch
@@ -57,6 +63,22 @@ fun ProfileSettingsScreen(
     onNavigateToChats: () -> Unit,
     viewModel: ProfileScreenViewModel = hiltViewModel()
 ) {
+    var userData by remember { mutableStateOf<User?>(null) }
+
+    LaunchedEffect(Unit) {
+        viewModel.getUserData { resource ->
+            when (resource) {
+                is Resource.Success -> {
+                    userData = resource.data
+                }
+                is Resource.Error -> {
+                    // Handle error
+                }
+                else -> {}
+            }
+        }
+    }
+
     Scaffold(
         topBar = {
             MediumTopAppBar(
@@ -85,7 +107,7 @@ fun ProfileSettingsScreen(
     ) { padding ->
         LogInContent(
             padding = padding,
-            userData = viewModel.getGoogleAuthUiClient().getSignedInUser(),
+            userData = userData,
             onSignOut = {
                 lifecycleScope.launch {
                     viewModel.signOut()
@@ -98,7 +120,7 @@ fun ProfileSettingsScreen(
 @Composable
 fun LogInContent(
     padding: PaddingValues,
-    userData: UserData?,
+    userData: User?,
     onSignOut: () -> Unit
 ) {
     Box(
@@ -125,7 +147,7 @@ fun LogInContent(
                 }
                 if (userData?.username != null) {
                     Text(
-                        text = userData.username,
+                        text = userData.username!!,
                         textAlign = TextAlign.Center,
                         fontSize = 20.sp,
                         fontWeight = FontWeight.SemiBold

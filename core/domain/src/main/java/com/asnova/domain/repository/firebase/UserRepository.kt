@@ -9,4 +9,5 @@ interface UserRepository {
 
     fun signOutUser()
     fun isAuthedUser(callback: (Resource<Boolean>) -> Unit)
+    fun getUserData(callback: (Resource<User?>) -> Unit)
 }

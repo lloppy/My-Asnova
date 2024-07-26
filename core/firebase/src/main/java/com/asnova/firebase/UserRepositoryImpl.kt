@@ -5,13 +5,10 @@ import com.asnova.domain.repository.firebase.UserRepository
 import com.asnova.model.Resource
 import com.asnova.model.User
 import com.google.firebase.Firebase
-import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
 import com.google.firebase.firestore.CollectionReference
-import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
-import java.util.Date
 import javax.inject.Inject
 
 class UserRepositoryImpl @Inject constructor() : UserRepository {
@@ -25,13 +22,28 @@ class UserRepositoryImpl @Inject constructor() : UserRepository {
         _auth.signOut()
         Log.e("user_repository_info", "current user after logOut ${_auth.currentUser}")
         Log.e("user_repository_info", "current user email after logOut ${_auth.currentUser?.email.toString()}")
-
     }
 
     override fun isAuthedUser(callback: (Resource<Boolean>) -> Unit) {
         _auth.addAuthStateListener {
             callback(Resource.Success(it.currentUser != null))
         }
+    }
+
+    override fun getUserData(callback: (Resource<User?>) -> Unit) {
+        Log.e("user_repository_info", "getUserDataUseCase")
+
+        val user = _auth.currentUser?.let {
+            User(
+                userId = it.uid,
+                username = it.displayName,
+                email = it.email,
+                profilePictureUrl = it.photoUrl?.toString()
+            )
+        }
+        Log.e("user_repository_info", "user is ${user?.email}")
+
+        callback(Resource.Success(user))
     }
 
     override fun pullRequest(callback: (Resource<User?>) -> Unit) {
@@ -43,16 +55,10 @@ class UserRepositoryImpl @Inject constructor() : UserRepository {
                     val currentUser = snapshot.toObject(com.asnova.firebase.model.User::class.java)
                     if (currentUser != null) {
                         user = User(
-                            uid = currentUser.uid,
-                            isAnonymous = currentUser.isAnonymous,
-                            photoUrl = currentUser.photoUrl,
-                            displayName = currentUser.displayName,
-                            email = currentUser.email,
-                            isEmailVerified = currentUser.isEmailVerified,
-                            phoneNumber = currentUser.phoneNumber,
-                            creationTimestamp = currentUser.creationTimestamp.seconds,
-                            lastSignInTimestamp = currentUser.lastSignInTimestamp.seconds,
-                            favorites = emptyList()
+                            userId = currentUser.userId,
+                            profilePictureUrl = currentUser.profilePictureUrl,
+                            username = currentUser.username,
+                            email = currentUser.email
                         )
                     }
                 }
@@ -72,12 +78,12 @@ class UserRepositoryImpl @Inject constructor() : UserRepository {
             val user = it.data
             val list: MutableList<String> = mutableListOf()
             if (user != null) {
-                _databaseReference.document(user.uid).get().addOnSuccessListener { snapshot ->
+                _databaseReference.document(user.userId).get().addOnSuccessListener { snapshot ->
                     if (snapshot.data != null) {
                         val userData = snapshot.toObject(com.asnova.firebase.model.User::class.java)
-                        userData?.favorites?.forEach { favoritesNewsItem ->
-                            list.add(favoritesNewsItem)
-                        }
+//                        userData?.favorites?.forEach { favoritesNewsItem ->
+//                            list.add(favoritesNewsItem)
+//                        }
                     }
                 }.addOnCompleteListener { task ->
                     if (task.isSuccessful) {

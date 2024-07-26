@@ -4,11 +4,11 @@ import com.asnova.domain.repository.firebase.UserRepository
 import com.asnova.model.Resource
 import com.asnova.model.User
 
-class PullRequestUserUseCase(
+class GetUserDataUseCase(
     private val userRepository: UserRepository
 ) {
     operator fun invoke(callback: (Resource<User?>) -> Unit)
     {
-        return userRepository.pullRequest(callback)
+        userRepository.getUserData(callback)
     }
 }

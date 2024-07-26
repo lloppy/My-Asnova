@@ -21,6 +21,7 @@ import com.asnova.domain.usecase.GetSafetyNewsUseCase
 import com.asnova.domain.usecase.GetScheduleStateUseCase
 import com.asnova.domain.usecase.GetScheduleUseCase
 import com.asnova.domain.usecase.GetThemeSettingUseCase
+import com.asnova.domain.usecase.GetUserDataUseCase
 import com.asnova.domain.usecase.IsAuthedUserUseCase
 import com.asnova.domain.usecase.OnDownloadMoreAsnovaNewsUseCase
 import com.asnova.domain.usecase.OnDownloadMoreSafetyNewsUseCase
@@ -44,6 +45,13 @@ class DomainModule {
         repository: NewsRepository
     ): AddNewsArticleUseCase {
         return AddNewsArticleUseCase(repository)
+    }
+
+    @Provides
+    fun provideGetUserDataUseCase(
+        userRepository: UserRepository
+    ): GetUserDataUseCase {
+        return GetUserDataUseCase(userRepository)
     }
 
     @Provides
