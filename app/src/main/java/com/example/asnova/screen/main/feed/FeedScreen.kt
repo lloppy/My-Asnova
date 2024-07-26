@@ -58,8 +58,7 @@ fun FeedScreen(
     val isRefreshing by remember { mutableStateOf(false) }
     val stateRefresh = rememberPullRefreshState(isRefreshing, { viewModel.pullToRefresh() })
 
-    val threeSegments = remember { listOf("Моя группа", "Asnovapro", "Охрана труда") }
-    var selectedThreeSegment by remember { mutableStateOf(threeSegments[1]) }
+    var selectedThreeSegment by remember { mutableStateOf(Segments.WORK_PROFESSIONS) }
 
     val context = LocalContext.current
     var userData by remember { mutableStateOf<User?>(null) }
@@ -92,7 +91,7 @@ fun FeedScreen(
                     item {
                         HeaderSection(
                             userData = userData,
-                            threeSegments = threeSegments,
+                            threeSegments = Segments.all,
                             selectedSegment = selectedThreeSegment,
                             pictureBackgroundId = pictureBackgroundId,
                             onSegmentSelected = {
@@ -124,7 +123,7 @@ fun FeedScreen(
                 item {
                     HeaderSection(
                         userData = userData,
-                        threeSegments = threeSegments,
+                        threeSegments = Segments.all,
                         selectedSegment = selectedThreeSegment,
                         pictureBackgroundId = pictureBackgroundId,
                         onSegmentSelected = {

@@ -33,7 +33,7 @@ class FeedScreenViewModel @Inject constructor(
     private val _state = mutableStateOf(FeedState())
     val state: State<FeedState> = _state
 
-    private var selectedSegment by mutableStateOf("Asnovapro")
+    private var selectedSegment by mutableStateOf(Segments.WORK_PROFESSIONS)
 
     init {
         loadNewsForSegment(selectedSegment)
@@ -46,8 +46,8 @@ class FeedScreenViewModel @Inject constructor(
     private fun loadNewsForSegment(segment: String) {
         selectedSegment = segment
         when (segment) {
-            "Asnovapro" -> loadAsnovaNews()
-            "Охрана труда" -> loadSafetyNews()
+            Segments.WORK_PROFESSIONS -> loadAsnovaNews()
+            Segments.SAFETY -> loadSafetyNews()
         }
     }
 
@@ -72,7 +72,7 @@ class FeedScreenViewModel @Inject constructor(
             }
 
             is Resource.Error -> {
-                _state.value = FeedState(error = result.message ?: "An unexpected error occurred")
+                _state.value = FeedState(error = result.message ?: "Ошибка. Проверьте интернет-соединение")
             }
 
             is Resource.Loading -> {
@@ -88,14 +88,14 @@ class FeedScreenViewModel @Inject constructor(
     fun onDownloadMore() {
         val currentList = _state.value.news.toMutableList()
         when (selectedSegment) {
-            "Asnovapro" -> onDownloadMoreAsnovaNewsUseCase(
+            Segments.WORK_PROFESSIONS -> onDownloadMoreAsnovaNewsUseCase(
                 offset = currentList.size,
                 callback = { result ->
                     handleDownloadMoreResult(result, currentList)
                 }
             )
 
-            "Охрана труда" -> onDownloadMoreSafetyNewsUseCase(
+            Segments.SAFETY -> onDownloadMoreSafetyNewsUseCase(
                 offset = currentList.size,
                 callback = { result ->
                     handleDownloadMoreResult(result, currentList)
