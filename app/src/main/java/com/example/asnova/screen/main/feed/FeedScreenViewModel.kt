@@ -15,6 +15,7 @@ import com.asnova.domain.usecase.OnDownloadMoreSafetyNewsUseCase
 import com.asnova.model.Resource
 import com.asnova.model.User
 import com.asnova.model.WallItem
+import com.example.asnova.screen.main.feed.components.Segments
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject

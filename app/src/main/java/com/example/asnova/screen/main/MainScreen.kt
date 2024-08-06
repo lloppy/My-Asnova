@@ -42,18 +42,7 @@ fun MainScreen(
             context = context,
             lifecycleScope = lifecycleScope,
             lifecycleOwner = lifecycleOwner,
-            router = router,
-            pictureBackgroundId = randomPicture(),
+            router = router
         )
     }
 }
-
-private fun randomPicture(): Int {
-    val pictures = listOf(
-        R.drawable.asnova_future_gen,
-        R.drawable.asnova_future_gen2
-    )
-
-    return pictures.random()
-}
-

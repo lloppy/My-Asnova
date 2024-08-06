@@ -35,7 +35,6 @@ import com.example.bottombar.model.VisibleItem
 fun SetupNavGraph(
     navHostController: NavHostController,
     context: Context,
-    pictureBackgroundId: Int,
     lifecycleScope: LifecycleCoroutineScope,
     lifecycleOwner: LifecycleOwner,
     router: Router
@@ -48,7 +47,6 @@ fun SetupNavGraph(
             FeedScreen(
                 externalRouter = router,
                 navController = navHostController,
-                pictureBackgroundId = pictureBackgroundId,
                 lifecycleOwner = lifecycleOwner
             )
         }

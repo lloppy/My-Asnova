@@ -32,6 +32,7 @@ import androidx.compose.material3.MediumTopAppBar
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -51,8 +52,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.LifecycleOwner
+import com.asnova.model.Resource
+import com.asnova.model.User
 import com.example.asnova.R
 import com.example.asnova.navigation.bottomBarHeight
+import com.example.asnova.screen.main.feed.components.HeaderScheduleSection
+import com.example.asnova.screen.main.feed.components.HeaderSection
+import com.example.asnova.screen.main.feed.components.ScheduleSegments
+import com.example.asnova.screen.main.feed.components.Segments
 import com.example.asnova.screen.main.schedule.components.ModalBottomSheet
 import com.example.asnova.screen.main.schedule.components.ScheduleScreenSkeleton
 import com.example.asnova.utils.SkeletonScreen
@@ -61,7 +68,7 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun ScheduleScreen(
     externalRouter: Router,
@@ -69,35 +76,10 @@ fun ScheduleScreen(
     lifecycleOwner: LifecycleOwner,
     viewModel: ScheduleScreenViewModel = hiltViewModel()
 ) {
-    Scaffold(
-        topBar = {
-            CenterAlignedTopAppBar(
-                title = {
-                    Text(
-                        text = stringResource(id = R.string.schedule),
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                        fontSize = 24.sp,
-                        fontWeight = FontWeight.Bold,
-                        textAlign = TextAlign.Center
-                    )
-                }
-            )
-        }
-    ) { padding ->
-        LogInContent(padding, viewModel)
-    }
 
-}
-
-@OptIn(ExperimentalMaterialApi::class)
-@Composable
-fun LogInContent(
-    padding: PaddingValues,
-    viewModel: ScheduleScreenViewModel
-) {
     val state = viewModel.state.value
     val context = LocalContext.current
+    var userData by remember { mutableStateOf<User?>(null) }
 
     val toastIdCopied =
         Toast.makeText(context, stringResource(id = R.string.id_copied), Toast.LENGTH_SHORT)
@@ -107,68 +89,96 @@ fun LogInContent(
         Toast.LENGTH_SHORT
     )
 
-
     // Refresh
     val isRefreshing by remember { mutableStateOf(false) }
     val stateRefresh = rememberPullRefreshState(isRefreshing, { viewModel.pullToRefresh() })
 
-    val ctx = LocalContext.current
     val clipboardManager: ClipboardManager = LocalClipboardManager.current
     var clickedItemId by remember { mutableStateOf("") }
 
     val currentDate = LocalDate.now()
     val dateList = List(7) { index -> currentDate.plusDays(index.toLong()) }
 
-    Column(Modifier.padding(top = padding.calculateTopPadding(), bottom = bottomBarHeight)) {
-        LazyRow(Modifier.padding(horizontal = 24.dp))
-        {
-            items(dateList)
-            { date ->
-                Box(
-                    modifier = Modifier
-                        .padding(start = 8.dp)
-                        .padding(top = 12.dp, bottom = 12.dp)
-                        .clip(RoundedCornerShape(12.dp))
-                        .background(
-                            color = MaterialTheme.colorScheme.secondaryContainer
-                        )
-                        .clickable {
-                            viewModel.saveDate(date)
-                            viewModel.loadSchedule()
-                        }
-                )
-                {
-                    Row(
-                        modifier = Modifier
-                            .padding(8.dp)
-                            .fillMaxWidth(),
-                        horizontalArrangement = Arrangement.Center,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        when (date) {
-                            currentDate -> Text(text = stringResource(id = R.string.today))
-                            currentDate.plusDays(1) -> Text(text = stringResource(id = R.string.tomorrow))
-                            else -> Text(text = date.format(DateTimeFormatter.ofPattern("d MMMM")))
-                        }
-                    }
+    var selectedSegment by remember { mutableStateOf(true) }
+
+    LaunchedEffect(Unit) {
+        viewModel.getUserData { resource ->
+            when (resource) {
+                is Resource.Success -> {
+                    userData = resource.data
                 }
+
+                is Resource.Error -> {
+                    // Handle error
+                }
+
+                else -> {}
             }
         }
-        Box(modifier = Modifier.fillMaxSize())
-        {
-            SkeletonScreen(isLoading = state.loading,
-                skeleton = {
-                    ScheduleScreenSkeleton()
-                }
+    }
+
+    Column(Modifier.padding(bottom = bottomBarHeight)) {
+        Box(Modifier.fillMaxSize()) {
+            SkeletonScreen(
+                isLoading = state.loading,
+                skeleton = { ScheduleScreenSkeleton() }
             ) {
                 LazyColumn(
                     Modifier
                         .fillMaxSize()
                         .pullRefresh(stateRefresh)
-                )
-                {
-                    itemsIndexed(state.value)
-                    { _, item ->
+                ) {
+                    item {
+                        HeaderScheduleSection(
+                            userData = userData,
+                            pictureBackgroundId = R.drawable.asnova_future_gen,
+                            onSegmentSelected = {
+                                selectedSegment = it
+                                viewModel.onSegmentChange(if (it) "MY_GROUP" else "ALL")
+                            }
+                        )
+                    }
+                    item {
+                        LazyRow(Modifier.padding(horizontal = 24.dp)) {
+                            items(dateList) { date ->
+                                Box(
+                                    modifier = Modifier
+                                        .padding(start = 8.dp)
+                                        .padding(top = 12.dp, bottom = 12.dp)
+                                        .clip(RoundedCornerShape(12.dp))
+                                        .background(
+                                            color = MaterialTheme.colorScheme.secondaryContainer
+                                        )
+                                        .clickable {
+                                            viewModel.saveDate(date)
+                                            viewModel.loadScheduleForGroup()
+                                        }
+                                )
+                                {
+                                    Row(
+                                        modifier = Modifier
+                                            .padding(8.dp)
+                                            .fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.Center,
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        when (date) {
+                                            currentDate -> Text(text = stringResource(id = R.string.today))
+                                            currentDate.plusDays(1) -> Text(text = stringResource(id = R.string.tomorrow))
+                                            else -> Text(
+                                                text = date.format(
+                                                    DateTimeFormatter.ofPattern(
+                                                        "d MMMM"
+                                                    )
+                                                )
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    itemsIndexed(state.value) { _, item ->
                         Text(
                             text = item.grade.toString() + stringResource(id = R.string.grade),
                             fontSize = 12.sp,
@@ -202,7 +212,7 @@ fun LogInContent(
                                             Intent.ACTION_VIEW,
                                             Uri.parse(item.task.link)
                                         )
-                                        ctx.startActivity(urlIntent)
+                                        context.startActivity(urlIntent)
                                     }
                                 ) {
                                     clickedItemId = ""
@@ -237,7 +247,10 @@ fun LogInContent(
                                     }
                                     Spacer(modifier = Modifier.width(24.dp))
                                     Column {
-                                        Text(text = item.summary.toString(), fontWeight = FontWeight.Bold)
+                                        Text(
+                                            text = item.summary.toString(),
+                                            fontWeight = FontWeight.Bold
+                                        )
                                         Text(
                                             text = stringResource(id = R.string.teacher) + " " + "teacher",
                                             fontSize = 12.sp,

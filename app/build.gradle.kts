@@ -160,6 +160,9 @@ dependencies {
     implementation("com.squareup.retrofit2:retrofit:$retrofitVersion")
     implementation("com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:0.8.0")
     implementation("com.squareup.okhttp3:logging-interceptor:4.9.1")
+
+    // SceneView https://github.com/SceneView/sceneview-android/tree/main
+
 }
 
 kapt {

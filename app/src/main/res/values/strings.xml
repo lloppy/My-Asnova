@@ -50,6 +50,7 @@
     <string name="vk_logo">Вк логотип</string>
     <string name="service_name">Учебный центр Аснова</string>
     <string name="login_using_phone">или войти с помощью номера телефона</string>
+    <string name="news">Расписание Аснова</string>
 
 
 </resources>

@@ -34,10 +34,12 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.navigation.NavController
 import com.asnova.model.Resource
 import com.asnova.model.User
+import com.example.asnova.R
 import com.example.asnova.navigation.bottomBarHeight
 import com.example.asnova.screen.main.feed.components.FeedItemHeight
 import com.example.asnova.screen.main.feed.components.FeedItemView
 import com.example.asnova.screen.main.feed.components.HeaderSection
+import com.example.asnova.screen.main.feed.components.Segments
 import com.example.asnova.ui.theme.backgroundAsnova
 import com.example.asnova.utils.SkeletonScreen
 import com.example.asnova.utils.navigation.Router
@@ -49,7 +51,6 @@ fun FeedScreen(
     externalRouter: Router,
     navController: NavController,
     lifecycleOwner: LifecycleOwner,
-    pictureBackgroundId: Int,
     viewModel: FeedScreenViewModel = hiltViewModel()
 ) {
     val listState = rememberLazyListState()
@@ -93,7 +94,7 @@ fun FeedScreen(
                             userData = userData,
                             threeSegments = Segments.all,
                             selectedSegment = selectedThreeSegment,
-                            pictureBackgroundId = pictureBackgroundId,
+                            pictureBackgroundId = R.drawable.asnova_future_gen,
                             onSegmentSelected = {
                                 selectedThreeSegment = it
                                 viewModel.onSegmentChange(it)
@@ -125,7 +126,7 @@ fun FeedScreen(
                         userData = userData,
                         threeSegments = Segments.all,
                         selectedSegment = selectedThreeSegment,
-                        pictureBackgroundId = pictureBackgroundId,
+                        pictureBackgroundId = R.drawable.asnova_future_gen,
                         onSegmentSelected = {
                             selectedThreeSegment = it
                             viewModel.onSegmentChange(it)
