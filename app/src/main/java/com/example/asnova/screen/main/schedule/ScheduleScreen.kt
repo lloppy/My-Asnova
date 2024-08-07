@@ -142,7 +142,7 @@ fun ScheduleScreen(
                             Column(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                  //  .clip(RoundedCornerShape(topStart = 0.dp, topEnd = 0.dp, bottomEnd = 16.dp, bottomStart = 16.dp))
+                                    .clip(RoundedCornerShape(0.dp)) //topStart = 0.dp, topEnd = 0.dp, bottomEnd = 16.dp, bottomStart = 16.dp))
                                     .height(
                                         screenHeight
                                             .minus(bottomBarHeight)
