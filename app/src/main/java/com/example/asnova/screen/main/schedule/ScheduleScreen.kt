@@ -59,6 +59,7 @@ import com.asnova.model.Resource
 import com.asnova.model.User
 import com.example.asnova.R
 import com.example.asnova.navigation.bottomBarHeight
+import com.example.asnova.screen.main.schedule.components.DateBox
 import com.example.asnova.screen.main.schedule.components.GroupScheduleItem
 import com.example.asnova.screen.main.schedule.components.ScheduleHeader
 import com.example.asnova.screen.main.schedule.components.ScheduleScreenSkeleton
@@ -186,6 +187,7 @@ fun ScheduleScreen(
                                         colors = SwitchDefaults.colors(
                                             checkedIconColor = Color.Black,
                                             checkedTrackColor = Color.Black.copy(alpha = 0.5f),
+                                            checkedThumbColor = Color.White.copy(alpha = 0.8f),
                                             uncheckedTrackColor = grayAsnova.copy(alpha = 0.3f),
                                             uncheckedBorderColor = Color.Transparent,
                                             uncheckedThumbColor = Color.Black.copy(alpha = 0.6f)
@@ -199,45 +201,14 @@ fun ScheduleScreen(
                         item {
                             LazyRow(Modifier.padding(horizontal = 24.dp)) {
                                 items(dateList) { date ->
-                                    Box(
-                                        modifier = Modifier
-                                            .padding(start = 8.dp)
-                                            .padding(top = 12.dp, bottom = 12.dp)
-                                            .clip(RoundedCornerShape(12.dp))
-                                            .background(
-                                                color = MaterialTheme.colorScheme.secondaryContainer
-                                            )
-                                            .clickable {
-                                                viewModel.saveDate(date)
-                                                viewModel.loadScheduleForGroup()
-                                            }
-                                    )
-                                    {
-                                        Row(
-                                            modifier = Modifier
-                                                .padding(8.dp)
-                                                .fillMaxWidth(),
-                                            horizontalArrangement = Arrangement.Center,
-                                            verticalAlignment = Alignment.CenterVertically
-                                        ) {
-                                            when (date) {
-                                                currentDate -> Text(text = stringResource(id = R.string.today))
-                                                currentDate.plusDays(1) -> Text(
-                                                    text = stringResource(
-                                                        id = R.string.tomorrow
-                                                    )
-                                                )
-
-                                                else -> Text(
-                                                    text = date.format(
-                                                        DateTimeFormatter.ofPattern(
-                                                            "d MMMM"
-                                                        )
-                                                    )
-                                                )
-                                            }
+                                    DateBox(
+                                        date = date,
+                                        currentDate = currentDate,
+                                        onDateSelected = { selectedDate ->
+                                            viewModel.saveDate(selectedDate)
+                                            viewModel.loadScheduleForGroup()
                                         }
-                                    }
+                                    )
                                 }
                             }
                         }
