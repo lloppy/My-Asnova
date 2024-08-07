@@ -9,27 +9,27 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CalendarMonth
+import androidx.compose.material.icons.filled.People
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
-import androidx.compose.material3.CenterAlignedTopAppBar
-import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.MediumTopAppBar
-import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -40,28 +40,30 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.paint
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.ClipboardManager
 import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.LifecycleOwner
 import com.asnova.model.Resource
 import com.asnova.model.User
 import com.example.asnova.R
 import com.example.asnova.navigation.bottomBarHeight
-import com.example.asnova.screen.main.feed.components.HeaderScheduleSection
-import com.example.asnova.screen.main.feed.components.HeaderSection
-import com.example.asnova.screen.main.feed.components.ScheduleSegments
-import com.example.asnova.screen.main.feed.components.Segments
-import com.example.asnova.screen.main.schedule.components.ModalBottomSheet
+import com.example.asnova.screen.main.schedule.components.GroupScheduleItem
+import com.example.asnova.screen.main.schedule.components.ScheduleHeader
 import com.example.asnova.screen.main.schedule.components.ScheduleScreenSkeleton
+import com.example.asnova.screen.main.schedule.components.SiteScheduleItem
+import com.example.asnova.ui.theme.grayAsnova
 import com.example.asnova.utils.SkeletonScreen
 import com.example.asnova.utils.navigation.Router
 import java.time.LocalDate
@@ -96,10 +98,13 @@ fun ScheduleScreen(
     val clipboardManager: ClipboardManager = LocalClipboardManager.current
     var clickedItemId by remember { mutableStateOf("") }
 
+    val configuration = LocalConfiguration.current
+    val screenHeight = configuration.screenHeightDp.dp
+
     val currentDate = LocalDate.now()
     val dateList = List(7) { index -> currentDate.plusDays(index.toLong()) }
 
-    var selectedSegment by remember { mutableStateOf(true) }
+    var checked by remember { mutableStateOf(true) } // MY_GROUP
 
     LaunchedEffect(Unit) {
         viewModel.getUserData { resource ->
@@ -129,136 +134,135 @@ fun ScheduleScreen(
                         .pullRefresh(stateRefresh)
                 ) {
                     item {
-                        HeaderScheduleSection(
-                            userData = userData,
-                            pictureBackgroundId = R.drawable.asnova_future_gen,
-                            onSegmentSelected = {
-                                selectedSegment = it
-                                viewModel.onSegmentChange(if (it) "MY_GROUP" else "ALL")
-                            }
-                        )
-                    }
-                    item {
-                        LazyRow(Modifier.padding(horizontal = 24.dp)) {
-                            items(dateList) { date ->
-                                Box(
-                                    modifier = Modifier
-                                        .padding(start = 8.dp)
-                                        .padding(top = 12.dp, bottom = 12.dp)
-                                        .clip(RoundedCornerShape(12.dp))
-                                        .background(
-                                            color = MaterialTheme.colorScheme.secondaryContainer
+                        Column(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Top
+                        ) {
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                  //  .clip(RoundedCornerShape(topStart = 0.dp, topEnd = 0.dp, bottomEnd = 16.dp, bottomStart = 16.dp))
+                                    .height(
+                                        screenHeight
+                                            .minus(bottomBarHeight)
+                                            .div(4)
+                                    )
+                                    .paint(
+                                        painterResource(id = R.drawable.asnova_future_gen),
+                                        contentScale = ContentScale.Crop,
+                                    )
+                                    .background(linear),
+                                verticalArrangement = Arrangement.SpaceBetween,
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                ScheduleHeader(userData = userData)
+
+                                Row(
+                                    modifier = Modifier.fillMaxWidth().padding(start = 32.dp, end = 32.dp, bottom = 12.dp),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.Top
+                                ) {
+                                    Text(
+                                        text = "",
+                                        style = MaterialTheme.typography.titleLarge,
+                                        fontWeight = FontWeight.Bold,
+                                        color = Color.White
+                                    )
+
+                                    Switch(
+                                        checked = checked,
+                                        onCheckedChange = {
+                                            checked = it
+                                            if (it) viewModel.loadScheduleForGroup() else viewModel.loadScheduleFromSite()
+                                        },
+                                        thumbContent = {
+                                            Icon(
+                                                imageVector = if (checked) Icons.Filled.CalendarMonth else Icons.Filled.People,
+                                                contentDescription = null,
+                                                modifier = Modifier.size(SwitchDefaults.IconSize)
+                                            )
+                                        },
+                                        colors = SwitchDefaults.colors(
+                                            checkedIconColor = Color.Black,
+                                            checkedTrackColor = Color.Black.copy(alpha = 0.5f),
+                                            uncheckedTrackColor = grayAsnova.copy(alpha = 0.3f),
+                                            uncheckedBorderColor = Color.Transparent,
+                                            uncheckedThumbColor = Color.Black.copy(alpha = 0.6f)
                                         )
-                                        .clickable {
-                                            viewModel.saveDate(date)
-                                            viewModel.loadScheduleForGroup()
-                                        }
-                                )
-                                {
-                                    Row(
+                                    )
+                                }
+                            }
+                        }
+                    }
+                    if (checked) {
+                        item {
+                            LazyRow(Modifier.padding(horizontal = 24.dp)) {
+                                items(dateList) { date ->
+                                    Box(
                                         modifier = Modifier
-                                            .padding(8.dp)
-                                            .fillMaxWidth(),
-                                        horizontalArrangement = Arrangement.Center,
-                                        verticalAlignment = Alignment.CenterVertically
-                                    ) {
-                                        when (date) {
-                                            currentDate -> Text(text = stringResource(id = R.string.today))
-                                            currentDate.plusDays(1) -> Text(text = stringResource(id = R.string.tomorrow))
-                                            else -> Text(
-                                                text = date.format(
-                                                    DateTimeFormatter.ofPattern(
-                                                        "d MMMM"
+                                            .padding(start = 8.dp)
+                                            .padding(top = 12.dp, bottom = 12.dp)
+                                            .clip(RoundedCornerShape(12.dp))
+                                            .background(
+                                                color = MaterialTheme.colorScheme.secondaryContainer
+                                            )
+                                            .clickable {
+                                                viewModel.saveDate(date)
+                                                viewModel.loadScheduleForGroup()
+                                            }
+                                    )
+                                    {
+                                        Row(
+                                            modifier = Modifier
+                                                .padding(8.dp)
+                                                .fillMaxWidth(),
+                                            horizontalArrangement = Arrangement.Center,
+                                            verticalAlignment = Alignment.CenterVertically
+                                        ) {
+                                            when (date) {
+                                                currentDate -> Text(text = stringResource(id = R.string.today))
+                                                currentDate.plusDays(1) -> Text(
+                                                    text = stringResource(
+                                                        id = R.string.tomorrow
                                                     )
                                                 )
-                                            )
+
+                                                else -> Text(
+                                                    text = date.format(
+                                                        DateTimeFormatter.ofPattern(
+                                                            "d MMMM"
+                                                        )
+                                                    )
+                                                )
+                                            }
                                         }
                                     }
                                 }
                             }
                         }
-                    }
-                    itemsIndexed(state.value) { _, item ->
-                        Text(
-                            text = item.grade.toString() + stringResource(id = R.string.grade),
-                            fontSize = 12.sp,
-                            color = MaterialTheme.colorScheme.secondary,
-                            modifier = Modifier.padding(horizontal = 32.dp)
-                        )
-
-                        Box(modifier = Modifier
-                            .padding(horizontal = 24.dp)
-                            .clip(RoundedCornerShape(12.dp))
-                            .fillMaxSize()
-                            .background(
-                                color = MaterialTheme.colorScheme.onSecondary
+                        items(state.value) { item ->
+                            GroupScheduleItem(
+                                item,
+                                clipboardManager,
+                                toastIdCopied,
+                                toastACCopied,
+                                context
                             )
-                            .clickable {
-                                clickedItemId = item.uid
-                            }) {
-                            if (clickedItemId == item.uid) {
-                                ModalBottomSheet(
-                                    schoolSchedule = item,
-                                    onClickId = {
-                                        clipboardManager.setText(AnnotatedString(item.task.id))
-                                        toastIdCopied.show()
-                                    },
-                                    onClickAC = {
-                                        clipboardManager.setText(AnnotatedString(item.task.accessCode))
-                                        toastACCopied.show()
-                                    },
-                                    onClickAction = {
-                                        val urlIntent = Intent(
+                        }
+                    } else {
+                        items(state.valueFromSite) { item ->
+                            SiteScheduleItem(
+                                item = item,
+                                onItemClick = {
+                                    context.startActivity(
+                                        Intent(
                                             Intent.ACTION_VIEW,
-                                            Uri.parse(item.task.link)
+                                            Uri.parse(item.newsLink)
                                         )
-                                        context.startActivity(urlIntent)
-                                    }
-                                ) {
-                                    clickedItemId = ""
+                                    )
                                 }
-                            }
-                            Column(modifier = Modifier.padding(4.dp)) {
-                                Text(
-                                    modifier = Modifier.padding(start = 12.dp, top = 12.dp),
-                                    fontWeight = FontWeight.SemiBold,
-                                    text = "classRoom", // item.classRoom,
-                                    fontSize = 12.sp,
-                                    color = MaterialTheme.colorScheme.secondary
-                                )
-                                Row(
-                                    modifier = Modifier.padding(12.dp),
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    Column(
-                                        horizontalAlignment = Alignment.CenterHorizontally
-                                    ) {
-                                        Text(
-                                            text = item.start.toString(),
-                                            textAlign = TextAlign.Center,
-                                            fontWeight = FontWeight.Bold
-                                        )
-                                        Text(
-                                            text = item.end.toString(),
-                                            textAlign = TextAlign.Center,
-                                            fontSize = 12.sp,
-                                            color = MaterialTheme.colorScheme.secondary
-                                        )
-                                    }
-                                    Spacer(modifier = Modifier.width(24.dp))
-                                    Column {
-                                        Text(
-                                            text = item.summary.toString(),
-                                            fontWeight = FontWeight.Bold
-                                        )
-                                        Text(
-                                            text = stringResource(id = R.string.teacher) + " " + "teacher",
-                                            fontSize = 12.sp,
-                                            color = MaterialTheme.colorScheme.secondary
-                                        )
-                                    }
-                                }
-                            }
+                            )
                         }
                     }
                 }
@@ -282,3 +286,14 @@ fun ScheduleScreen(
         }
     }
 }
+
+val linear = Brush.linearGradient(
+    listOf(
+        Color.Black.copy(alpha = 1f),
+        Color.Black.copy(alpha = 0.9f),
+        Color.Black.copy(alpha = 0.8f),
+        Color.Black.copy(alpha = 0.7f),
+        Color.Black.copy(alpha = 0.5f)
+    )
+)
+

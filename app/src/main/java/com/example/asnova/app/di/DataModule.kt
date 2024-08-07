@@ -3,7 +3,6 @@ package com.example.asnova.app.di
 import CalDavClient
 import android.content.Context
 import android.content.SharedPreferences
-import androidx.compose.ui.platform.LocalContext
 import com.asnova.domain.repository.firebase.NewsRepository
 import com.asnova.domain.repository.firebase.ScheduleRepository
 import com.asnova.domain.repository.firebase.UserRepository

@@ -2,20 +2,18 @@ package com.example.asnova.screen.main.schedule
 
 import android.util.Log
 import androidx.compose.runtime.State
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.asnova.domain.usecase.GetScheduleFromSiteUseCase
 import com.asnova.domain.usecase.GetScheduleStateUseCase
 import com.asnova.domain.usecase.GetScheduleUseCase
 import com.asnova.domain.usecase.GetUserDataUseCase
 import com.asnova.domain.usecase.SaveScheduleStateUseCase
 import com.asnova.model.AsnovaSchedule
+import com.asnova.model.AsnovaSiteSchedule
 import com.asnova.model.Resource
 import com.asnova.model.User
-import com.example.asnova.screen.main.feed.components.ScheduleSegments
-import com.example.asnova.screen.main.feed.components.Segments
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.time.LocalDate
 import javax.inject.Inject
@@ -23,6 +21,7 @@ import javax.inject.Inject
 @HiltViewModel
 class ScheduleScreenViewModel @Inject constructor(
     private val getScheduleUseCase: GetScheduleUseCase,
+    private val getScheduleFromSiteUseCase: GetScheduleFromSiteUseCase,
 
     private val saveScheduleStateUseCase: SaveScheduleStateUseCase,
     private val getScheduleStateUseCase: GetScheduleStateUseCase,
@@ -36,10 +35,9 @@ class ScheduleScreenViewModel @Inject constructor(
     private val selectedDateMutableState = MutableLiveData(LocalDate.now())
     val selectedDate: MutableLiveData<LocalDate?> = selectedDateMutableState
 
-    private var selectedSegment by mutableStateOf(ScheduleSegments.ALL)
-
     init {
         loadScheduleForGroup()
+        loadScheduleFromSite()
     }
 
     fun getUserData(callback: (Resource<User?>) -> Unit) {
@@ -68,41 +66,60 @@ class ScheduleScreenViewModel @Inject constructor(
                 }
 
                 is Resource.Error -> {
-                    Log.d("calendar_info", "Error loading schedules")
                     _state.value = AsnovaScheduleState(
                         error = result.message ?: "An unexpected error occurred"
                     )
                 }
 
                 is Resource.Loading -> {
-                    Log.d("calendar_info", "Loading schedules")
                     _state.value = AsnovaScheduleState(loading = true)
                 }
             }
         })
     }
 
-    fun onSegmentChange(segment: String) {
-        loadScheduleForSegment(segment)
+    fun loadScheduleFromSite() {
+        getScheduleFromSiteUseCase(callback = { result ->
+            when (result) {
+                is Resource.Success -> {
+                    _state.value = AsnovaScheduleState(valueFromSite = result.data ?: emptyList())
+                    val temp = mutableListOf<AsnovaSiteSchedule>()
+                    for (item in _state.value.valueFromSite) {
+                        temp.add(item)
+                    }
+                    _state.value.valueFromSite = temp
+                }
+
+                is Resource.Error -> {
+                    _state.value = AsnovaScheduleState(
+                        error = result.message ?: "An unexpected error occurred"
+                    )
+                }
+
+                is Resource.Loading -> {
+                    _state.value = AsnovaScheduleState(loading = true)
+                }
+            }
+        })
     }
 
-    private fun loadScheduleForSegment(segment: String) {
-        selectedSegment = segment
-        when (segment) {
-            ScheduleSegments.ALL -> loadScheduleFromSite()
-            ScheduleSegments.MY_GROUP -> loadScheduleForGroup()
+    private fun filterScheduleBySelectedDate() {
+        val temp = _state.value.value.filter {
+            selectedDateMutableState.value?.let { date ->
+                it.start.toLocalDate() == date
+            } ?: false
         }
+        _state.value = _state.value.copy(value = temp)
     }
 
-    private fun loadScheduleFromSite() {
-        TODO("Not yet implemented")
-    }
 
     fun saveDate(date: LocalDate) {
         selectedDateMutableState.value = date
+        filterScheduleBySelectedDate()
     }
 
     fun pullToRefresh() {
         loadScheduleFromSite()
+        loadScheduleForGroup()
     }
 }

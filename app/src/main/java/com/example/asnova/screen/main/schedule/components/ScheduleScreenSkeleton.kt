@@ -22,21 +22,24 @@ fun ScheduleScreenSkeleton() {
         modifier = Modifier
             .fillMaxSize()
     ) {
-        items(2)
+        items(3)
         {
-            Box(modifier = Modifier
-                .padding(horizontal = 32.dp)
-                .height(16.dp)
-                .width(50.dp)
-                .clip(shape = MaterialTheme.shapes.medium)
-                .shimmerEffect())
+            Box(
+                modifier = Modifier
+                    .padding(horizontal = 32.dp)
+                    .height(16.dp)
+                    .width(50.dp)
+                    .clip(shape = MaterialTheme.shapes.medium)
+                    .shimmerEffect()
+            )
             Spacer(modifier = Modifier.height(12.dp))
-            Box(modifier = Modifier
-                .padding(horizontal = 24.dp)
-                .clip(RoundedCornerShape(12.dp))
-                .height(120.dp)
-                .fillMaxWidth()
-                .shimmerEffect()
+            Box(
+                modifier = Modifier
+                    .padding(horizontal = 24.dp)
+                    .clip(RoundedCornerShape(12.dp))
+                    .height(120.dp)
+                    .fillMaxWidth()
+                    .shimmerEffect()
             )
             Spacer(modifier = Modifier.height(12.dp))
         }

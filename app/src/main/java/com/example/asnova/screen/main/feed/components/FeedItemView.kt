@@ -75,7 +75,7 @@ fun FeedItemView(
             verticalAlignment = Alignment.Top
         ) {
             FeedItemImage(
-                newsItem = feedItem,
+                imageUrl = feedItem.images.first().url,
                 width = 200.dp,
                 modifier = Modifier
                     .weight(1.1f)
@@ -147,7 +147,7 @@ private fun HashtagsRow(
 
 @Composable
 fun FeedItemImage(
-    newsItem: WallItem,
+    imageUrl: String,
     width: Dp,
     modifier: Modifier = Modifier
 ) {
@@ -159,7 +159,6 @@ fun FeedItemImage(
         )
     } else {
         val context = LocalContext.current
-        val imageUrl = newsItem.images.first().url
 
         if (imageUrl.startsWith("resource://")) {
             val resourceId = context.resources.getIdentifier(

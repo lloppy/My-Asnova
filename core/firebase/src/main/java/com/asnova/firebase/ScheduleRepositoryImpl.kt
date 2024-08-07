@@ -4,6 +4,7 @@ import CalDavClient
 import android.util.Log
 import com.asnova.domain.repository.firebase.ScheduleRepository
 import com.asnova.model.AsnovaSchedule
+import com.asnova.model.AsnovaSiteSchedule
 import com.asnova.model.Resource
 import com.asnova.model.Schedule
 import com.google.firebase.Timestamp
@@ -14,10 +15,16 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
+import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.LocalTime
 import java.time.ZoneId
+import java.time.format.DateTimeFormatter
+import java.time.format.DateTimeParseException
 import java.util.Date
+import java.util.Locale
 import javax.inject.Inject
 
 class ScheduleRepositoryImpl @Inject constructor(
@@ -31,9 +38,21 @@ class ScheduleRepositoryImpl @Inject constructor(
 
         val lesson = com.asnova.firebase.model.Schedule(
             id = id,
-            date = Timestamp(Date.from(schedule.date.atStartOfDay(ZoneId.systemDefault()).toInstant())),
-            start = Timestamp(Date.from(LocalDate.now().atTime(schedule.start).atZone(ZoneId.systemDefault()).toInstant())),
-            end = Timestamp(Date.from(LocalDate.now().atTime(schedule.end).atZone(ZoneId.systemDefault()).toInstant())
+            date = Timestamp(
+                Date.from(
+                    schedule.date.atStartOfDay(ZoneId.systemDefault()).toInstant()
+                )
+            ),
+            start = Timestamp(
+                Date.from(
+                    LocalDate.now().atTime(schedule.start).atZone(ZoneId.systemDefault())
+                        .toInstant()
+                )
+            ),
+            end = Timestamp(
+                Date.from(
+                    LocalDate.now().atTime(schedule.end).atZone(ZoneId.systemDefault()).toInstant()
+                )
             ),
             lesson = schedule.lesson,
             status = schedule.status,
@@ -97,14 +116,13 @@ class ScheduleRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun getAllScheduleFromCalDav(callback: (Resource<List<AsnovaSchedule>>) -> Unit) {
+    override fun getScheduleFromCalDav(callback: (Resource<List<AsnovaSchedule>>) -> Unit) {
         callback(Resource.Loading())
 
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 val scheduleList = calDavClient.getScheduleList()
 
-                Log.d("calendar_info", "Success: ${scheduleList.size} items")
                 scheduleList.forEach {
                     Log.d("calendar_info", it.summary.toString())
                 }
@@ -113,8 +131,6 @@ class ScheduleRepositoryImpl @Inject constructor(
                     callback(Resource.Success(scheduleList))
                 }
             } catch (e: Exception) {
-                Log.d("calendar_info", "Error: ${e.message}")
-
                 withContext(Dispatchers.Main) {
                     callback(Resource.Error(e.message.toString()))
                 }
@@ -123,57 +139,63 @@ class ScheduleRepositoryImpl @Inject constructor(
     }
 
     override fun getAllSchedule(callback: (Resource<List<Schedule>>) -> Unit) {
-        /*
+        TODO("Not yet implemented")
+    }
+
+    override fun getScheduleFromSite(callback: (Resource<List<AsnovaSiteSchedule>>) -> Unit) {
         callback(Resource.Loading())
+
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                // Получение расписаний из Firebase
-                val firebaseSchedules = _databaseReference.get().await().map {
-                    val temp = it.toObject(com.asnova.firebase.model.Schedule::class.java)
-                    Schedule(
-                        id = temp.id,
-                        date = LocalDateTime.ofInstant(
-                            temp.date.toDate().toInstant(),
-                            ZoneId.systemDefault()
-                        ).toLocalDate(),
-                        start = LocalDateTime.ofInstant(
-                            temp.start.toDate().toInstant(),
-                            ZoneId.systemDefault()
-                        ).toLocalTime(),
-                        end = LocalDateTime.ofInstant(
-                            temp.end.toDate().toInstant(),
-                            ZoneId.systemDefault()
-                        ).toLocalTime(),
-                        lesson = temp.lesson,
-                        status = temp.status,
-                        classRoom = temp.classRoom,
-                        teacher = temp.teacher,
-                        grade = temp.grade,
-                        task = temp.task,
-                        homeWork = temp.homeWork
-                    )
-                }
-                Log.d("calendar_info", "Firebase schedules fetched: ${firebaseSchedules.size}")
-
-                // Получение расписаний из CalDAV
-                val calDavSchedules = calDavClient.getScheduleList()
-                Log.d("calendar_info", "CalDAV schedules fetched: ${calDavSchedules.size}")
-
-                // Объединение
-                val combinedSchedules = firebaseSchedules + calDavSchedules
+                val document = Jsoup.connect("https://asnova.pro/raspisanie").get()
+                val year = extractYearFromDocument(document)
+                val scheduleList = parseScheduleFromHtml(document.html(), year)
 
                 withContext(Dispatchers.Main) {
-                    Log.d("calendar_info", "Total combined schedules: ${combinedSchedules.size}")
-                    callback(Resource.Success(combinedSchedules))
+                    callback(Resource.Success(scheduleList))
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
-                    Log.d("calendar_info", "Error: ${e.message}")
                     callback(Resource.Error(e.message.toString()))
                 }
             }
         }
+    }
+    private fun extractYearFromDocument(document: Document): Int {
+        val yearText = document.selectFirst("div.seocategory__prodblock-title__inner")?.text()
+        return yearText?.split(" ")?.last()?.toIntOrNull() ?: LocalDate.now().year
+    }
+}
 
-         */
+private fun parseScheduleFromHtml(html: String, year: Int): List<AsnovaSiteSchedule> {
+    val document = Jsoup.parse(html)
+    val scheduleElements = document.select("div.seocategory__prodblock")
+    Log.d("calendar_site_info", scheduleElements.text())
+
+    return scheduleElements.mapNotNull { element ->
+        val linkElement = element.selectFirst(".seocategory__prodblock-link") ?: return@mapNotNull null
+        val dateAndTimeText = linkElement.text().split(", ")
+        Log.d("calendar_site_info", "text $dateAndTimeText")
+
+        if (dateAndTimeText.size < 3) return@mapNotNull null
+
+        val dateRange = dateAndTimeText[0]
+        val timeRange = dateAndTimeText[1]
+        val description = dateAndTimeText[2]
+
+        val imageUrlElement = element.selectFirst(".seocategory__prodblock-img img")
+        val imageUrl = imageUrlElement?.attr("src") ?: ""
+
+        val newsLinkElement = element.selectFirst(".seocategory__prodblock-link")
+        val newsLink = newsLinkElement?.attr("href") ?: ""
+
+        AsnovaSiteSchedule(
+            dateRange = dateRange,
+            year = year,
+            timeRange = timeRange,
+            description = description,
+            imageUrl = "https://asnova.pro$imageUrl",
+            newsLink = newsLink
+        )
     }
 }

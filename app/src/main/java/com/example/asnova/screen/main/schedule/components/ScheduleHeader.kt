@@ -47,7 +47,7 @@ fun ScheduleHeader(
             verticalAlignment = Alignment.Top
         ) {
             Text(
-                text = stringResource(id = R.string.news),
+                text = stringResource(id = R.string.schedule) + " " + stringResource(id = R.string.app_name),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 fontSize = 16.sp,
