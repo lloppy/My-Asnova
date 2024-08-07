@@ -27,7 +27,7 @@
     <string name="email_formatting_is_incorrect">Неправильное форматирование адреса электронной почты</string>
     <string name="your_password_must_be_at_least_6_digits_long">Ваш пароль должен состоять не менее чем из 6 цифр</string>
     <string name="sign_up_failed">Не удалось зарегистрироваться</string>
-    <string name="google_sign_in">Вход через Google</string>
+    <string name="google_sign_in">Войти через Google</string>
     <string name="google_logo">лого Google</string>
     <string name="email_icon">Иконка электронной почты</string>
     <string name="profile_picture">Картинка профиля</string>

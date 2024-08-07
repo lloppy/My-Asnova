@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -64,6 +65,7 @@ fun SignInScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
+            .background(Color.White)
             .padding(16.dp),
         contentAlignment = Alignment.Center
     ) {
@@ -75,20 +77,28 @@ fun SignInScreen(
         ) {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
+                verticalArrangement = Arrangement.SpaceAround
             ) {
+                Image(
+                    painter = painterResource(id = R.drawable.asnova_logo),
+                    contentDescription = "logo",
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 32.dp)
+                )
+                Spacer(modifier = Modifier.height(32.dp))
+
                 // Google Sign-In Button
                 Box(
                     modifier = Modifier
-                        .size(450.dp, 60.dp)
+                        .fillMaxWidth()
+                        .padding(horizontal = 20.dp)
                         .shadow(
                             elevation = 2.dp,
-                            shape = RoundedCornerShape(percent = 10),
+                            shape = RoundedCornerShape(percent = 12),
                             spotColor = Color.Black,
                             ambientColor = Color.Black
                         )
-                        .background(Color(0xFFF2F2F2))
-                        .clip(RoundedCornerShape(10))
+                        .background(Color.White)
+                        .clip(RoundedCornerShape(12))
                         .clickable(onClick = onSignInClick)
                 ) {
                     Image(
@@ -134,14 +144,14 @@ fun SignInScreen(
                 )
                 Spacer(modifier = Modifier.height(16.dp))
 
-                TextButton(onClick = { goOtp.invoke() }) {
-                    Text(
-                        text = stringResource(R.string.login_using_phone),
-                        color = greenAsnova,
-                        fontSize = 12.sp
-                    )
-                }
-                Spacer(modifier = Modifier.height(16.dp))
+//                TextButton(onClick = { goOtp.invoke() }) {
+//                    Text(
+//                        text = stringResource(R.string.login_using_phone),
+//                        color = greenAsnova,
+//                        fontSize = 12.sp
+//                    )
+//                }
+//                Spacer(modifier = Modifier.height(16.dp))
             }
         }
     }

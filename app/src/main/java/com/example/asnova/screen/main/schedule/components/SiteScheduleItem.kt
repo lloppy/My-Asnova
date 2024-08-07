@@ -46,7 +46,7 @@ fun SiteScheduleItem(
                     .fillMaxHeight()
                     .weight(0.6f)
                     .clip(RoundedCornerShape(8.dp))
-                    .background(Color.Black.copy(alpha = 0.2f))
+                    .background(Color.Black.copy(alpha = 0.35f))
             )
 
             Column(
