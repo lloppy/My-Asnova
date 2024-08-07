@@ -22,6 +22,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarMonth
+import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material.icons.filled.People
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
@@ -147,7 +148,7 @@ fun ScheduleScreen(
                                     .height(
                                         screenHeight
                                             .minus(bottomBarHeight)
-                                            .div(4)
+                                            .div(4).plus(20.dp)
                                     )
                                     .paint(
                                         painterResource(id = R.drawable.asnova_future_gen),
@@ -179,19 +180,20 @@ fun ScheduleScreen(
                                         },
                                         thumbContent = {
                                             Icon(
-                                                imageVector = if (checked) Icons.Filled.CalendarMonth else Icons.Filled.People,
+                                                imageVector = if (checked) Icons.Filled.CalendarToday else Icons.Filled.People,
                                                 contentDescription = null,
-                                                modifier = Modifier.size(SwitchDefaults.IconSize)
+                                                modifier = Modifier.size(20.dp)
                                             )
                                         },
                                         colors = SwitchDefaults.colors(
-                                            checkedIconColor = Color.Black,
+                                            checkedIconColor = Color.Black.copy(alpha = 0.9f),
                                             checkedTrackColor = Color.Black.copy(alpha = 0.5f),
                                             checkedThumbColor = Color.White.copy(alpha = 0.8f),
                                             uncheckedTrackColor = grayAsnova.copy(alpha = 0.3f),
                                             uncheckedBorderColor = Color.Transparent,
                                             uncheckedThumbColor = Color.Black.copy(alpha = 0.6f)
-                                        )
+                                        ),
+                                        modifier = Modifier.size(60.dp)
                                     )
                                 }
                             }

@@ -3,10 +3,7 @@ package com.example.asnova.screen.main.schedule.components
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -24,6 +21,7 @@ import com.example.asnova.R
 import com.example.asnova.ui.theme.darkAsnova
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import java.util.Locale
 
 @Composable
 fun DateBox(
@@ -33,38 +31,38 @@ fun DateBox(
 ) {
     val boxSize = 90.dp
 
+    val textColor = if (date == currentDate) {
+        darkAsnova.copy(alpha = 0.6f)
+    } else {
+        darkAsnova.copy(alpha = 0.9f)
+    }
+
     val boxModifier = Modifier
         .size(boxSize)
         .padding(start = 8.dp)
-        .padding(top = 12.dp, bottom = 12.dp)
+        .padding(top = 16.dp, bottom = 16.dp)
         .clip(RoundedCornerShape(12.dp))
-        .background(color = darkAsnova.copy(alpha = 0.9f))
+        .background(color = textColor)
         .clickable {
             onDateSelected(date)
         }
 
+    val dateFormatter = DateTimeFormatter.ofPattern("d MMMM", Locale("ru"))
+
     Column(
         modifier = boxModifier,
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.SpaceBetween
+        verticalArrangement = Arrangement.Center
     ) {
-        Row(
-            modifier = Modifier
-                .padding(8.dp)
-                .fillMaxWidth(),
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = when (date) {
-                    currentDate -> stringResource(id = R.string.today)
-                    currentDate.plusDays(1) -> stringResource(id = R.string.tomorrow)
-                    else -> date.format(DateTimeFormatter.ofPattern("d MMMM"))
-                },
-                color = Color.White,
-                style = MaterialTheme.typography.bodyLarge,
-                textAlign = TextAlign.Center
-            )
-        }
+        Text(
+            text = when (date) {
+                currentDate -> stringResource(id = R.string.today)
+                currentDate.plusDays(1) -> stringResource(id = R.string.tomorrow)
+                else -> date.format(dateFormatter)
+            },
+            color = Color.White,
+            style = MaterialTheme.typography.bodyLarge,
+            textAlign = TextAlign.Center
+        )
     }
 }

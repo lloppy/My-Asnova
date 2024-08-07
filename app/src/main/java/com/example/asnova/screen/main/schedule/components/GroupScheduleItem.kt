@@ -3,6 +3,7 @@ package com.example.asnova.screen.main.schedule.components
 import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -38,9 +39,10 @@ fun GroupScheduleItem(
 ) {
     Box(modifier = Modifier
         .fillMaxSize()
-        .padding(horizontal = 24.dp, vertical = 16.dp)
+        .padding(horizontal = 24.dp, vertical = 14.dp)
         .clip(RoundedCornerShape(12.dp))
         .background(color = MaterialTheme.colorScheme.onSecondary)
+        .border(width = 2.dp, color = grayAsnova, shape = RoundedCornerShape(12.dp))
         .clickable {
 
         }) {

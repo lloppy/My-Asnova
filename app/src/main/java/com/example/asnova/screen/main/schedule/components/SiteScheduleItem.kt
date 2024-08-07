@@ -35,7 +35,7 @@ fun SiteScheduleItem(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(FeedItemHeight.div(2).plus(10.dp)),
+                .height(FeedItemHeight.div(2).plus(12.dp)),
             verticalAlignment = Alignment.Top
         ) {
             AsyncImage(
@@ -44,8 +44,9 @@ fun SiteScheduleItem(
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .fillMaxHeight()
-                    .weight(0.7f)
+                    .weight(0.6f)
                     .clip(RoundedCornerShape(8.dp))
+                    .background(Color.Black.copy(alpha = 0.2f))
             )
 
             Column(
