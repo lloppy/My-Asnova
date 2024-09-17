@@ -1,10 +1,8 @@
 package com.example.asnova.screen.log_in
 
-import android.app.Activity
 import android.content.Intent
 import android.content.IntentSender
 import android.content.SharedPreferences
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.asnova.domain.usecase.CreateUserWithPhoneUseCase
@@ -14,7 +12,6 @@ import com.asnova.domain.usecase.SignInWithIntentUseCase
 import com.asnova.domain.usecase.SignInWithOtpUseCase
 import com.asnova.model.Resource
 import com.asnova.model.SignInResult
-import com.asnova.storage.KEY_USER_SETTING
 import com.example.asnova.data.UserManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -42,8 +39,8 @@ class LogInViewModel @Inject constructor(
     val state = _state.asStateFlow()
 
     init {
+        UserManager.init(userSharedPreferences)
         checkIfUserIsSignedIn()
-        getUserStatusFromSharedPref()
     }
 
     fun signInWithOtp(otp: String, verificationId: String) {
@@ -65,16 +62,6 @@ class LogInViewModel @Inject constructor(
             }
             onSignInResult(SignInResult(data = user, errorMessage = errorMessage))
         }
-    }
-
-    private fun getUserStatusFromSharedPref() {
-        val userStatus = userSharedPreferences.getString(KEY_USER_SETTING, false.toString())
-        UserManager.status = when (userStatus) {
-            true.toString() -> true
-            false.toString() -> false
-            else -> false
-        }
-        Log.e("login_info", "UserManager status is $userStatus")
     }
 
     private fun checkIfUserIsSignedIn() {

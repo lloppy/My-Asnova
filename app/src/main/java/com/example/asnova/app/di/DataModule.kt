@@ -37,6 +37,7 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 class DataModule {
+    // Паттерн Singleton
     @Provides
     @Singleton
     fun provideUserSharedPreferences(@ApplicationContext context: Context): SharedPreferences {

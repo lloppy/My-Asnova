@@ -126,4 +126,4 @@ fun BottomNavigationBar(navController: NavController) {
     }
 }
 
-val bottomBarHeight = 90.dp
+val bottomBarHeight = 80.dp
