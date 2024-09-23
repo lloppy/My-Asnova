@@ -172,7 +172,7 @@ fun ScheduleScreen(
                                         color = Color.White
                                     )
 
-                                    if (!state.value.isNullOrEmpty()) {
+                                    if (!state.privateSchedule.isNullOrEmpty()) {
                                         Switch(
                                             checked = checked,
                                             onCheckedChange = {
@@ -201,7 +201,7 @@ fun ScheduleScreen(
                             }
                         }
                     }
-                    if (checked && !state.value.isNullOrEmpty()) {
+                    if (checked && !state.privateSchedule.isNullOrEmpty()) {
                         item {
                             LazyRow(Modifier.padding(horizontal = 24.dp)) {
                                 items(dateList) { date ->
@@ -216,7 +216,7 @@ fun ScheduleScreen(
                                 }
                             }
                         }
-                        items(state.value) { item ->
+                        items(state.privateSchedule) { item ->
                             GroupScheduleItem(
                                 item,
                                 clipboardManager,
@@ -226,7 +226,7 @@ fun ScheduleScreen(
                             )
                         }
                     } else {
-                        items(state.valueFromSite) { item ->
+                        items(state.siteSchedule) { item ->
                             SiteScheduleItem(
                                 item = item,
                                 onItemClick = {

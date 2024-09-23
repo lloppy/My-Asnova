@@ -4,8 +4,8 @@ import com.asnova.model.AsnovaSchedule
 import com.asnova.model.AsnovaSiteSchedule
 
 data class AsnovaScheduleState(
-    var value: List<AsnovaSchedule> = emptyList(),
-    var valueFromSite: List<AsnovaSiteSchedule> = emptyList(),
+    var privateSchedule: List<AsnovaSchedule> = emptyList(),
+    var siteSchedule: List<AsnovaSiteSchedule> = emptyList(),
     val error: String = "",
     val loading: Boolean = false
 )

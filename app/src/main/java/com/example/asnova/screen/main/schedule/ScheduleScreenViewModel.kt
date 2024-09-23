@@ -55,9 +55,9 @@ class ScheduleScreenViewModel @Inject constructor(
                 is Resource.Success -> {
                     Log.d("calendar_info", "Schedules loaded")
 
-                    _state.value = AsnovaScheduleState(value = result.data ?: emptyList())
+                    _state.value = AsnovaScheduleState(privateSchedule = result.data ?: emptyList())
                     val temp = mutableListOf<AsnovaSchedule>()
-                    for (item in _state.value.value) {
+                    for (item in _state.value.privateSchedule) {
                         if (selectedDateMutableState.value?.dayOfMonth == item.start.dayOfMonth &&
                             selectedDateMutableState.value?.monthValue == item.start.monthValue &&
                             selectedDateMutableState.value?.year == item.start.year
@@ -65,7 +65,7 @@ class ScheduleScreenViewModel @Inject constructor(
                             temp.add(item)
                         }
                     }
-                    _state.value.value = temp
+                    _state.value.privateSchedule = temp
                 }
 
                 is Resource.Error -> {
@@ -85,12 +85,12 @@ class ScheduleScreenViewModel @Inject constructor(
         getScheduleFromSiteUseCase(callback = { result ->
             when (result) {
                 is Resource.Success -> {
-                    _state.value = AsnovaScheduleState(valueFromSite = result.data ?: emptyList())
+                    _state.value = AsnovaScheduleState(siteSchedule = result.data ?: emptyList())
                     val temp = mutableListOf<AsnovaSiteSchedule>()
-                    for (item in _state.value.valueFromSite) {
+                    for (item in _state.value.siteSchedule) {
                         temp.add(item)
                     }
-                    _state.value.valueFromSite = temp
+                    _state.value.siteSchedule = temp
                 }
 
                 is Resource.Error -> {
@@ -107,12 +107,12 @@ class ScheduleScreenViewModel @Inject constructor(
     }
 
     private fun filterScheduleBySelectedDate() {
-        val temp = _state.value.value.filter {
+        val temp = _state.value.privateSchedule.filter {
             selectedDateMutableState.value?.let { date ->
                 it.start.toLocalDate() == date
             } ?: false
         }
-        _state.value = _state.value.copy(value = temp)
+        _state.value = _state.value.copy(privateSchedule = temp)
     }
 
 
