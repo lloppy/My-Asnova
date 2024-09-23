@@ -14,6 +14,7 @@ import com.asnova.model.AsnovaSchedule
 import com.asnova.model.AsnovaSiteSchedule
 import com.asnova.model.Resource
 import com.asnova.model.User
+import com.example.asnova.data.UserManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.time.LocalDate
 import javax.inject.Inject
@@ -36,7 +37,9 @@ class ScheduleScreenViewModel @Inject constructor(
     val selectedDate: MutableLiveData<LocalDate?> = selectedDateMutableState
 
     init {
-        loadScheduleForGroup()
+        if (UserManager.isStudentOrWorker()) {
+            loadScheduleForGroup()
+        }
         loadScheduleFromSite()
     }
 
@@ -119,7 +122,9 @@ class ScheduleScreenViewModel @Inject constructor(
     }
 
     fun pullToRefresh() {
+        if (UserManager.isStudentOrWorker()) {
+            loadScheduleForGroup()
+        }
         loadScheduleFromSite()
-        loadScheduleForGroup()
     }
 }

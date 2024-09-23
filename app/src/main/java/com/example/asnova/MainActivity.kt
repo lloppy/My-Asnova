@@ -16,10 +16,12 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.asnova.model.Role
+import com.example.asnova.data.UserManager
 import com.example.asnova.navigation.Screen
 import com.example.asnova.screen.greeting.GreetingScreen
-import com.example.asnova.screen.log_in.LogInViewModel
-import com.example.asnova.screen.log_in.OtpScreen
+import com.example.asnova.screen.log_in.SignInScreenViewModel
+import com.example.asnova.screen.log_in.components.OtpScreen
 import com.example.asnova.screen.log_in.SignInScreen
 import com.example.asnova.screen.main.MainScreen
 import com.example.asnova.screen.splash.SplashScreen
@@ -42,7 +44,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             AsnovaTheme {
                 navController = rememberNavController()
-                val viewModel: LogInViewModel = hiltViewModel()
+                val viewModel: SignInScreenViewModel = hiltViewModel()
                 val state by viewModel.state.collectAsStateWithLifecycle()
 
                 val launcher = rememberLauncherForActivityResult(
@@ -60,7 +62,7 @@ class MainActivity : ComponentActivity() {
                 )
 
                 LaunchedEffect(key1 = state.isSignInSuccessful) {
-                    if (state.isSignInSuccessful) {
+                    if (state.isSignInSuccessful || UserManager.getRole() == Role.VISITOR) {
                         navController.navigate(route = Screen.Main.route) {
                             popUpTo(route = Screen.Main.route) {
                                 inclusive = true

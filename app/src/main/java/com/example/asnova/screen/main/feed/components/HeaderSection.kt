@@ -22,7 +22,7 @@ import com.example.asnova.navigation.bottomBarHeight
 @Composable
 fun HeaderSection(
     userData: User?,
-    threeSegments: List<String>,
+    segments: List<String>,
     selectedSegment: String,
     pictureBackgroundId: Int,
     onSegmentSelected: (String) -> Unit
@@ -62,7 +62,7 @@ fun HeaderSection(
             modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
         ) {
             SegmentedControl(
-                segments = threeSegments,
+                segments = segments,
                 selectedSegment = selectedSegment,
                 onSegmentSelected = onSegmentSelected,
                 modifier = Modifier.height(52.dp)

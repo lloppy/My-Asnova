@@ -1,6 +1,5 @@
-package com.example.asnova.screen.log_in
+package com.example.asnova.screen.log_in.components
 
-import android.content.Intent
 import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
@@ -12,13 +11,14 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.asnova.screen.log_in.components.OtpView
+import com.example.asnova.screen.log_in.SignInScreenViewModel
+import com.example.asnova.screen.log_in.SignInState
 import kotlinx.coroutines.launch
 
 @Composable
 fun OtpScreen(
     state: SignInState,
-    viewModel: LogInViewModel = hiltViewModel()
+    viewModel: SignInScreenViewModel = hiltViewModel()
 ) {
     var mobile by remember { mutableStateOf("") }
     var otp by remember { mutableStateOf("") }

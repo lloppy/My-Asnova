@@ -33,8 +33,10 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.LifecycleOwner
 import androidx.navigation.NavController
 import com.asnova.model.Resource
+import com.asnova.model.Role
 import com.asnova.model.User
 import com.example.asnova.R
+import com.example.asnova.data.UserManager
 import com.example.asnova.navigation.bottomBarHeight
 import com.example.asnova.screen.main.feed.components.FeedItemHeight
 import com.example.asnova.screen.main.feed.components.FeedItemView
@@ -64,6 +66,13 @@ fun FeedScreen(
     val context = LocalContext.current
     var userData by remember { mutableStateOf<User?>(null) }
 
+    val segmentsForCurrentUser =
+        if (UserManager.isStudentOrWorker()) {
+            Segments.all
+        } else {
+            Segments.forVisitor
+        }
+
     LaunchedEffect(Unit) {
         viewModel.getUserData { resource ->
             when (resource) {
@@ -92,7 +101,7 @@ fun FeedScreen(
                     item {
                         HeaderSection(
                             userData = userData,
-                            threeSegments = Segments.all,
+                            segments = segmentsForCurrentUser,
                             selectedSegment = selectedThreeSegment,
                             pictureBackgroundId = R.drawable.asnova_future_gen,
                             onSegmentSelected = {
@@ -124,7 +133,7 @@ fun FeedScreen(
                 item {
                     HeaderSection(
                         userData = userData,
-                        threeSegments = Segments.all,
+                        segments = segmentsForCurrentUser,
                         selectedSegment = selectedThreeSegment,
                         pictureBackgroundId = R.drawable.asnova_future_gen,
                         onSegmentSelected = {

@@ -24,8 +24,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import com.asnova.model.Role
 import com.asnova.model.User
 import com.example.asnova.R
+import com.example.asnova.data.UserManager
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -76,13 +78,15 @@ fun NewsHeader(
             Spacer(modifier = Modifier.height(24.dp))
             CurrentDateText()
             Spacer(modifier = Modifier.height(12.dp))
-            Text(
-                //Добро пожаловать
-                text = "С возвращением${if (userData?.username.isNullOrEmpty()) "!" else ",\n${userData!!.username}"}",
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold,
-                color = Color.White
-            )
+
+            if (UserManager.isStudentOrWorker()) {
+                Text(
+                    text = "С возвращением${if (userData?.username.isNullOrEmpty()) "!" else ",\n${userData!!.username}"}",
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White
+                )
+            }
         }
     }
 }

@@ -126,6 +126,7 @@ fun GreetingScreen(
 
                     RoleButton(roleName = Role.VISITOR, R.drawable.guest) {
                         viewModel.onRoleSelected(Role.VISITOR){
+                            navHostController.navigate(Screen.Main.route)
                         }
                     }
                 }
@@ -142,7 +143,8 @@ fun RoleButton(roleName: String, iconId: Int, onClick: () -> Unit) {
             modifier = Modifier
                 .size(75.dp),
             shape = CircleShape,
-            colors = ButtonDefaults.buttonColors(containerColor = Color.White)
+            colors = ButtonDefaults.buttonColors(containerColor = Color.White),
+            elevation = ButtonDefaults.buttonElevation(defaultElevation = 10.dp)
         ) {
             Image(
                 painter = painterResource(id = iconId),

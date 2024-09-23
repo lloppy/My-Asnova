@@ -7,6 +7,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.asnova.model.Role
 import com.asnova.storage.KEY_USER_SETTING
+import com.example.asnova.screen.main.feed.components.Segments
 
 /*
     В Kotlin ключевое слово Object используется для создания объекта-одиночки
@@ -27,6 +28,14 @@ object UserManager {
         _role = newRole
         // TODO() в самом коде сохранение через юзкейс
         // sharedPreferences.edit().putString(KEY_USER_SETTING, newRole).apply()
+    }
+
+    fun isStudentOrWorker(): Boolean {
+        return _role == Role.STUDENT || _role == Role.WORKER
+    }
+
+    fun isGuest(): Boolean {
+        return _role == Role.VISITOR || _role == Role.NONE
     }
 
     fun getRole(): String {

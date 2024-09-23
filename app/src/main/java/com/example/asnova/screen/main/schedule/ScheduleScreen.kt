@@ -5,7 +5,6 @@ import android.content.Intent
 import android.net.Uri
 import android.widget.Toast
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,7 +20,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material.icons.filled.People
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
@@ -69,7 +67,6 @@ import com.example.asnova.ui.theme.grayAsnova
 import com.example.asnova.utils.SkeletonScreen
 import com.example.asnova.utils.navigation.Router
 import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -144,11 +141,12 @@ fun ScheduleScreen(
                             Column(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .clip(RoundedCornerShape(0.dp)) //topStart = 0.dp, topEnd = 0.dp, bottomEnd = 16.dp, bottomStart = 16.dp))
+                                    .clip(RoundedCornerShape(0.dp))
                                     .height(
                                         screenHeight
                                             .minus(bottomBarHeight)
-                                            .div(4).plus(20.dp)
+                                            .div(4)
+                                            .plus(20.dp)
                                     )
                                     .paint(
                                         painterResource(id = R.drawable.asnova_future_gen),
@@ -161,7 +159,9 @@ fun ScheduleScreen(
                                 ScheduleHeader(userData = userData)
 
                                 Row(
-                                    modifier = Modifier.fillMaxWidth().padding(start = 32.dp, end = 32.dp, bottom = 12.dp),
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(start = 32.dp, end = 32.dp, bottom = 12.dp),
                                     horizontalArrangement = Arrangement.SpaceBetween,
                                     verticalAlignment = Alignment.Top
                                 ) {
@@ -172,34 +172,36 @@ fun ScheduleScreen(
                                         color = Color.White
                                     )
 
-                                    Switch(
-                                        checked = checked,
-                                        onCheckedChange = {
-                                            checked = it
-                                            if (it) viewModel.loadScheduleForGroup() else viewModel.loadScheduleFromSite()
-                                        },
-                                        thumbContent = {
-                                            Icon(
-                                                imageVector = if (checked) Icons.Filled.CalendarToday else Icons.Filled.People,
-                                                contentDescription = null,
-                                                modifier = Modifier.size(20.dp)
-                                            )
-                                        },
-                                        colors = SwitchDefaults.colors(
-                                            checkedIconColor = Color.Black.copy(alpha = 0.9f),
-                                            checkedTrackColor = Color.Black.copy(alpha = 0.5f),
-                                            checkedThumbColor = Color.White.copy(alpha = 0.8f),
-                                            uncheckedTrackColor = grayAsnova.copy(alpha = 0.3f),
-                                            uncheckedBorderColor = Color.Transparent,
-                                            uncheckedThumbColor = Color.Black.copy(alpha = 0.6f)
-                                        ),
-                                        modifier = Modifier.size(60.dp)
-                                    )
+                                    if (!state.value.isNullOrEmpty()) {
+                                        Switch(
+                                            checked = checked,
+                                            onCheckedChange = {
+                                                checked = it
+                                                if (it) viewModel.loadScheduleForGroup() else viewModel.loadScheduleFromSite()
+                                            },
+                                            thumbContent = {
+                                                Icon(
+                                                    imageVector = if (checked) Icons.Filled.CalendarToday else Icons.Filled.People,
+                                                    contentDescription = null,
+                                                    modifier = Modifier.size(20.dp)
+                                                )
+                                            },
+                                            colors = SwitchDefaults.colors(
+                                                checkedIconColor = Color.Black.copy(alpha = 0.9f),
+                                                checkedTrackColor = Color.Black.copy(alpha = 0.5f),
+                                                checkedThumbColor = Color.White.copy(alpha = 0.8f),
+                                                uncheckedTrackColor = grayAsnova.copy(alpha = 0.3f),
+                                                uncheckedBorderColor = Color.Transparent,
+                                                uncheckedThumbColor = Color.Black.copy(alpha = 0.6f)
+                                            ),
+                                            modifier = Modifier.size(60.dp)
+                                        )
+                                    }
                                 }
                             }
                         }
                     }
-                    if (checked) {
+                    if (checked && !state.value.isNullOrEmpty()) {
                         item {
                             LazyRow(Modifier.padding(horizontal = 24.dp)) {
                                 items(dateList) { date ->

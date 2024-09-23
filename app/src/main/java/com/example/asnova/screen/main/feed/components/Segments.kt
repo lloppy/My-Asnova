@@ -9,4 +9,5 @@ object Segments {
     const val SAFETY = "Охрана труда"
 
     val all = listOf(MY_GROUP, WORK_PROFESSIONS, SAFETY)
+    val forVisitor = listOf(WORK_PROFESSIONS, SAFETY)
 }
