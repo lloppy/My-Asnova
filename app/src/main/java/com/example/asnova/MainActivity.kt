@@ -17,6 +17,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.asnova.navigation.Screen
+import com.example.asnova.screen.greeting.GreetingScreen
 import com.example.asnova.screen.log_in.LogInViewModel
 import com.example.asnova.screen.log_in.OtpScreen
 import com.example.asnova.screen.log_in.SignInScreen
@@ -69,9 +70,12 @@ class MainActivity : ComponentActivity() {
                     }
                 }
 
-                NavHost(navController = navController, startDestination = Screen.Splash.route) {
+                NavHost(navController = navController, startDestination = Screen.Greeting.route) {
+                    composable(Screen.Greeting.route) {
+                        GreetingScreen()
+                    }
                     composable(Screen.Splash.route) {
-                        SplashScreen(navHostController = navController, route = Screen.LogIn.route)
+                        SplashScreen(navHostController = navController, route = Screen.Greeting.route)
                     }
                     composable(Screen.LogIn.route) {
                         SignInScreen(
