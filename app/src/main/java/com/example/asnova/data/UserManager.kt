@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import com.asnova.model.Role
 import com.asnova.storage.KEY_USER_SETTING
 
 /*
@@ -15,17 +16,23 @@ import com.asnova.storage.KEY_USER_SETTING
 
 // Паттерн Singleton
 object UserManager {
-    private var status by mutableStateOf(false)
-
+    private var _role: String = Role.NONE
     fun init(sharedPreferences: SharedPreferences) {
-        val userStatus = sharedPreferences.getString(KEY_USER_SETTING, false.toString())
-        status = when (userStatus) {
-            true.toString() -> true
-            false.toString() -> false
-            else -> false
-        }
-        Log.e("login_info", "UserManager status is $userStatus")
+        val userRole = sharedPreferences.getString(KEY_USER_SETTING, Role.NONE) ?: Role.NONE
+        _role = userRole
+        Log.e("login_info", "UserManager role is $_role")
     }
+
+    fun setRole(newRole: String) {
+        _role = newRole
+        // TODO() в самом коде сохранение через юзкейс
+        // sharedPreferences.edit().putString(KEY_USER_SETTING, newRole).apply()
+    }
+
+    fun getRole(): String {
+        return _role
+    }
+
 }
 
 
