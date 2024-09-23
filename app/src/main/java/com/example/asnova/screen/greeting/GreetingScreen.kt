@@ -11,9 +11,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -22,20 +24,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.DeviceFontFamilyName
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavHostController
 import com.asnova.model.Role
 import com.example.asnova.R
+import com.example.asnova.navigation.Screen
 
 @Composable
 fun GreetingScreen(
-    viewModel: GreetingScreenViewModel = hiltViewModel()
+    viewModel: GreetingScreenViewModel = hiltViewModel(),
+    navHostController: NavHostController
 ) {
     val state by viewModel.state
 
@@ -72,46 +75,23 @@ fun GreetingScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(top = 40.dp, start = 24.dp, end = 16.dp, bottom = 40.dp),
+                .padding(top = 12.dp, start = 26.dp, end = 16.dp, bottom = 60.dp),
             horizontalAlignment = Alignment.Start,
             verticalArrangement = Arrangement.SpaceBetween
         ) {
-            Spacer(modifier = Modifier.height(80.dp))
-            Column(verticalArrangement = Arrangement.Top){
+            Spacer(modifier = Modifier.height(70.dp))
+            Column(
+                verticalArrangement = Arrangement.Top,
+                modifier = Modifier.padding(start = 6.dp)
+            ) {
                 Text(
-                    text = "Добро",
-                    fontFamily = FontFamily(
-                        Font(
-                            DeviceFontFamilyName("sans-serif-condensed"),
-                            weight = FontWeight.SemiBold
-                        )
-                    ),
-                    lineHeight = 1.sp,
+                    text = "Добро\nпожаловать в",
+                    style = MaterialTheme.typography.displaySmall.copy(fontWeight = FontWeight.Bold),
                     color = Color.White,
-                    fontSize = 48.sp,
-                )
-                Text(
-                    text = "пожаловать в",
-                    fontFamily = FontFamily(
-                        Font(
-                            DeviceFontFamilyName("sans-serif-condensed"),
-                            weight = FontWeight.SemiBold
-                        )
-                    ),
-                    lineHeight = 1.sp,
-                    color = Color.White,
-                    fontSize = 48.sp,
                 )
                 Text(
                     text = "УЭЦ АСНОВА!",
-                    fontFamily = FontFamily(
-                        Font(
-                            DeviceFontFamilyName("sans-serif-condensed"),
-                            weight = FontWeight.SemiBold
-                        )
-                    ),
-                    lineHeight = 1.sp,
-                    fontSize = 48.sp,
+                    style = MaterialTheme.typography.displaySmall.copy(fontWeight = FontWeight.Bold),
                     color = Color(0xFF80F988),
                 )
             }
@@ -120,28 +100,33 @@ fun GreetingScreen(
             Column {
                 Text(
                     text = "Выберите свою роль:",
-                    fontSize = 18.sp,
-                    color = Color.White.copy(alpha = 0.82f),
-                    modifier = Modifier.padding(bottom = 16.dp)
+                    fontSize = 16.sp,
+                    color = Color.White.copy(alpha = 0.8f),
+                    modifier = Modifier.padding(bottom = 24.dp, start = 8.dp)
                 )
 
                 Row(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    RoleButton(roleName = Role.WORKER) {
-                        viewModel.onRoleSelected(Role.WORKER)
+                    RoleButton(roleName = Role.WORKER, R.drawable.worker) {
+                        viewModel.onRoleSelected(Role.WORKER) {
+                            navHostController.navigate(Screen.LogIn.route)
+                        }
                     }
 
-                    RoleButton(
-                        roleName = Role.STUDENT,
-                    ) {
-                        viewModel.onRoleSelected(Role.STUDENT)
+                    RoleButton(roleName = Role.STUDENT, R.drawable.student) {
+                        viewModel.onRoleSelected(Role.STUDENT) {
+                            navHostController.navigate(Screen.LogIn.route)
+                        }
                     }
 
-                    RoleButton(roleName = Role.VISITOR) {
-                        viewModel.onRoleSelected(Role.VISITOR)
+                    RoleButton(roleName = Role.VISITOR, R.drawable.guest) {
+                        viewModel.onRoleSelected(Role.VISITOR){
+                        }
                     }
                 }
             }
@@ -150,27 +135,29 @@ fun GreetingScreen(
 }
 
 @Composable
-fun RoleButton(roleName: String, onClick: () -> Unit) {
-    Column {
-
+fun RoleButton(roleName: String, iconId: Int, onClick: () -> Unit) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Button(
             onClick = onClick,
             modifier = Modifier
-                .fillMaxWidth(0.25f)
-                .padding(vertical = 8.dp),
+                .size(75.dp),
             shape = CircleShape,
-            colors = ButtonDefaults.buttonColors(containerColor = Color.Blue)
+            colors = ButtonDefaults.buttonColors(containerColor = Color.White)
         ) {
             Image(
-                painter = painterResource(id = R.drawable.ic_schedule),
+                painter = painterResource(id = iconId),
+                modifier = Modifier
+                    .size(80.dp)
+                    .graphicsLayer(scaleX = 1.3f, scaleY = 1.3f),
                 contentDescription = roleName
             )
         }
+        Spacer(modifier = Modifier.height(5.dp))
 
         Text(
             text = roleName,
             color = Color.White,
-            fontSize = 15.sp,
+            fontSize = 15.sp
         )
     }
 }

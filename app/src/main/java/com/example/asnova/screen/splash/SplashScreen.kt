@@ -12,6 +12,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.navigation.NavHostController
 import com.example.asnova.R
@@ -41,9 +42,10 @@ fun SplashScreen(navHostController: NavHostController, route: String) {
         modifier = Modifier.fillMaxSize()
     ) {
         Icon(
-            painter = painterResource(id = R.drawable.ic_launcher_foreground), // asnova_logo
+            painter = painterResource(id = R.drawable.student), // asnova_logo
             contentDescription = "Logo",
-            modifier = Modifier.scale(scale.value * 3)
+            modifier = Modifier.scale(scale.value * 3),
+            tint = Color.Transparent
         )
     }
 }

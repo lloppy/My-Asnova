@@ -70,12 +70,12 @@ class MainActivity : ComponentActivity() {
                     }
                 }
 
-                NavHost(navController = navController, startDestination = Screen.Greeting.route) {
-                    composable(Screen.Greeting.route) {
-                        GreetingScreen()
-                    }
+                NavHost(navController = navController, startDestination = Screen.Splash.route) {
                     composable(Screen.Splash.route) {
                         SplashScreen(navHostController = navController, route = Screen.Greeting.route)
+                    }
+                    composable(Screen.Greeting.route) {
+                        GreetingScreen(navHostController = navController)
                     }
                     composable(Screen.LogIn.route) {
                         SignInScreen(
