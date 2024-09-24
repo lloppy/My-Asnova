@@ -14,10 +14,3 @@ data class WallItem(
     val hashtags: List<String> = emptyList(),
     val postUrl: String
 )
-
-data class WallImageItem(
-    val id: Int,
-    val height: Int,
-    val width: Int,
-    val url: String,
-)
