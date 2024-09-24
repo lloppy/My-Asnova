@@ -1,4 +1,4 @@
-package com.example.asnova.screen.main.profile_settings
+package com.example.asnova.screen.main.settings
 
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable

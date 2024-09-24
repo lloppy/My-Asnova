@@ -1,4 +1,4 @@
-package com.example.asnova.screen.main.profile_settings
+package com.example.asnova.screen.main.settings
 
 import android.content.Context
 import androidx.compose.foundation.background
@@ -61,7 +61,7 @@ fun ProfileSettingsScreen(
     lifecycleScope: LifecycleCoroutineScope,
     lifecycleOwner: LifecycleOwner,
     onNavigateToChats: () -> Unit,
-    viewModel: ProfileScreenViewModel = hiltViewModel()
+    viewModel: SettingsScreenViewModel = hiltViewModel()
 ) {
     var userData by remember { mutableStateOf<User?>(null) }
 

@@ -18,8 +18,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.asnova.screen.main.feed.FeedScreen
-import com.example.asnova.screen.main.profile_settings.ChatScreen
-import com.example.asnova.screen.main.profile_settings.ProfileSettingsScreen
+import com.example.asnova.screen.main.settings.ChatScreen
+import com.example.asnova.screen.main.settings.ProfileSettingsScreen
 import com.example.asnova.screen.main.schedule.ScheduleScreen
 import com.example.asnova.ui.theme.BottomBarHeight
 import com.example.asnova.utils.Router

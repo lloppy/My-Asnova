@@ -10,7 +10,6 @@ import com.asnova.storage.KEY_USER_SETTING
     https://apptractor.ru/info/techhype/kotlin-object.html
 */
 
-
 // Паттерн Singleton
 object UserManager {
     private var _role: String = Role.NONE

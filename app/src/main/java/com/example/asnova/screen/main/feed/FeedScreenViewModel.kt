@@ -32,6 +32,7 @@ class FeedScreenViewModel @Inject constructor(
 
     private val getUserDataUseCase: GetUserDataUseCase
 ) : ViewModel() {
+
     val availableSegments: List<String> = when (UserManager.getRole()) {
         Role.STUDENT, Role.WORKER -> Segments.all
         Role.GUEST, Role.NONE, Role.ADMIN -> Segments.forVisitor

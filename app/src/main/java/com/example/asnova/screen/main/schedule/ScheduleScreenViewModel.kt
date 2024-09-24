@@ -16,7 +16,6 @@ import com.asnova.model.Resource
 import com.asnova.model.Role
 import com.asnova.model.User
 import com.example.asnova.data.UserManager
-import com.example.asnova.screen.main.feed.components.Segments
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.time.LocalDate
 import javax.inject.Inject
