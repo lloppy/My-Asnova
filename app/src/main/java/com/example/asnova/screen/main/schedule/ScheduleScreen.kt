@@ -90,76 +90,75 @@ fun ScheduleScreen(
         }
     }
 
-    Box(modifier = Modifier.padding(bottom = BottomBarHeight)) {
-        Box(Modifier.fillMaxSize()) {
-            SkeletonScreen(
-                isLoading = state.loading,
-                skeleton = { ScheduleScreenSkeleton(userData, screenHeight) }
-            ) {
-                LazyColumn(
-                    Modifier
-                        .fillMaxSize()
-                        .pullRefresh(stateRefresh))
-                {
-                    item {
-                        Column(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.Top
-                        ) {
-                            // header section
-                            ScheduleHeader(userData, screenHeight)
-                        }
+    Box(modifier = Modifier
+        .padding(bottom = BottomBarHeight)
+        .fillMaxSize()) {
+        SkeletonScreen(
+            isLoading = state.loading,
+            skeleton = { ScheduleScreenSkeleton(userData, screenHeight) }
+        ) {
+            LazyColumn(
+                Modifier
+                    .fillMaxSize()
+                    .pullRefresh(stateRefresh)
+            )
+            {
+                item {
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Top
+                    ) {
+                        ScheduleHeader(userData, screenHeight)
                     }
+                }
 
-                    if (viewModel.canLoadPrivateSchedule()) {
-                        item {
-                            LazyRow(Modifier.padding(horizontal = 24.dp)) {
-                                items(dateList) { date ->
-                                    DateBox(
-                                        date = date,
-                                        currentDate = currentDate,
-                                        onDateSelected = { selectedDate ->
-                                            viewModel.saveDate(selectedDate)
-                                            viewModel.loadScheduleForGroup()
-                                        }
-                                    )
-                                }
-                            }
-                        }
-                        items(state.privateSchedule) { item ->
-                            GroupScheduleItem(item, context)
-                        }
-
-                    } else {
-                        items(state.siteSchedule) { item ->
-                            SiteScheduleItem(item) {
-                                context.startActivity(
-                                    Intent(
-                                        Intent.ACTION_VIEW,
-                                        Uri.parse(item.newsLink)
-                                    )
+                if (viewModel.canLoadPrivateSchedule()) {
+                    item {
+                        LazyRow(Modifier.padding(horizontal = 24.dp)) {
+                            items(dateList) { date ->
+                                DateBox(
+                                    date = date,
+                                    currentDate = currentDate,
+                                    onDateSelected = { selectedDate ->
+                                        viewModel.saveDate(selectedDate)
+                                        viewModel.loadScheduleForGroup()
+                                    }
                                 )
                             }
                         }
                     }
-
-                    if (state.error.isNotBlank()) {
-                        item {
-                            Text(
-                                text = state.error,
-                                color = MaterialTheme.colorScheme.error,
-                                textAlign = TextAlign.Center,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 20.dp)
-                                    .align(Alignment.Center)
+                    items(state.privateSchedule) { item ->
+                        GroupScheduleItem(item, context)
+                    }
+                } else if (!viewModel.canLoadPrivateSchedule()) {
+                    items(state.siteSchedule) { item ->
+                        SiteScheduleItem(item) {
+                            context.startActivity(
+                                Intent(
+                                    Intent.ACTION_VIEW,
+                                    Uri.parse(item.newsLink)
+                                )
                             )
                         }
                     }
                 }
+
+                if (state.error.isNotBlank()) {
+                    item {
+                        Text(
+                            text = state.error,
+                            color = MaterialTheme.colorScheme.error,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 20.dp)
+                                .align(Alignment.Center)
+                        )
+                    }
+                }
             }
-            PullRefreshIndicator(isRefreshing, stateRefresh, Modifier.align(Alignment.TopCenter))
         }
+        PullRefreshIndicator(isRefreshing, stateRefresh, Modifier.align(Alignment.TopCenter))
     }
 }

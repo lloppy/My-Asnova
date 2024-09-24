@@ -1,4 +1,4 @@
-package com.example.asnova.screen.sign_in.components
+package com.example.asnova.utils
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border

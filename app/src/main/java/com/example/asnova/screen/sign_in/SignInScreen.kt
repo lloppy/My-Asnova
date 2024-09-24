@@ -42,7 +42,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.asnova.R
-import com.example.asnova.screen.sign_in.components.OtpView
+import com.example.asnova.utils.OtpView
 import com.example.asnova.ui.theme.darkLinear
 import com.example.asnova.ui.theme.grayAsnova
 import com.vk.id.multibranding.OAuthListWidget
