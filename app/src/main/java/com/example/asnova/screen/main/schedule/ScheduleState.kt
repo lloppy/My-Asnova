@@ -1,11 +1,11 @@
 package com.example.asnova.screen.main.schedule
 
-import com.asnova.model.AsnovaSchedule
-import com.asnova.model.AsnovaSiteSchedule
+import com.asnova.model.ScheduleAsnovaPrivate
+import com.asnova.model.ScheduleAsnovaSite
 
 data class ScheduleState(
-    var privateSchedule: List<AsnovaSchedule> = emptyList(),
-    var siteSchedule: List<AsnovaSiteSchedule> = emptyList(),
+    var privateSchedule: List<ScheduleAsnovaPrivate> = emptyList(),
+    var siteSchedule: List<ScheduleAsnovaSite> = emptyList(),
     val error: String = "",
     val loading: Boolean = false
 )

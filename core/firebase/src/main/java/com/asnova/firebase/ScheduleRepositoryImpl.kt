@@ -3,8 +3,8 @@ package com.asnova.firebase
 import CalDavClient
 import android.util.Log
 import com.asnova.domain.repository.firebase.ScheduleRepository
-import com.asnova.model.AsnovaSchedule
-import com.asnova.model.AsnovaSiteSchedule
+import com.asnova.model.ScheduleAsnovaPrivate
+import com.asnova.model.ScheduleAsnovaSite
 import com.asnova.model.Resource
 import com.asnova.model.Schedule
 import com.google.firebase.Timestamp
@@ -13,18 +13,13 @@ import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.time.LocalTime
 import java.time.ZoneId
-import java.time.format.DateTimeFormatter
-import java.time.format.DateTimeParseException
 import java.util.Date
-import java.util.Locale
 import javax.inject.Inject
 
 class ScheduleRepositoryImpl @Inject constructor(
@@ -116,7 +111,7 @@ class ScheduleRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun getScheduleFromCalDav(callback: (Resource<List<AsnovaSchedule>>) -> Unit) {
+    override fun getScheduleFromCalDav(callback: (Resource<List<ScheduleAsnovaPrivate>>) -> Unit) {
         callback(Resource.Loading())
 
         CoroutineScope(Dispatchers.IO).launch {
@@ -142,7 +137,7 @@ class ScheduleRepositoryImpl @Inject constructor(
         TODO("Not yet implemented")
     }
 
-    override fun getScheduleFromSite(callback: (Resource<List<AsnovaSiteSchedule>>) -> Unit) {
+    override fun getScheduleFromSite(callback: (Resource<List<ScheduleAsnovaSite>>) -> Unit) {
         callback(Resource.Loading())
 
         CoroutineScope(Dispatchers.IO).launch {
@@ -167,7 +162,7 @@ class ScheduleRepositoryImpl @Inject constructor(
     }
 }
 
-private fun parseScheduleFromHtml(html: String, year: Int): List<AsnovaSiteSchedule> {
+private fun parseScheduleFromHtml(html: String, year: Int): List<ScheduleAsnovaSite> {
     val document = Jsoup.parse(html)
     val scheduleElements = document.select("div.seocategory__prodblock")
     Log.d("calendar_site_info", scheduleElements.text())
@@ -189,7 +184,7 @@ private fun parseScheduleFromHtml(html: String, year: Int): List<AsnovaSiteSched
         val newsLinkElement = element.selectFirst(".seocategory__prodblock-link")
         val newsLink = newsLinkElement?.attr("href") ?: ""
 
-        AsnovaSiteSchedule(
+        ScheduleAsnovaSite(
             dateRange = dateRange,
             year = year,
             timeRange = timeRange,

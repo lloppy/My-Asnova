@@ -23,13 +23,13 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
-import com.asnova.model.AsnovaSiteSchedule
+import com.asnova.model.ScheduleAsnovaSite
 import com.example.asnova.ui.theme.SiteScheduleItemHeight
 import com.example.asnova.ui.theme.SiteSchedulePictureHeight
 
 @Composable
 fun SiteScheduleItem(
-    item: AsnovaSiteSchedule,
+    item: ScheduleAsnovaSite,
     onItemClick: (String) -> Unit
 ) {
     Column(

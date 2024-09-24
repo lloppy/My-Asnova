@@ -59,7 +59,6 @@ fun ScheduleScreen(
 ) {
 
     val state = viewModel.state.value
-    val context = LocalContext.current
     var userData by remember { mutableStateOf<User?>(null) }
 
     val configuration = LocalConfiguration.current
@@ -71,8 +70,6 @@ fun ScheduleScreen(
 
     val currentDate = LocalDate.now()
     val dateList = List(7) { index -> currentDate.plusDays(index.toLong()) }
-
-    var checked by remember { mutableStateOf(true) } // MY_GROUP
 
     LaunchedEffect(Unit) {
         viewModel.getUserData { resource ->

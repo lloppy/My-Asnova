@@ -10,8 +10,8 @@ import com.asnova.domain.usecase.GetScheduleStateUseCase
 import com.asnova.domain.usecase.GetScheduleUseCase
 import com.asnova.domain.usecase.GetUserDataUseCase
 import com.asnova.domain.usecase.SaveScheduleStateUseCase
-import com.asnova.model.AsnovaSchedule
-import com.asnova.model.AsnovaSiteSchedule
+import com.asnova.model.ScheduleAsnovaPrivate
+import com.asnova.model.ScheduleAsnovaSite
 import com.asnova.model.Resource
 import com.asnova.model.Role
 import com.asnova.model.User
@@ -50,7 +50,7 @@ class ScheduleScreenViewModel @Inject constructor(
     }
     private fun loadAvailableSchedule() {
         when (UserManager.getRole()) {
-            Role.STUDENT, Role.WORKER, Role.ADMIN -> loadScheduleForGroup() // TODO () нужно передавать в параметры учителей и учеников параметр - группа, по которой нужно загрузить расписание и фильтровать по ней у админа такого фильтра просто не будет
+            Role.STUDENT, Role.WORKER -> loadScheduleForGroup() // TODO () нужно передавать в параметры учителей и учеников параметр - группа, по которой нужно загрузить расписание и фильтровать по ней у админа такого фильтра просто не будет
             Role.GUEST, Role.NONE -> loadScheduleFromSite()
             Role.ADMIN -> {
                 loadScheduleForGroup()
@@ -72,7 +72,7 @@ class ScheduleScreenViewModel @Inject constructor(
                     Log.d("calendar_info", "Schedules loaded")
 
                     _state.value = ScheduleState(privateSchedule = result.data ?: emptyList())
-                    val temp = mutableListOf<AsnovaSchedule>()
+                    val temp = mutableListOf<ScheduleAsnovaPrivate>()
                     for (item in _state.value.privateSchedule) {
                         if (selectedDateMutableState.value?.dayOfMonth == item.start.dayOfMonth &&
                             selectedDateMutableState.value?.monthValue == item.start.monthValue &&
@@ -102,7 +102,7 @@ class ScheduleScreenViewModel @Inject constructor(
             when (result) {
                 is Resource.Success -> {
                     _state.value = ScheduleState(siteSchedule = result.data ?: emptyList())
-                    val temp = mutableListOf<AsnovaSiteSchedule>()
+                    val temp = mutableListOf<ScheduleAsnovaSite>()
                     for (item in _state.value.siteSchedule) {
                         temp.add(item)
                     }

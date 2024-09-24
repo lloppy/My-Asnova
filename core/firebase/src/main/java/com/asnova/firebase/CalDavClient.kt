@@ -1,5 +1,4 @@
 import android.util.Log
-import com.asnova.model.ScheduleTask
 import net.fortuna.ical4j.data.CalendarBuilder
 import net.fortuna.ical4j.model.Calendar
 import net.fortuna.ical4j.model.Property
@@ -11,10 +10,8 @@ import java.io.StringReader
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
-import java.time.ZoneId
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
-import java.util.Date
 
 /*
 private val calDavClient = CalDavClient(
@@ -47,7 +44,7 @@ class CalDavClient(
         return calendarBuilder.build(stringReader)
     }
 
-    fun getScheduleList(): List<com.asnova.model.AsnovaSchedule> {
+    fun getScheduleList(): List<com.asnova.model.ScheduleAsnovaPrivate> {
         val calendarData = fetchCalendarData()
 
         val calendar = calendarData?.let { parseCalendarData(it) } ?: return emptyList()
@@ -68,7 +65,7 @@ class CalDavClient(
             Log.e("calendar_info", "__________________" )
 
 
-            com.asnova.model.AsnovaSchedule(
+            com.asnova.model.ScheduleAsnovaPrivate(
                 summary = event.getProperty<Property>(Property.SUMMARY)?.value,
                 created = parseDate(event.getProperty<Property>(Property.CREATED)?.value),
                 start = parseDate(event.getProperty<Property>(Property.DTSTART)?.value),
