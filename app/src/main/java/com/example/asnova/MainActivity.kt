@@ -24,10 +24,10 @@ import com.example.asnova.screen.log_in.SignInScreenViewModel
 import com.example.asnova.screen.log_in.components.OtpScreen
 import com.example.asnova.screen.log_in.SignInScreen
 import com.example.asnova.screen.main.MainScreen
-import com.example.asnova.screen.splash.SplashScreen
+import com.example.asnova.utils.SplashScreen
 import com.example.asnova.ui.theme.AsnovaTheme
-import com.example.asnova.utils.navigation.createExternalRouter
-import com.example.asnova.utils.navigation.navigate
+import com.example.asnova.utils.createExternalRouter
+import com.example.asnova.utils.navigate
 import com.vk.id.VKID
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -62,7 +62,7 @@ class MainActivity : ComponentActivity() {
                 )
 
                 LaunchedEffect(key1 = state.isSignInSuccessful) {
-                    if (state.isSignInSuccessful || UserManager.getRole() == Role.VISITOR) {
+                    if (state.isSignInSuccessful || UserManager.getRole() == Role.GUEST) {
                         navController.navigate(route = Screen.Main.route) {
                             popUpTo(route = Screen.Main.route) {
                                 inclusive = true

@@ -1,8 +1,6 @@
 package com.example.asnova.navigation
 
 import android.content.Context
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -23,7 +21,8 @@ import com.example.asnova.screen.main.feed.FeedScreen
 import com.example.asnova.screen.main.profile_settings.ChatScreen
 import com.example.asnova.screen.main.profile_settings.ProfileSettingsScreen
 import com.example.asnova.screen.main.schedule.ScheduleScreen
-import com.example.asnova.utils.navigation.Router
+import com.example.asnova.ui.theme.BottomBarHeight
+import com.example.asnova.utils.Router
 import com.example.bottombar.AnimatedBottomBar
 import com.example.bottombar.components.BottomBarItem
 import com.example.bottombar.model.IndicatorDirection
@@ -84,7 +83,7 @@ fun BottomNavigationBar(navController: NavController) {
     var selectedItem by remember { mutableIntStateOf(0) }
 
     AnimatedBottomBar(
-        bottomBarHeight = bottomBarHeight,
+        bottomBarHeight = BottomBarHeight,
         modifier = Modifier
             .shadow(8.dp, RoundedCornerShape(topStart = 40.dp, topEnd = 40.dp)),
         selectedItem = selectedItem,
@@ -125,5 +124,3 @@ fun BottomNavigationBar(navController: NavController) {
         }
     }
 }
-
-val bottomBarHeight = 80.dp

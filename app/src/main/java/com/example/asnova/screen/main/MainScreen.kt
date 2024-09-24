@@ -8,12 +8,10 @@ import androidx.lifecycle.LifecycleCoroutineScope
 import androidx.lifecycle.LifecycleOwner
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.example.asnova.R
-import com.example.asnova.data.UserManager
 import com.example.asnova.navigation.BottomNavigationBar
 import com.example.asnova.navigation.Screen
 import com.example.asnova.navigation.SetupNavGraph
-import com.example.asnova.utils.navigation.Router
+import com.example.asnova.utils.Router
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable

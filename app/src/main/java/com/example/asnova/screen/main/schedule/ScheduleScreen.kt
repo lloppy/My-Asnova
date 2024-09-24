@@ -40,7 +40,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.paint
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.ClipboardManager
@@ -57,15 +56,16 @@ import androidx.lifecycle.LifecycleOwner
 import com.asnova.model.Resource
 import com.asnova.model.User
 import com.example.asnova.R
-import com.example.asnova.navigation.bottomBarHeight
 import com.example.asnova.screen.main.schedule.components.DateBox
 import com.example.asnova.screen.main.schedule.components.GroupScheduleItem
 import com.example.asnova.screen.main.schedule.components.ScheduleHeader
-import com.example.asnova.screen.main.schedule.components.ScheduleScreenSkeleton
 import com.example.asnova.screen.main.schedule.components.SiteScheduleItem
+import com.example.asnova.ui.theme.BottomBarHeight
+import com.example.asnova.ui.theme.blackShadesLinear
 import com.example.asnova.ui.theme.grayAsnova
+import com.example.asnova.utils.Router
+import com.example.asnova.utils.ScheduleScreenSkeleton
 import com.example.asnova.utils.SkeletonScreen
-import com.example.asnova.utils.navigation.Router
 import java.time.LocalDate
 
 
@@ -121,7 +121,7 @@ fun ScheduleScreen(
         }
     }
 
-    Column(Modifier.padding(bottom = bottomBarHeight)) {
+    Column(Modifier.padding(bottom = BottomBarHeight)) {
         Box(Modifier.fillMaxSize()) {
             SkeletonScreen(
                 isLoading = state.loading,
@@ -144,7 +144,7 @@ fun ScheduleScreen(
                                     .clip(RoundedCornerShape(0.dp))
                                     .height(
                                         screenHeight
-                                            .minus(bottomBarHeight)
+                                            .minus(BottomBarHeight)
                                             .div(4)
                                             .plus(20.dp)
                                     )
@@ -152,7 +152,7 @@ fun ScheduleScreen(
                                         painterResource(id = R.drawable.asnova_future_gen),
                                         contentScale = ContentScale.Crop,
                                     )
-                                    .background(linear),
+                                    .background(blackShadesLinear),
                                 verticalArrangement = Arrangement.SpaceBetween,
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {
@@ -261,14 +261,3 @@ fun ScheduleScreen(
         }
     }
 }
-
-val linear = Brush.linearGradient(
-    listOf(
-        Color.Black.copy(alpha = 1f),
-        Color.Black.copy(alpha = 0.9f),
-        Color.Black.copy(alpha = 0.8f),
-        Color.Black.copy(alpha = 0.7f),
-        Color.Black.copy(alpha = 0.5f)
-    )
-)
-

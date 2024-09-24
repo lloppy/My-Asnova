@@ -1,4 +1,4 @@
-package com.example.asnova.screen.splash
+package com.example.asnova.utils
 
 import android.view.animation.OvershootInterpolator
 import androidx.compose.animation.core.Animatable

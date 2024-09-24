@@ -2,12 +2,8 @@ package com.example.asnova.data
 
 import android.content.SharedPreferences
 import android.util.Log
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import com.asnova.model.Role
 import com.asnova.storage.KEY_USER_SETTING
-import com.example.asnova.screen.main.feed.components.Segments
 
 /*
     В Kotlin ключевое слово Object используется для создания объекта-одиночки
@@ -34,14 +30,13 @@ object UserManager {
         return _role == Role.STUDENT || _role == Role.WORKER
     }
 
-    fun isGuest(): Boolean {
-        return _role == Role.VISITOR || _role == Role.NONE
-    }
-
     fun getRole(): String {
         return _role
     }
 
+    fun signOut() {
+        _role = Role.NONE
+    }
 }
 
 

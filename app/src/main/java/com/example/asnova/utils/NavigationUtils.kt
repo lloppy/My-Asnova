@@ -1,7 +1,19 @@
-package com.example.asnova.utils.navigation
+package com.example.asnova.utils
 
 import android.os.Bundle
 import androidx.core.os.bundleOf
+import androidx.navigation.NavController
+import androidx.navigation.NavOptionsBuilder
+
+fun NavController.navigate(
+    route: String,
+    params: Bundle?,
+    builder: NavOptionsBuilder.() -> Unit = {}
+) {
+    this.currentBackStackEntry?.arguments?.putAll(params)
+
+    navigate(route, builder)
+}
 
 fun createExternalRouter(block: (String, Bundle) -> Unit): Router = object : Router {
     override fun routeTo(screen: String, params: Bundle) {

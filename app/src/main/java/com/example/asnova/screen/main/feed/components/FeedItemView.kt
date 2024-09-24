@@ -35,15 +35,12 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import com.asnova.model.FeedItemUrlInfo
 import com.asnova.model.WallItem
+import com.example.asnova.ui.theme.FeedItemHeight
 import com.example.asnova.ui.theme.grayAsnova
-import java.text.SimpleDateFormat
-import java.time.Instant
-import java.time.LocalDate
-import java.time.ZoneId
-import java.time.temporal.ChronoUnit
-import java.util.Date
-import java.util.Locale
+import com.example.asnova.utils.formatRelativeDate
+import com.example.asnova.utils.formatTime
 
 @Composable
 fun FeedItemView(
@@ -53,7 +50,7 @@ fun FeedItemView(
 ) {
     Column(
         modifier = Modifier
-            .height(210.dp)
+            .height(FeedItemHeight.minus(10.dp))
             .padding(horizontal = 18.dp, vertical = 14.dp)
             .clip(RoundedCornerShape(8.dp))
             .clickable(
@@ -76,7 +73,7 @@ fun FeedItemView(
         ) {
             FeedItemImage(
                 imageUrl = feedItem.images.first().url,
-                width = 200.dp,
+                width = FeedItemHeight.minus(20.dp),
                 modifier = Modifier
                     .weight(1.1f)
                     .fillMaxHeight()
@@ -188,30 +185,3 @@ fun FeedItemImage(
         }
     }
 }
-
-data class FeedItemUrlInfo(
-    val id: String,
-    val url: String,
-    val title: String?,
-    val openOnlyOnBrowser: Boolean = false,
-)
-
-private fun formatRelativeDate(date: Date): String {
-    val now = LocalDate.now()
-    val givenDate = Instant.ofEpochMilli(date.time).atZone(ZoneId.systemDefault()).toLocalDate()
-
-    return when (val daysBetween = ChronoUnit.DAYS.between(givenDate, now).toInt()) {
-        0 -> "Сегодня"
-        1 -> "Вчера"
-        2 -> "Позавчера"
-        3, 4 -> "$daysBetween дня назад"
-        else -> "$daysBetween дней назад"
-    }
-}
-
-private fun formatTime(date: Date): String {
-    val formatter = SimpleDateFormat("HH:mm", Locale.getDefault())
-    return formatter.format(date)
-}
-
-val FeedItemHeight = 220.dp

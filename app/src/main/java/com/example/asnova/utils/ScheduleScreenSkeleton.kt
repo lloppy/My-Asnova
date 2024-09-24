@@ -1,4 +1,4 @@
-package com.example.asnova.screen.main.schedule.components
+package com.example.asnova.utils
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer

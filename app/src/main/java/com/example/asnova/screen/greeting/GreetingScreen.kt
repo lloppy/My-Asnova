@@ -34,6 +34,7 @@ import androidx.navigation.NavHostController
 import com.asnova.model.Role
 import com.example.asnova.R
 import com.example.asnova.navigation.Screen
+import com.example.asnova.ui.theme.darkLinear
 
 @Composable
 fun GreetingScreen(
@@ -47,13 +48,7 @@ fun GreetingScreen(
             .fillMaxSize()
             .background(
                 brush = Brush.linearGradient(
-                    colors = listOf(
-                        Color(0xFF282C27),
-                        Color(0xFF181A18),
-                        Color(0xFF1A1C1A),
-                        Color(0xFF1D1F1E),
-                        Color(0xFF18231B)
-                    ),
+                    darkLinear,
                     start = Offset(0f, Float.POSITIVE_INFINITY),
                     end = Offset(Float.POSITIVE_INFINITY, 0f)
                 )
@@ -124,8 +119,8 @@ fun GreetingScreen(
                         }
                     }
 
-                    RoleButton(roleName = Role.VISITOR, R.drawable.guest) {
-                        viewModel.onRoleSelected(Role.VISITOR){
+                    RoleButton(roleName = Role.GUEST, R.drawable.guest) {
+                        viewModel.onRoleSelected(Role.GUEST){
                             navHostController.navigate(Screen.Main.route)
                         }
                     }

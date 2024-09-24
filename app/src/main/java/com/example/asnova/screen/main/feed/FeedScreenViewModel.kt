@@ -13,8 +13,10 @@ import com.asnova.domain.usecase.GetUserDataUseCase
 import com.asnova.domain.usecase.OnDownloadMoreAsnovaNewsUseCase
 import com.asnova.domain.usecase.OnDownloadMoreSafetyNewsUseCase
 import com.asnova.model.Resource
+import com.asnova.model.Role
 import com.asnova.model.User
 import com.asnova.model.WallItem
+import com.example.asnova.data.UserManager
 import com.example.asnova.screen.main.feed.components.Segments
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -30,6 +32,11 @@ class FeedScreenViewModel @Inject constructor(
 
     private val getUserDataUseCase: GetUserDataUseCase
 ) : ViewModel() {
+    val availableSegments: List<String> = when (UserManager.getRole()) {
+        Role.STUDENT, Role.WORKER -> Segments.all
+        Role.GUEST, Role.NONE, Role.ADMIN -> Segments.forVisitor
+        else -> emptyList()
+    }
 
     private val _state = mutableStateOf(FeedState())
     val state: State<FeedState> = _state

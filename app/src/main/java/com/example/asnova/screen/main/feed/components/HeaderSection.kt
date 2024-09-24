@@ -31,7 +31,8 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.asnova.model.User
 import com.example.asnova.R
-import com.example.asnova.navigation.bottomBarHeight
+import com.example.asnova.ui.theme.BottomBarHeight
+import com.example.asnova.ui.theme.FeedItemHeight
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -67,7 +68,7 @@ fun HeaderSection(
             .background(linear)
             .height(
                 screenHeight
-                    .minus(bottomBarHeight)
+                    .minus(BottomBarHeight)
                     .minus(FeedItemHeight)
             ),
         verticalArrangement = Arrangement.SpaceBetween,

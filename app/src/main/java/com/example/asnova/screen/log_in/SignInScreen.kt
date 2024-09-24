@@ -32,6 +32,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.asnova.R
+import com.example.asnova.ui.theme.darkLinear
 import com.example.asnova.ui.theme.greenAsnova
 import com.vk.id.multibranding.OAuthListWidget
 import com.vk.id.onetap.compose.onetap.sheet.OneTapBottomSheet
@@ -64,13 +65,7 @@ fun SignInScreen(
             .fillMaxSize()
             .background(
                 brush = Brush.linearGradient(
-                    colors = listOf(
-                        Color(0xFF282C27),
-                        Color(0xFF181A18),
-                        Color(0xFF1A1C1A),
-                        Color(0xFF1D1F1E),
-                        Color(0xFF18231B)
-                    ),
+                    darkLinear,
                     start = Offset(0f, Float.POSITIVE_INFINITY),
                     end = Offset(Float.POSITIVE_INFINITY, 0f)
                 )

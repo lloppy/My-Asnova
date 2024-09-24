@@ -33,18 +33,16 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.LifecycleOwner
 import androidx.navigation.NavController
 import com.asnova.model.Resource
-import com.asnova.model.Role
 import com.asnova.model.User
 import com.example.asnova.R
-import com.example.asnova.data.UserManager
-import com.example.asnova.navigation.bottomBarHeight
-import com.example.asnova.screen.main.feed.components.FeedItemHeight
 import com.example.asnova.screen.main.feed.components.FeedItemView
 import com.example.asnova.screen.main.feed.components.HeaderSection
 import com.example.asnova.screen.main.feed.components.Segments
+import com.example.asnova.ui.theme.BottomBarHeight
+import com.example.asnova.ui.theme.FeedItemHeight
 import com.example.asnova.ui.theme.backgroundAsnova
 import com.example.asnova.utils.SkeletonScreen
-import com.example.asnova.utils.navigation.Router
+import com.example.asnova.utils.Router
 import com.example.asnova.utils.shimmerEffect
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -57,6 +55,7 @@ fun FeedScreen(
 ) {
     val listState = rememberLazyListState()
     val state by viewModel.state
+    val segmentsForCurrentUser = viewModel.availableSegments
 
     val isRefreshing by remember { mutableStateOf(false) }
     val stateRefresh = rememberPullRefreshState(isRefreshing, { viewModel.pullToRefresh() })
@@ -65,13 +64,6 @@ fun FeedScreen(
 
     val context = LocalContext.current
     var userData by remember { mutableStateOf<User?>(null) }
-
-    val segmentsForCurrentUser =
-        if (UserManager.isStudentOrWorker()) {
-            Segments.all
-        } else {
-            Segments.forVisitor
-        }
 
     LaunchedEffect(Unit) {
         viewModel.getUserData { resource ->
@@ -92,7 +84,7 @@ fun FeedScreen(
     Box(
         modifier = Modifier
             .background(backgroundAsnova)
-            .padding(bottom = bottomBarHeight)
+            .padding(bottom = BottomBarHeight)
     ) {
         SkeletonScreen(
             isLoading = state.loading,

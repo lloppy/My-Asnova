@@ -49,8 +49,8 @@ import coil.compose.AsyncImage
 import com.asnova.model.Resource
 import com.asnova.model.User
 import com.example.asnova.R
-import com.example.asnova.navigation.bottomBarHeight
-import com.example.asnova.utils.navigation.Router
+import com.example.asnova.ui.theme.BottomBarHeight
+import com.example.asnova.utils.Router
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -124,7 +124,7 @@ fun LogInContent(
     onSignOut: () -> Unit
 ) {
     Box(
-        modifier = Modifier.padding(top = padding.calculateTopPadding(), bottom = bottomBarHeight)
+        modifier = Modifier.padding(top = padding.calculateTopPadding(), bottom = BottomBarHeight)
     ) {
         Column(
             modifier = Modifier

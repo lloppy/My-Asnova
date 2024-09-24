@@ -2,7 +2,14 @@ package com.example.asnova.screen.main.schedule.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -12,13 +19,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.asnova.model.AsnovaSiteSchedule
-import com.example.asnova.screen.main.feed.components.FeedItemHeight
+import com.example.asnova.ui.theme.FeedItemHeight
 
 @Composable
 fun SiteScheduleItem(
@@ -27,7 +33,11 @@ fun SiteScheduleItem(
 ) {
     Column(
         modifier = Modifier
-            .height(FeedItemHeight.div(3).times(2))
+            .height(
+                FeedItemHeight
+                    .div(3)
+                    .times(2)
+            )
             .padding(horizontal = 18.dp, vertical = 14.dp)
             .clip(RoundedCornerShape(8.dp))
             .clickable { onItemClick(item.newsLink) }
@@ -35,7 +45,11 @@ fun SiteScheduleItem(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(FeedItemHeight.div(2).plus(12.dp)),
+                .height(
+                    FeedItemHeight
+                        .div(2)
+                        .plus(12.dp)
+                ),
             verticalAlignment = Alignment.Top
         ) {
             AsyncImage(
