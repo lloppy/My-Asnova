@@ -26,10 +26,6 @@ object UserManager {
         // sharedPreferences.edit().putString(KEY_USER_SETTING, newRole).apply()
     }
 
-    fun isStudentOrWorker(): Boolean {
-        return _role == Role.STUDENT || _role == Role.WORKER
-    }
-
     fun getRole(): String {
         return _role
     }

@@ -29,6 +29,16 @@ val blackShadesLinear = Brush.linearGradient(
     )
 )
 
+val blackShadesLinearMini = Brush.linearGradient(
+    listOf(
+        Color.Black.copy(alpha = 1f),
+        Color.Black.copy(alpha = 0.8f),
+        Color.Black.copy(alpha = 0.5f),
+        Color.Black.copy(alpha = 0.3f),
+        Color.Transparent
+    )
+)
+
 val darkLinear = listOf(
     Color(0xFF282C27),
     Color(0xFF181A18),

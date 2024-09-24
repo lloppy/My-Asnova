@@ -37,7 +37,9 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.asnova.model.FeedItemUrlInfo
 import com.asnova.model.WallItem
+import com.example.asnova.ui.theme.FeedItemBoxHeight
 import com.example.asnova.ui.theme.FeedItemHeight
+import com.example.asnova.ui.theme.FeedItemImageHeight
 import com.example.asnova.ui.theme.grayAsnova
 import com.example.asnova.utils.formatRelativeDate
 import com.example.asnova.utils.formatTime
@@ -50,7 +52,7 @@ fun FeedItemView(
 ) {
     Column(
         modifier = Modifier
-            .height(FeedItemHeight.minus(10.dp))
+            .height(FeedItemBoxHeight)
             .padding(horizontal = 18.dp, vertical = 14.dp)
             .clip(RoundedCornerShape(8.dp))
             .clickable(
@@ -73,7 +75,7 @@ fun FeedItemView(
         ) {
             FeedItemImage(
                 imageUrl = feedItem.images.first().url,
-                width = FeedItemHeight.minus(20.dp),
+                width = FeedItemImageHeight,
                 modifier = Modifier
                     .weight(1.1f)
                     .fillMaxHeight()

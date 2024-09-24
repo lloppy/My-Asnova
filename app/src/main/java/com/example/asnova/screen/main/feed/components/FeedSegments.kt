@@ -1,7 +1,5 @@
 package com.example.asnova.screen.main.feed.components
 
-import com.example.asnova.R
-
 // Паттерн Singleton
 object Segments {
     const val MY_GROUP = "Моя группа"

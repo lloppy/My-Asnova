@@ -24,7 +24,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.asnova.model.AsnovaSiteSchedule
-import com.example.asnova.ui.theme.FeedItemHeight
+import com.example.asnova.ui.theme.SiteScheduleItemHeight
+import com.example.asnova.ui.theme.SiteSchedulePictureHeight
 
 @Composable
 fun SiteScheduleItem(
@@ -33,11 +34,7 @@ fun SiteScheduleItem(
 ) {
     Column(
         modifier = Modifier
-            .height(
-                FeedItemHeight
-                    .div(3)
-                    .times(2)
-            )
+            .height(SiteScheduleItemHeight)
             .padding(horizontal = 18.dp, vertical = 14.dp)
             .clip(RoundedCornerShape(8.dp))
             .clickable { onItemClick(item.newsLink) }
@@ -45,11 +42,7 @@ fun SiteScheduleItem(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(
-                    FeedItemHeight
-                        .div(2)
-                        .plus(12.dp)
-                ),
+                .height(SiteSchedulePictureHeight),
             verticalAlignment = Alignment.Top
         ) {
             AsyncImage(
@@ -67,7 +60,7 @@ fun SiteScheduleItem(
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxHeight()
-                    .padding(start = 10.dp, end = 10.dp, top = 8.dp),
+                    .padding(start = 10.dp, end = 10.dp, top = 6.dp),
                 verticalArrangement = Arrangement.SpaceBetween,
                 horizontalAlignment = Alignment.Start
             ) {

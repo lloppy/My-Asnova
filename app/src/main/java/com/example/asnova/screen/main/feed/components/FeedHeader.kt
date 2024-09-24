@@ -18,7 +18,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.paint
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
@@ -33,6 +32,7 @@ import com.asnova.model.User
 import com.example.asnova.R
 import com.example.asnova.ui.theme.BottomBarHeight
 import com.example.asnova.ui.theme.FeedItemHeight
+import com.example.asnova.ui.theme.blackShadesLinearMini
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -48,16 +48,6 @@ fun HeaderSection(
     val configuration = LocalConfiguration.current
     val screenHeight = configuration.screenHeightDp.dp
 
-    val linear = Brush.linearGradient(
-        listOf(
-            Color.Black.copy(alpha = 1f),
-            Color.Black.copy(alpha = 0.8f),
-            Color.Black.copy(alpha = 0.5f),
-            Color.Black.copy(alpha = 0.3f),
-            Color.Transparent
-        )
-    )
-
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -65,7 +55,7 @@ fun HeaderSection(
                 painterResource(id = pictureBackgroundId),
                 contentScale = ContentScale.Crop
             )
-            .background(linear)
+            .background(blackShadesLinearMini)
             .height(
                 screenHeight
                     .minus(BottomBarHeight)
