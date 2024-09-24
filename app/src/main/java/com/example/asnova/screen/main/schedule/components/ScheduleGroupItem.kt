@@ -36,7 +36,7 @@ fun GroupScheduleItem(
 ) {
     Box(modifier = Modifier
         .fillMaxSize()
-        .padding(horizontal = 24.dp, vertical = 14.dp)
+        .padding(horizontal = 24.dp, vertical = 12.dp)
         .clip(RoundedCornerShape(12.dp))
         .background(color = MaterialTheme.colorScheme.onSecondary)
         .border(width = 2.dp, color = grayAsnova, shape = RoundedCornerShape(12.dp))
@@ -46,7 +46,7 @@ fun GroupScheduleItem(
         Column(
             modifier = Modifier
                 .fillMaxHeight()
-                .padding(12.dp),
+                .padding(14.dp),
             verticalArrangement = Arrangement.SpaceBetween,
             horizontalAlignment = Alignment.End
         ) {
@@ -67,7 +67,7 @@ fun GroupScheduleItem(
                     modifier = Modifier.padding(start = 4.dp),
                     style = MaterialTheme.typography.bodyLarge
                 )
-                Spacer(modifier = Modifier.height(12.dp))
+                Spacer(modifier = Modifier.height(18.dp))
                 Text(
                     modifier = Modifier
                         .background(

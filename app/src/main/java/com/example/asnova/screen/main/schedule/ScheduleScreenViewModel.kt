@@ -31,17 +31,32 @@ class ScheduleScreenViewModel @Inject constructor(
     private val getUserDataUseCase: GetUserDataUseCase
 ) : ViewModel() {
 
-    private val _state = mutableStateOf(AsnovaScheduleState())
-    val state: State<AsnovaScheduleState> = _state
+    private val _state = mutableStateOf(ScheduleState())
+    val state: State<ScheduleState> = _state
 
     private val selectedDateMutableState = MutableLiveData(LocalDate.now())
     val selectedDate: MutableLiveData<LocalDate?> = selectedDateMutableState
 
     init {
-        when (UserManager.getRole()) {
-            Role.STUDENT, Role.WORKER, Role.ADMIN -> loadScheduleForGroup()
+        loadAvailableSchedule()
+    }
+
+    fun canLoadPrivateSchedule(): Boolean {
+        return when (UserManager.getRole()) {
+            Role.STUDENT, Role.WORKER, Role.ADMIN -> true
+            Role.GUEST, Role.NONE -> false
+            else -> false
         }
-        loadScheduleFromSite()
+    }
+    private fun loadAvailableSchedule() {
+        when (UserManager.getRole()) {
+            Role.STUDENT, Role.WORKER, Role.ADMIN -> loadScheduleForGroup() // TODO () нужно передавать в параметры учителей и учеников параметр - группа, по которой нужно загрузить расписание и фильтровать по ней у админа такого фильтра просто не будет
+            Role.GUEST, Role.NONE -> loadScheduleFromSite()
+            Role.ADMIN -> {
+                loadScheduleForGroup()
+                loadScheduleFromSite()
+            }
+        }
     }
 
     fun getUserData(callback: (Resource<User?>) -> Unit) {
@@ -56,7 +71,7 @@ class ScheduleScreenViewModel @Inject constructor(
                 is Resource.Success -> {
                     Log.d("calendar_info", "Schedules loaded")
 
-                    _state.value = AsnovaScheduleState(privateSchedule = result.data ?: emptyList())
+                    _state.value = ScheduleState(privateSchedule = result.data ?: emptyList())
                     val temp = mutableListOf<AsnovaSchedule>()
                     for (item in _state.value.privateSchedule) {
                         if (selectedDateMutableState.value?.dayOfMonth == item.start.dayOfMonth &&
@@ -70,23 +85,23 @@ class ScheduleScreenViewModel @Inject constructor(
                 }
 
                 is Resource.Error -> {
-                    _state.value = AsnovaScheduleState(
+                    _state.value = ScheduleState(
                         error = result.message ?: "An unexpected error occurred"
                     )
                 }
 
                 is Resource.Loading -> {
-                    _state.value = AsnovaScheduleState(loading = true)
+                    _state.value = ScheduleState(loading = true)
                 }
             }
         })
     }
 
-    fun loadScheduleFromSite() {
+    private fun loadScheduleFromSite() {
         getScheduleFromSiteUseCase(callback = { result ->
             when (result) {
                 is Resource.Success -> {
-                    _state.value = AsnovaScheduleState(siteSchedule = result.data ?: emptyList())
+                    _state.value = ScheduleState(siteSchedule = result.data ?: emptyList())
                     val temp = mutableListOf<AsnovaSiteSchedule>()
                     for (item in _state.value.siteSchedule) {
                         temp.add(item)
@@ -95,13 +110,13 @@ class ScheduleScreenViewModel @Inject constructor(
                 }
 
                 is Resource.Error -> {
-                    _state.value = AsnovaScheduleState(
+                    _state.value = ScheduleState(
                         error = result.message ?: "An unexpected error occurred"
                     )
                 }
 
                 is Resource.Loading -> {
-                    _state.value = AsnovaScheduleState(loading = true)
+                    _state.value = ScheduleState(loading = true)
                 }
             }
         })
@@ -123,9 +138,6 @@ class ScheduleScreenViewModel @Inject constructor(
     }
 
     fun pullToRefresh() {
-        when (UserManager.getRole()) {
-            Role.STUDENT, Role.WORKER, Role.ADMIN -> loadScheduleForGroup()
-        }
-        loadScheduleFromSite()
+        loadAvailableSchedule()
     }
 }

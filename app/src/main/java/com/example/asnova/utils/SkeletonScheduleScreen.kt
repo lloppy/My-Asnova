@@ -1,6 +1,9 @@
 package com.example.asnova.utils
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -11,17 +14,29 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.paint
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.example.asnova.utils.shimmerEffect
+import com.asnova.model.User
+import com.example.asnova.R
+import com.example.asnova.screen.main.schedule.components.ScheduleHeader
+import com.example.asnova.ui.theme.BottomBarHeight
+import com.example.asnova.ui.theme.blackShadesLinear
 
 @Composable
-fun ScheduleScreenSkeleton() {
+fun ScheduleScreenSkeleton(userData: User?, screenHeight: Dp) {
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
     ) {
+        item {
+            ScheduleHeader(userData, screenHeight)
+        }
         items(3)
         {
             Box(
