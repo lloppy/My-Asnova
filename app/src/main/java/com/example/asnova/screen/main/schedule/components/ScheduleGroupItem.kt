@@ -32,9 +32,6 @@ import com.example.asnova.ui.theme.grayAsnova
 @Composable
 fun GroupScheduleItem(
     item: AsnovaSchedule,
-    clipboardManager: androidx.compose.ui.platform.ClipboardManager,
-    toastIdCopied: Toast,
-    toastACCopied: Toast,
     context: Context
 ) {
     Box(modifier = Modifier

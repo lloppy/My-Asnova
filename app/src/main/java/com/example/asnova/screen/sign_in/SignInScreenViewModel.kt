@@ -1,4 +1,4 @@
-package com.example.asnova.screen.log_in
+package com.example.asnova.screen.sign_in
 
 import android.content.Intent
 import android.content.IntentSender

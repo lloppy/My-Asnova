@@ -82,23 +82,12 @@ fun ScheduleScreen(
     val context = LocalContext.current
     var userData by remember { mutableStateOf<User?>(null) }
 
-    val toastIdCopied =
-        Toast.makeText(context, stringResource(id = R.string.id_copied), Toast.LENGTH_SHORT)
-    val toastACCopied = Toast.makeText(
-        context,
-        stringResource(id = R.string.access_code_copied),
-        Toast.LENGTH_SHORT
-    )
+    val configuration = LocalConfiguration.current
+    val screenHeight = configuration.screenHeightDp.dp
 
     // Refresh
     val isRefreshing by remember { mutableStateOf(false) }
     val stateRefresh = rememberPullRefreshState(isRefreshing, { viewModel.pullToRefresh() })
-
-    val clipboardManager: ClipboardManager = LocalClipboardManager.current
-    var clickedItemId by remember { mutableStateOf("") }
-
-    val configuration = LocalConfiguration.current
-    val screenHeight = configuration.screenHeightDp.dp
 
     val currentDate = LocalDate.now()
     val dateList = List(7) { index -> currentDate.plusDays(index.toLong()) }
@@ -217,13 +206,7 @@ fun ScheduleScreen(
                             }
                         }
                         items(state.privateSchedule) { item ->
-                            GroupScheduleItem(
-                                item,
-                                clipboardManager,
-                                toastIdCopied,
-                                toastACCopied,
-                                context
-                            )
+                            GroupScheduleItem(item, context)
                         }
                     } else {
                         items(state.siteSchedule) { item ->

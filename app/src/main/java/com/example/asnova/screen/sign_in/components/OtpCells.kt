@@ -1,4 +1,4 @@
-package com.example.asnova.screen.log_in.components
+package com.example.asnova.screen.sign_in.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.asnova.ui.theme.grayAsnova
 
 const val OTP_VIEW_TYPE_NONE = 0
 const val OTP_VIEW_TYPE_UNDERLINE = 1
@@ -26,9 +27,9 @@ const val OTP_VIEW_TYPE_BORDER = 2
 fun OtpView(
     modifier: Modifier = Modifier,
     otpText: String = "",
-    charColor: Color = Color(0XFFE8E8E8),
+    charColor: Color = grayAsnova,
     charBackground: Color = Color.Transparent,
-    charSize: TextUnit = 20.sp,
+    charSize: TextUnit = 25.sp,
     containerSize: Dp = charSize.value.dp * 2,
     otpCount: Int = 6,
     type: Int = OTP_VIEW_TYPE_BORDER,
@@ -51,7 +52,7 @@ fun OtpView(
         decorationBox = {
             Row(horizontalArrangement = Arrangement.SpaceAround) {
                 repeat(otpCount) { index ->
-                    Spacer(modifier = Modifier.width(2.dp))
+                    Spacer(modifier = Modifier.width(6.dp))
                     CharView(
                         index = index,
                         text = otpText,
@@ -85,11 +86,10 @@ private fun CharView(
         Modifier
             .size(containerSize)
             .border(
-                width = 1.dp,
+                width = 2.dp,
                 color = charColor,
                 shape = MaterialTheme.shapes.medium
             )
-            .padding(bottom = 4.dp)
             .background(charBackground)
     } else Modifier
         .width(containerSize)
@@ -106,7 +106,7 @@ private fun CharView(
         }
         Text(
             text = char,
-            color = Color.Black,
+            color = Color.White,
             modifier = modifier.wrapContentHeight(),
             style = MaterialTheme.typography.bodyLarge,
             fontSize = charSize,

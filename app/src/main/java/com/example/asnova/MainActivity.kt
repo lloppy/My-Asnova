@@ -20,12 +20,11 @@ import com.asnova.model.Role
 import com.example.asnova.data.UserManager
 import com.example.asnova.navigation.Screen
 import com.example.asnova.screen.greeting.GreetingScreen
-import com.example.asnova.screen.log_in.SignInScreenViewModel
-import com.example.asnova.screen.log_in.components.OtpScreen
-import com.example.asnova.screen.log_in.SignInScreen
 import com.example.asnova.screen.main.MainScreen
-import com.example.asnova.utils.SplashScreen
+import com.example.asnova.screen.sign_in.SignInScreen
+import com.example.asnova.screen.sign_in.SignInScreenViewModel
 import com.example.asnova.ui.theme.AsnovaTheme
+import com.example.asnova.utils.SplashScreen
 import com.example.asnova.utils.createExternalRouter
 import com.example.asnova.utils.navigate
 import com.vk.id.VKID
@@ -74,7 +73,10 @@ class MainActivity : ComponentActivity() {
 
                 NavHost(navController = navController, startDestination = Screen.Splash.route) {
                     composable(Screen.Splash.route) {
-                        SplashScreen(navHostController = navController, route = Screen.Greeting.route)
+                        SplashScreen(
+                            navHostController = navController,
+                            route = Screen.Greeting.route
+                        )
                     }
                     composable(Screen.Greeting.route) {
                         GreetingScreen(navHostController = navController)
@@ -98,9 +100,6 @@ class MainActivity : ComponentActivity() {
                                         inclusive = true
                                     }
                                 }
-                            },
-                            goOtp = {
-                                navController.navigate(route = Screen.Otp.route)
                             }
                         )
                     }
@@ -113,9 +112,6 @@ class MainActivity : ComponentActivity() {
                                 navController.navigate(screen, params)
                             }
                         )
-                    }
-                    composable(Screen.Otp.route) {
-                        OtpScreen(state = state)
                     }
                 }
             }

@@ -1,4 +1,4 @@
-package com.example.asnova.screen.log_in
+package com.example.asnova.screen.sign_in
 
 import android.util.Log
 import androidx.compose.foundation.Image
@@ -14,10 +14,18 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.Button
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -29,11 +37,14 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.asnova.R
+import com.example.asnova.screen.sign_in.components.OtpView
 import com.example.asnova.ui.theme.darkLinear
-import com.example.asnova.ui.theme.greenAsnova
+import com.example.asnova.ui.theme.grayAsnova
 import com.vk.id.multibranding.OAuthListWidget
 import com.vk.id.onetap.compose.onetap.sheet.OneTapBottomSheet
 import com.vk.id.onetap.compose.onetap.sheet.rememberOneTapBottomSheetState
@@ -43,20 +54,25 @@ import kotlinx.coroutines.delay
 fun SignInScreen(
     state: SignInState,
     onSignInClick: () -> Unit,
-    goProfile: () -> Unit,
-    goOtp: () -> Unit
+    goProfile: () -> Unit
 ) {
     val bottomSheetState = rememberOneTapBottomSheetState()
 
+    var showPhone by remember { mutableStateOf(false) }
+    var showOtp by remember { mutableStateOf(false) }
+
+    var mobile by remember { mutableStateOf("") }
+    var otp by remember { mutableStateOf("") }
+
     LaunchedEffect(Unit) {
         delay(15000)
-        bottomSheetState.show()
+        if (!showPhone) bottomSheetState.show()
     }
 
     LaunchedEffect(key1 = state.signInError) {
         state.signInError?.let { error ->
             Log.e("login_info", "$error! Вход не выполнен")
-            onSignInClick.invoke()
+            if (!showPhone) onSignInClick.invoke()
         }
     }
 
@@ -85,16 +101,64 @@ fun SignInScreen(
         }
 
         Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 20.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceAround
         ) {
             Spacer(modifier = Modifier.height(32.dp))
 
+            if (showPhone) {
+                OutlinedTextField(
+                    value = mobile,
+                    onValueChange = { mobile = it },
+                    label = { Text(text = "+7") },
+                    isError = mobile.length > 10,
+                    maxLines = 1,
+                    modifier = Modifier.fillMaxWidth(),
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone, imeAction = ImeAction.Next),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedContainerColor = Color.Transparent,
+                        unfocusedContainerColor = Color.Transparent,
+                        errorTextColor = Color.Gray,
+                        focusedBorderColor = Color.Gray,
+                        focusedTextColor = Color.Gray,
+                        unfocusedTextColor = Color.Gray,
+                        focusedLabelColor = Color.Gray,
+                        unfocusedLabelColor = Color.Gray,
+                        cursorColor = Color.Gray
+                    )
+                )
+                Spacer(modifier = Modifier.height(20.dp))
+                Button(onClick = {
+                    showOtp = !showOtp
+                }) {
+                    Text(text = "Получить SMS - код")
+                }
+                Spacer(modifier = Modifier.height(32.dp))
+
+                if (showOtp){
+                    Text(text = "Введите SMS-код", color = grayAsnova)
+                    Spacer(modifier = Modifier.height(6.dp))
+                    OtpView(otpText = otp) {
+                        otp = it
+                    }
+                    Spacer(modifier = Modifier.height(20.dp))
+                    Button(onClick = {
+
+                    }) {
+                        Text(text = "Подтвердить")
+                    }
+                    Spacer(modifier = Modifier.height(32.dp))
+
+                }
+            }
+
             // Google Sign-In Button
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 20.dp)
                     .shadow(
                         elevation = 2.dp,
                         shape = RoundedCornerShape(percent = 12),
@@ -147,17 +211,18 @@ fun SignInScreen(
                 serviceName = stringResource(R.string.service_name)
             )
 
-//            Spacer(modifier = Modifier.height(40.dp))
-//
-//            TextButton(onClick = { goOtp.invoke() }) {
-//                Text(
-//                    text = stringResource(R.string.login_using_phone),
-//                    color = greenAsnova,
-//                    fontSize = 12.sp
-//                )
-//            }
-//            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(40.dp))
 
+            TextButton(onClick = {
+                showPhone = !showPhone
+                showOtp = false
+            }) {
+                Text(
+                    text = stringResource(R.string.login_using_phone),
+                    color = grayAsnova,
+                    fontSize = 12.sp
+                )
+            }
         }
     }
 }
