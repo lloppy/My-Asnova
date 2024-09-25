@@ -3,6 +3,7 @@ package com.asnova.firebase
 import CalDavClient
 import android.util.Log
 import com.asnova.domain.repository.firebase.ScheduleRepository
+import com.asnova.model.AsnovaStudentsClass
 import com.asnova.model.ScheduleAsnovaPrivate
 import com.asnova.model.ScheduleAsnovaSite
 import com.asnova.model.Resource
@@ -157,6 +158,38 @@ class ScheduleRepositoryImpl @Inject constructor(
             }
         }
     }
+
+    override fun getAsnovaClasses(callback: (Resource<List<AsnovaStudentsClass>>) -> Unit) {
+        getScheduleFromCalDav { resource ->
+            when (resource) {
+                is Resource.Loading -> {
+                    callback(Resource.Loading())
+                }
+                is Resource.Success -> {
+                    val schedules = resource.data
+
+                    val uniqueClasses = schedules
+                        ?.mapNotNull { it.trimmedSummary }
+                        ?.filter { className ->
+                            className.count { char -> char == '"' } >= 2
+                                    || className.contains("Обучение")
+                        }
+                        ?.toSet()
+                        ?.toList()
+
+                    val asnovaClasses = uniqueClasses?.map { className ->
+                        AsnovaStudentsClass(name = className)
+                    }
+
+                    callback(Resource.Success(asnovaClasses))
+                }
+                is Resource.Error -> {
+                    callback(Resource.Error(resource.message ?: "Unknown error"))
+                }
+            }
+        }
+    }
+
     private fun extractYearFromDocument(document: Document): Int {
         val yearText = document.selectFirst("div.seocategory__prodblock-title__inner")?.text()
         return yearText?.split(" ")?.last()?.toIntOrNull() ?: LocalDate.now().year

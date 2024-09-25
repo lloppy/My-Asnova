@@ -60,7 +60,8 @@ fun ProfileSettingsScreen(
     context: Context,
     lifecycleScope: LifecycleCoroutineScope,
     lifecycleOwner: LifecycleOwner,
-    onNavigateToChats: () -> Unit,
+    navigateToChats: () -> Unit,
+    navigateToSelectClass: () -> Unit,
     viewModel: SettingsScreenViewModel = hiltViewModel()
 ) {
     var userData by remember { mutableStateOf<User?>(null) }
@@ -94,7 +95,7 @@ fun ProfileSettingsScreen(
                 },
                 actions = {
                     IconButton(onClick = {
-                        onNavigateToChats.invoke()
+                        navigateToChats.invoke()
                     }) {
                         Icon(
                             imageVector = Icons.Filled.ChatBubble,
@@ -108,6 +109,7 @@ fun ProfileSettingsScreen(
         LogInContent(
             padding = padding,
             userData = userData,
+            navigateToSelectClass = navigateToSelectClass,
             onSignOut = {
                 lifecycleScope.launch {
                     viewModel.signOut()
@@ -121,6 +123,7 @@ fun ProfileSettingsScreen(
 fun LogInContent(
     padding: PaddingValues,
     userData: User?,
+    navigateToSelectClass: () -> Unit,
     onSignOut: () -> Unit
 ) {
     Box(
@@ -152,6 +155,11 @@ fun LogInContent(
                         fontSize = 20.sp,
                         fontWeight = FontWeight.SemiBold
                     )
+
+                    Button(onClick =  navigateToSelectClass ) {
+                        Text(text = "Выбрать учебную группу")
+                    }
+
                     Spacer(modifier = Modifier.height(36.dp))
                 }
             }

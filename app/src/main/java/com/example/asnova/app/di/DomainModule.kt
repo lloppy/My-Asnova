@@ -13,6 +13,7 @@ import com.asnova.domain.usecase.AddNewLessonUseCase
 import com.asnova.domain.usecase.AddNewsArticleUseCase
 import com.asnova.domain.usecase.CreateUserWithPhoneUseCase
 import com.asnova.domain.usecase.GetAllFavoritesUseCase
+import com.asnova.domain.usecase.GetAsnovaClassesUseCase
 import com.asnova.domain.usecase.GetAsnovaNewsUseCase
 import com.asnova.domain.usecase.GetIsAuthedUserUseCase
 import com.asnova.domain.usecase.GetLanguageSettingUseCase
@@ -52,6 +53,13 @@ class DomainModule {
         repository: NewsRepository
     ): AddNewsArticleUseCase {
         return AddNewsArticleUseCase(repository)
+    }
+
+    @Provides
+    fun provideGetAsnovaClassesUseCase(
+        scheduleRepository: ScheduleRepository
+    ): GetAsnovaClassesUseCase {
+        return GetAsnovaClassesUseCase(scheduleRepository)
     }
 
     @Provides
