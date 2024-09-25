@@ -26,6 +26,8 @@ import java.util.Date
 import java.util.UUID
 import javax.inject.Inject
 
+const val DEFAULT_IMAGE_RESOURCE_URL = "resource://ic_asnova_default_news"
+
 class NewsRepositoryImpl @Inject constructor(
     private val groupsApi: GroupsApi
 
@@ -133,7 +135,7 @@ class NewsRepositoryImpl @Inject constructor(
                 } else
                     callback(Resource.Error("No news")) // TODO: Must be return ErrorState
             }.addOnFailureListener {
-                callback(Resource.Error("Something happened on the server side")) // TODO: Must be return ErrorState
+                callback(Resource.Error("Ошибка на стороне сервера, проверьте интернет-подключение")) // TODO: Must be return ErrorState
             }
     }
 
@@ -279,5 +281,3 @@ private fun removeHeadlineAndHashtags(text: String): String {
 
     return textWithoutHashtags
 }
-
-const val DEFAULT_IMAGE_RESOURCE_URL = "resource://ic_asnova_default_news"

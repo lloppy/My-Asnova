@@ -7,6 +7,7 @@ import com.asnova.model.ScheduleAsnovaPrivate
 import com.asnova.model.ScheduleAsnovaSite
 import com.asnova.model.Resource
 import com.asnova.model.Schedule
+import com.asnova.model.ScheduleFirebase
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
@@ -27,7 +28,7 @@ class ScheduleRepositoryImpl @Inject constructor(
 ) : ScheduleRepository {
     private val _database: FirebaseFirestore = FirebaseFirestore.getInstance()
     private val _databaseReference: CollectionReference = _database.collection("schedule")
-    override fun addNewLesson(schedule: Schedule, callback: (Resource<Boolean>) -> Unit) {
+    override fun addNewLesson(scheduleFirebase: ScheduleFirebase, callback: (Resource<Boolean>) -> Unit) {
         callback(Resource.Loading())
         val id = _databaseReference.document().id
 
@@ -35,27 +36,27 @@ class ScheduleRepositoryImpl @Inject constructor(
             id = id,
             date = Timestamp(
                 Date.from(
-                    schedule.date.atStartOfDay(ZoneId.systemDefault()).toInstant()
+                    scheduleFirebase.date.atStartOfDay(ZoneId.systemDefault()).toInstant()
                 )
             ),
             start = Timestamp(
                 Date.from(
-                    LocalDate.now().atTime(schedule.start).atZone(ZoneId.systemDefault())
+                    LocalDate.now().atTime(scheduleFirebase.start).atZone(ZoneId.systemDefault())
                         .toInstant()
                 )
             ),
             end = Timestamp(
                 Date.from(
-                    LocalDate.now().atTime(schedule.end).atZone(ZoneId.systemDefault()).toInstant()
+                    LocalDate.now().atTime(scheduleFirebase.end).atZone(ZoneId.systemDefault()).toInstant()
                 )
             ),
-            lesson = schedule.lesson,
-            status = schedule.status,
-            classRoom = schedule.classRoom,
-            teacher = schedule.teacher,
-            grade = schedule.grade,
-            task = schedule.task,
-            homeWork = schedule.homeWork
+            lesson = scheduleFirebase.lesson,
+            status = scheduleFirebase.status,
+            classRoom = scheduleFirebase.classRoom,
+            teacher = scheduleFirebase.teacher,
+            grade = scheduleFirebase.grade,
+            task = scheduleFirebase.task,
+            homeWork = scheduleFirebase.homeWork
         )
         _databaseReference.document(id).set(lesson).addOnCompleteListener {
             if (it.isSuccessful) {
@@ -68,14 +69,14 @@ class ScheduleRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun getAllScheduleFromFirebase(callback: (Resource<List<Schedule>>) -> Unit) {
+    override fun getAllScheduleFromFirebase(callback: (Resource<List<ScheduleFirebase>>) -> Unit) {
         callback(Resource.Loading())
         _databaseReference.get().addOnSuccessListener { snapshot ->
             if (!snapshot.isEmpty) {
-                val scheduleList = mutableListOf<Schedule>()
+                val scheduleFirebaseList = mutableListOf<ScheduleFirebase>()
                 snapshot.forEach {
                     val temp = it.toObject(com.asnova.firebase.model.Schedule::class.java)
-                    val schedule = Schedule(
+                    val scheduleFirebase = ScheduleFirebase(
                         id = temp.id,
                         date = LocalDateTime.ofInstant(
                             temp.date.toDate().toInstant(),
@@ -97,10 +98,10 @@ class ScheduleRepositoryImpl @Inject constructor(
                         task = temp.task,
                         homeWork = temp.homeWork
                     )
-                    scheduleList.add(schedule)
+                    scheduleFirebaseList.add(scheduleFirebase)
                 }
-                Log.d("calendar_info", "Success: ${scheduleList.size} items")
-                callback(Resource.Success(scheduleList))
+                Log.d("calendar_info", "Success: ${scheduleFirebaseList.size} items")
+                callback(Resource.Success(scheduleFirebaseList))
             } else {
                 Log.d("calendar_info", "Success: Empty list")
                 callback(Resource.Success(emptyList()))
@@ -133,7 +134,7 @@ class ScheduleRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun getAllSchedule(callback: (Resource<List<Schedule>>) -> Unit) {
+    override fun getAllSchedule(callback: (Resource<List<ScheduleFirebase>>) -> Unit) {
         TODO("Not yet implemented")
     }
 
@@ -184,7 +185,8 @@ private fun parseScheduleFromHtml(html: String, year: Int): List<ScheduleAsnovaS
         val newsLinkElement = element.selectFirst(".seocategory__prodblock-link")
         val newsLink = newsLinkElement?.attr("href") ?: ""
 
-        ScheduleAsnovaSite(
+        // Паттерн Static factory method
+        Schedule.createSiteSchedule(
             dateRange = dateRange,
             year = year,
             timeRange = timeRange,

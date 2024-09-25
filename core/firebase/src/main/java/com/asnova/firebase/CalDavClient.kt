@@ -1,4 +1,5 @@
 import android.util.Log
+import com.asnova.model.Schedule
 import net.fortuna.ical4j.data.CalendarBuilder
 import net.fortuna.ical4j.model.Calendar
 import net.fortuna.ical4j.model.Property
@@ -57,24 +58,18 @@ class CalDavClient(
 
             Log.e("calendar_info", "\n" )
 
-
             Log.e("calendar_info", "parseDate CREATED " + parseDate(event.getProperty<Property>(Property.CREATED)?.value))
             Log.e("calendar_info", "parseDate DTSTART " + parseDate(event.getProperty<Property>(Property.DTSTART)?.value))
             Log.e("calendar_info", "parseDate DTEND " + parseDate(event.getProperty<Property>(Property.DTEND)?.value))
 
             Log.e("calendar_info", "__________________" )
 
-
-            com.asnova.model.ScheduleAsnovaPrivate(
+            // Паттерн Static factory method
+            Schedule.createPrivateSchedule(
                 summary = event.getProperty<Property>(Property.SUMMARY)?.value,
                 created = parseDate(event.getProperty<Property>(Property.CREATED)?.value),
                 start = parseDate(event.getProperty<Property>(Property.DTSTART)?.value),
                 end = parseDate(event.getProperty<Property>(Property.DTEND)?.value),
-//                location = event.getProperty<Property>(Property.LOCATION)?.value,
-//                description = event.getProperty<Property>(Property.DESCRIPTION)?.value,
-//                status = event.getProperty<Property>(Property.STATUS)?.value,
-//                organizer = event.getProperty<Property>(Property.ORGANIZER)?.value,
-//                attendees = event.getProperties<Property>(Property.ATTENDEE)?.map { it.value },
                 uid = event.getProperty<Property>(Property.UID)?.value.toString()
             )
         }
