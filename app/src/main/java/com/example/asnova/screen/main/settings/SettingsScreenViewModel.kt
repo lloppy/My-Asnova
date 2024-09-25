@@ -70,4 +70,8 @@ class SettingsScreenViewModel @Inject constructor(
             }
         }
     }
+
+    fun duplicateAsnovaClass(updatedClass: AsnovaStudentsClass) {
+        _state.value.asnovaClasses = _state.value.asnovaClasses?.plus(updatedClass)
+    }
 }
