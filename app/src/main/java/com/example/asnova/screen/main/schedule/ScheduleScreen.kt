@@ -53,7 +53,7 @@ fun ScheduleScreen(
     viewModel: ScheduleScreenViewModel = hiltViewModel()
 ) {
 
-    val state = viewModel.state.value
+    val state = viewModel.state
     var userData by remember { mutableStateOf<User?>(null) }
 
     val configuration = LocalConfiguration.current
@@ -92,20 +92,21 @@ fun ScheduleScreen(
             .fillMaxSize()
     ) {
         SkeletonScreen(
-            isLoading = state.loading,
+            isLoading = state.value.loading,
             skeleton = {
                 ScheduleScreenSkeleton(userData, screenHeight) {
-                    WeekNavigationRow(
-                        lastMonday,
-                        dateList,
-                        currentDate,
-                        selectedMutableDate,
-                        onDateSelected = { selectedDate ->
-                            viewModel.saveDate(selectedDate)
-                            viewModel.loadScheduleForGroup()
-                        }
-                    )
-
+                    if (viewModel.canLoadPrivateSchedule()) {
+                        WeekNavigationRow(
+                            lastMonday,
+                            dateList,
+                            currentDate,
+                            selectedMutableDate,
+                            onDateSelected = { selectedDate ->
+                                viewModel.saveDate(selectedDate)
+                                viewModel.loadScheduleForGroup()
+                            }
+                        )
+                    }
                 }
             }
         ) {
@@ -123,25 +124,24 @@ fun ScheduleScreen(
                         ScheduleHeader(userData, screenHeight)
                     }
                 }
-                item {
-                    WeekNavigationRow(
-                        lastMonday,
-                        dateList,
-                        currentDate,
-                        selectedMutableDate,
-                        onDateSelected = { selectedDate ->
-                            viewModel.saveDate(selectedDate)
-                            viewModel.loadScheduleForGroup()
-                        }
-                    )
-                }
-
                 if (viewModel.canLoadPrivateSchedule()) {
-                    items(state.privateSchedule) { item ->
+                    item {
+                        WeekNavigationRow(
+                            lastMonday,
+                            dateList,
+                            currentDate,
+                            selectedMutableDate,
+                            onDateSelected = { selectedDate ->
+                                viewModel.saveDate(selectedDate)
+                                viewModel.loadScheduleForGroup()
+                            }
+                        )
+                    }
+                    items(state.value.privateSchedule) { item ->
                         GroupScheduleItem(item, context)
                     }
-                } else if (!viewModel.canLoadPrivateSchedule()) {
-                    items(state.siteSchedule) { item ->
+                } else {
+                    items(state.value.siteSchedule) { item ->
                         SiteScheduleItem(item) {
                             context.startActivity(
                                 Intent(
@@ -153,10 +153,10 @@ fun ScheduleScreen(
                     }
                 }
 
-                if (state.error.isNotBlank()) {
+                if (state.value.error.isNotBlank()) {
                     item {
                         Text(
-                            text = state.error,
+                            text = state.value.error,
                             color = MaterialTheme.colorScheme.error,
                             textAlign = TextAlign.Center,
                             modifier = Modifier
