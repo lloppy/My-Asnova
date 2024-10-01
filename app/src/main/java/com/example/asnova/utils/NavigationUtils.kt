@@ -11,7 +11,6 @@ fun NavController.navigate(
     builder: NavOptionsBuilder.() -> Unit = {}
 ) {
     this.currentBackStackEntry?.arguments?.putAll(params)
-
     navigate(route, builder)
 }
 

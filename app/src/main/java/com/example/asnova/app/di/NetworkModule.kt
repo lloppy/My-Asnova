@@ -24,11 +24,14 @@ class NetworkModule {
     fun provideGroupsApi(
         okHttpClient: OkHttpClient,
         converterFactory: Converter.Factory
-    ): GroupsApi = Retrofit.Builder()
-        .client(okHttpClient)
-        .addConverterFactory(converterFactory)
-        .baseUrl("https://api.vk.com/method/")
-        .build().create(GroupsApi::class.java)
+    ): GroupsApi =
+        // Паттерн Builder
+        Retrofit.Builder()
+            .client(okHttpClient)
+            .addConverterFactory(converterFactory)
+            .baseUrl("https://api.vk.com/method/")
+            .build()
+            .create(GroupsApi::class.java)
 
     @ExperimentalSerializationApi
     @Provides
@@ -38,7 +41,9 @@ class NetworkModule {
 
     @Provides
     @Singleton
-    fun provideOkHttpClient(): OkHttpClient = OkHttpClient.Builder()
-        .protocols(listOf(Protocol.HTTP_1_1))
-        .build()
+    fun provideOkHttpClient(): OkHttpClient =
+        // Паттерн Builder
+        OkHttpClient.Builder()
+            .protocols(listOf(Protocol.HTTP_1_1))
+            .build()
 }
