@@ -178,8 +178,7 @@ class ScheduleRepositoryImpl @Inject constructor(
                             className.count { char -> char == '"' } >= 2
                                     || className.contains("Обучение")
                         }
-                        ?.toSet()
-                        ?.toList()
+                        ?.distinct()
 
                     val asnovaClasses = uniqueClasses?.map { className ->
                         AsnovaStudentsClass(name = className)
