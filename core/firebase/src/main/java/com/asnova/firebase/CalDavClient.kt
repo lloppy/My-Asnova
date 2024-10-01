@@ -29,6 +29,7 @@ class CalDavClient(
     private val client = OkHttpClient()
 
     private fun fetchCalendarData(): String? {
+        // Паттерн Builder
         val request = Request.Builder()
             .url(baseUrl)
             .header("Authorization", Credentials.basic(username, password))
@@ -41,8 +42,9 @@ class CalDavClient(
 
     private fun parseCalendarData(data: String): Calendar {
         val stringReader = StringReader(data)
-        val calendarBuilder = CalendarBuilder()
-        return calendarBuilder.build(stringReader)
+
+        // Паттерн Builder
+        return CalendarBuilder().build(stringReader)
     }
 
     fun getScheduleList(): List<com.asnova.model.ScheduleAsnovaPrivate> {
@@ -52,17 +54,35 @@ class CalDavClient(
 
         val events: List<VEvent> = calendar.components.filterIsInstance<VEvent>()
         return events.map { event ->
-            Log.e("calendar_info", "CREATED " + event.getProperty<Property>(Property.CREATED)?.value.toString())
-            Log.e("calendar_info", "DTSTART " + event.getProperty<Property>(Property.DTSTART)?.value.toString())
-            Log.e("calendar_info", "DTEND " + event.getProperty<Property>(Property.DTEND)?.value.toString())
+            Log.e(
+                "calendar_info",
+                "CREATED " + event.getProperty<Property>(Property.CREATED)?.value.toString()
+            )
+            Log.e(
+                "calendar_info",
+                "DTSTART " + event.getProperty<Property>(Property.DTSTART)?.value.toString()
+            )
+            Log.e(
+                "calendar_info",
+                "DTEND " + event.getProperty<Property>(Property.DTEND)?.value.toString()
+            )
 
-            Log.e("calendar_info", "\n" )
+            Log.e("calendar_info", "\n")
 
-            Log.e("calendar_info", "parseDate CREATED " + parseDate(event.getProperty<Property>(Property.CREATED)?.value))
-            Log.e("calendar_info", "parseDate DTSTART " + parseDate(event.getProperty<Property>(Property.DTSTART)?.value))
-            Log.e("calendar_info", "parseDate DTEND " + parseDate(event.getProperty<Property>(Property.DTEND)?.value))
+            Log.e(
+                "calendar_info",
+                "parseDate CREATED " + parseDate(event.getProperty<Property>(Property.CREATED)?.value)
+            )
+            Log.e(
+                "calendar_info",
+                "parseDate DTSTART " + parseDate(event.getProperty<Property>(Property.DTSTART)?.value)
+            )
+            Log.e(
+                "calendar_info",
+                "parseDate DTEND " + parseDate(event.getProperty<Property>(Property.DTEND)?.value)
+            )
 
-            Log.e("calendar_info", "__________________" )
+            Log.e("calendar_info", "__________________")
 
             // Паттерн Static factory method
             Schedule.createPrivateSchedule(
@@ -83,7 +103,9 @@ class CalDavClient(
 
         return try {
             when {
-                dateStr.endsWith("Z") -> LocalDateTime.parse(dateStr, createdFormatter).atOffset(ZoneOffset.UTC).toLocalDateTime()
+                dateStr.endsWith("Z") -> LocalDateTime.parse(dateStr, createdFormatter)
+                    .atOffset(ZoneOffset.UTC).toLocalDateTime()
+
                 else -> {
                     val datePart = dateStr.substring(0, 8)
                     val timePart = dateStr.substring(9)

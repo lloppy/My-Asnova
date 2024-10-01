@@ -88,6 +88,7 @@ class MainActivity : ComponentActivity() {
                                 lifecycleScope.launch {
                                     val signInIntentSender = viewModel.signIn()
                                     launcher.launch(
+                                        // Паттерн Builder
                                         IntentSenderRequest.Builder(
                                             signInIntentSender ?: return@launch
                                         ).build()

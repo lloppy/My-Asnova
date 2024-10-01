@@ -20,7 +20,6 @@ import com.google.firebase.auth.PhoneAuthProvider
 import com.google.firebase.auth.auth
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.tasks.await
 import java.util.concurrent.CancellationException
 import java.util.concurrent.TimeUnit
@@ -71,6 +70,7 @@ class UserRepositoryImpl @Inject constructor(
     }
 
     private fun buildSignInRequest(): BeginSignInRequest {
+        // Паттерн Builder
         return BeginSignInRequest.Builder()
             .setGoogleIdTokenRequestOptions(
                 BeginSignInRequest.GoogleIdTokenRequestOptions.Builder()
@@ -160,7 +160,11 @@ class UserRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun signInWithOtp(otp: String, verificationId: String, callback: (Resource<SignInResult>) -> Unit) {
+    override fun signInWithOtp(
+        otp: String,
+        verificationId: String,
+        callback: (Resource<SignInResult>) -> Unit
+    ) {
         val credential = PhoneAuthProvider.getCredential(verificationId, otp)
         _auth.signInWithCredential(credential)
             .addOnCompleteListener { task ->

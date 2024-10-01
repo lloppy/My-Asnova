@@ -38,7 +38,9 @@ class NetworkModule {
 
     @Provides
     @Singleton
-    fun provideOkHttpClient(): OkHttpClient = OkHttpClient.Builder()
-        .protocols(listOf(Protocol.HTTP_1_1))
-        .build()
+    fun provideOkHttpClient(): OkHttpClient =
+        // Паттерн Builder
+        OkHttpClient.Builder()
+            .protocols(listOf(Protocol.HTTP_1_1))
+            .build()
 }

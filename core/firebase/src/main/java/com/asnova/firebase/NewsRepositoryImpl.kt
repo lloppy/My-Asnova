@@ -39,6 +39,7 @@ class NewsRepositoryImpl @Inject constructor(
     private val _databaseReference: CollectionReference = _database.collection("news")
     private val _storage: FirebaseStorage = Firebase.storage
     private val _storageReference: StorageReference = _storage.reference
+
     override fun addNewsItem(newsItem: NewsItem, callback: (Resource<Boolean>) -> Unit) {
         callback(Resource.Loading())
         val id = _databaseReference.document().id
@@ -98,7 +99,6 @@ class NewsRepositoryImpl @Inject constructor(
                         }
                 }
             }
-
         } catch (e: FirebaseException) {
             callback(Resource.Error(e.message.toString()))
         }

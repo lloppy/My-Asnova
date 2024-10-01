@@ -29,7 +29,10 @@ class ScheduleRepositoryImpl @Inject constructor(
 ) : ScheduleRepository {
     private val _database: FirebaseFirestore = FirebaseFirestore.getInstance()
     private val _databaseReference: CollectionReference = _database.collection("schedule")
-    override fun addNewLesson(scheduleFirebase: ScheduleFirebase, callback: (Resource<Boolean>) -> Unit) {
+    override fun addNewLesson(
+        scheduleFirebase: ScheduleFirebase,
+        callback: (Resource<Boolean>) -> Unit
+    ) {
         callback(Resource.Loading())
         val id = _databaseReference.document().id
 
@@ -48,7 +51,8 @@ class ScheduleRepositoryImpl @Inject constructor(
             ),
             end = Timestamp(
                 Date.from(
-                    LocalDate.now().atTime(scheduleFirebase.end).atZone(ZoneId.systemDefault()).toInstant()
+                    LocalDate.now().atTime(scheduleFirebase.end).atZone(ZoneId.systemDefault())
+                        .toInstant()
                 )
             ),
             lesson = scheduleFirebase.lesson,
@@ -165,6 +169,7 @@ class ScheduleRepositoryImpl @Inject constructor(
                 is Resource.Loading -> {
                     callback(Resource.Loading())
                 }
+
                 is Resource.Success -> {
                     val schedules = resource.data
 
@@ -183,6 +188,7 @@ class ScheduleRepositoryImpl @Inject constructor(
 
                     callback(Resource.Success(asnovaClasses))
                 }
+
                 is Resource.Error -> {
                     callback(Resource.Error(resource.message ?: "Unknown error"))
                 }
@@ -194,38 +200,39 @@ class ScheduleRepositoryImpl @Inject constructor(
         val yearText = document.selectFirst("div.seocategory__prodblock-title__inner")?.text()
         return yearText?.split(" ")?.last()?.toIntOrNull() ?: LocalDate.now().year
     }
-}
 
-private fun parseScheduleFromHtml(html: String, year: Int): List<ScheduleAsnovaSite> {
-    val document = Jsoup.parse(html)
-    val scheduleElements = document.select("div.seocategory__prodblock")
-    Log.d("calendar_site_info", scheduleElements.text())
+    private fun parseScheduleFromHtml(html: String, year: Int): List<ScheduleAsnovaSite> {
+        val document = Jsoup.parse(html)
+        val scheduleElements = document.select("div.seocategory__prodblock")
+        Log.d("calendar_site_info", scheduleElements.text())
 
-    return scheduleElements.mapNotNull { element ->
-        val linkElement = element.selectFirst(".seocategory__prodblock-link") ?: return@mapNotNull null
-        val dateAndTimeText = linkElement.text().split(", ")
-        Log.d("calendar_site_info", "text $dateAndTimeText")
+        return scheduleElements.mapNotNull { element ->
+            val linkElement =
+                element.selectFirst(".seocategory__prodblock-link") ?: return@mapNotNull null
+            val dateAndTimeText = linkElement.text().split(", ")
+            Log.d("calendar_site_info", "text $dateAndTimeText")
 
-        if (dateAndTimeText.size < 3) return@mapNotNull null
+            if (dateAndTimeText.size < 3) return@mapNotNull null
 
-        val dateRange = dateAndTimeText[0]
-        val timeRange = dateAndTimeText[1]
-        val description = dateAndTimeText[2]
+            val dateRange = dateAndTimeText[0]
+            val timeRange = dateAndTimeText[1]
+            val description = dateAndTimeText[2]
 
-        val imageUrlElement = element.selectFirst(".seocategory__prodblock-img img")
-        val imageUrl = imageUrlElement?.attr("src") ?: ""
+            val imageUrlElement = element.selectFirst(".seocategory__prodblock-img img")
+            val imageUrl = imageUrlElement?.attr("src") ?: ""
 
-        val newsLinkElement = element.selectFirst(".seocategory__prodblock-link")
-        val newsLink = newsLinkElement?.attr("href") ?: ""
+            val newsLinkElement = element.selectFirst(".seocategory__prodblock-link")
+            val newsLink = newsLinkElement?.attr("href") ?: ""
 
-        // Паттерн Static factory method
-        Schedule.createSiteSchedule(
-            dateRange = dateRange,
-            year = year,
-            timeRange = timeRange,
-            description = description,
-            imageUrl = "https://asnova.pro$imageUrl",
-            newsLink = newsLink
-        )
+            // Паттерн Static factory method
+            Schedule.createSiteSchedule(
+                dateRange = dateRange,
+                year = year,
+                timeRange = timeRange,
+                description = description,
+                imageUrl = "https://asnova.pro$imageUrl",
+                newsLink = newsLink
+            )
+        }
     }
 }
