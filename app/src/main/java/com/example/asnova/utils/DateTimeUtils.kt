@@ -4,6 +4,7 @@ import java.text.SimpleDateFormat
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
+import java.time.format.TextStyle
 import java.time.temporal.ChronoUnit
 import java.util.Date
 import java.util.Locale
@@ -24,4 +25,8 @@ fun formatRelativeDate(date: Date): String {
         3, 4 -> "$daysBetween дня назад"
         else -> "$daysBetween дней назад"
     }
+}
+
+fun getDayOfWeekInRussian(date: LocalDate): String {
+    return date.dayOfWeek.getDisplayName(TextStyle.SHORT, Locale("ru")).lowercase()
 }

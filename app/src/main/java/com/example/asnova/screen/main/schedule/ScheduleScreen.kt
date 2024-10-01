@@ -1,5 +1,6 @@
 package com.example.asnova.screen.main.schedule
 
+
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -10,7 +11,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
@@ -26,6 +26,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -33,18 +34,15 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.LifecycleOwner
 import com.asnova.model.Resource
 import com.asnova.model.User
-import com.example.asnova.screen.main.schedule.components.DateBox
 import com.example.asnova.screen.main.schedule.components.GroupScheduleItem
 import com.example.asnova.screen.main.schedule.components.ScheduleHeader
 import com.example.asnova.screen.main.schedule.components.SiteScheduleItem
+import com.example.asnova.screen.main.schedule.components.WeekNavigationRow
 import com.example.asnova.ui.theme.BottomBarHeight
 import com.example.asnova.utils.Router
 import com.example.asnova.utils.ScheduleScreenSkeleton
 import com.example.asnova.utils.SkeletonScreen
-import com.kizitonwose.calendar.compose.WeekCalendar
-import com.kizitonwose.calendar.compose.weekcalendar.rememberWeekCalendarState
 import java.time.LocalDate
-
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -66,7 +64,11 @@ fun ScheduleScreen(
     val stateRefresh = rememberPullRefreshState(isRefreshing, { viewModel.pullToRefresh() })
 
     val currentDate = LocalDate.now()
-    val dateList = List(7) { index -> currentDate.plusDays(index.toLong()) }
+    val lastMonday =
+        remember { mutableStateOf(currentDate.minusDays(currentDate.dayOfWeek.value.toLong() - 1)) }
+    val dateList =
+        remember { mutableStateOf(List(7) { index -> lastMonday.value.plusDays(index.toLong()) }) }
+    val selectedMutableDate = remember { mutableStateOf(currentDate) }
 
     LaunchedEffect(Unit) {
         viewModel.getUserData { resource ->
@@ -91,14 +93,27 @@ fun ScheduleScreen(
     ) {
         SkeletonScreen(
             isLoading = state.loading,
-            skeleton = { ScheduleScreenSkeleton(userData, screenHeight) }
+            skeleton = {
+                ScheduleScreenSkeleton(userData, screenHeight) {
+                    WeekNavigationRow(
+                        lastMonday,
+                        dateList,
+                        currentDate,
+                        selectedMutableDate,
+                        onDateSelected = { selectedDate ->
+                            viewModel.saveDate(selectedDate)
+                            viewModel.loadScheduleForGroup()
+                        }
+                    )
+
+                }
+            }
         ) {
             LazyColumn(
                 Modifier
                     .fillMaxSize()
                     .pullRefresh(stateRefresh)
-            )
-            {
+            ) {
                 item {
                     Column(
                         modifier = Modifier.fillMaxWidth(),
@@ -108,21 +123,20 @@ fun ScheduleScreen(
                         ScheduleHeader(userData, screenHeight)
                     }
                 }
-                if (viewModel.canLoadPrivateSchedule()) {
-                    item {
-                        LazyRow(Modifier.padding(horizontal = 24.dp)) {
-                            items(dateList) { date ->
-                                DateBox(
-                                    date = date,
-                                    currentDate = currentDate,
-                                    onDateSelected = { selectedDate ->
-                                        viewModel.saveDate(selectedDate)
-                                        viewModel.loadScheduleForGroup()
-                                    }
-                                )
-                            }
+                item {
+                    WeekNavigationRow(
+                        lastMonday,
+                        dateList,
+                        currentDate,
+                        selectedMutableDate,
+                        onDateSelected = { selectedDate ->
+                            viewModel.saveDate(selectedDate)
+                            viewModel.loadScheduleForGroup()
                         }
-                    }
+                    )
+                }
+
+                if (viewModel.canLoadPrivateSchedule()) {
                     items(state.privateSchedule) { item ->
                         GroupScheduleItem(item, context)
                     }
