@@ -40,15 +40,6 @@ android {
             )
         }
     }
-//    compileOptions {
-//        sourceCompatibility = JavaVersion.VERSION_1_8
-//        targetCompatibility = JavaVersion.VERSION_1_8
-//
-//        isCoreLibraryDesugaringEnabled = true
-//    }
-//    kotlinOptions {
-//        jvmTarget = JavaVersion.VERSION_1_8.toString()
-//    }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
@@ -58,7 +49,6 @@ android {
     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_17.toString()
     }
-
     buildFeatures {
         buildConfig = true
         compose = true
@@ -172,7 +162,8 @@ dependencies {
     implementation("com.squareup.okhttp3:logging-interceptor:4.9.1")
 
     // SceneView https://github.com/SceneView/sceneview-android/tree/main
-    implementation("io.github.sceneview:sceneview:2.2.1")
+//    implementation("io.github.sceneview:sceneview:2.2.1")
+    implementation("io.github.sceneview:arsceneview:2.1.0")
 
     // Oceanic Kalendar: Represents the WeekView.
     implementation("com.himanshoe:kalendar:1.3.2")
