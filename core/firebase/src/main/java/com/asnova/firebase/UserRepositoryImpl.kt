@@ -190,13 +190,14 @@ class UserRepositoryImpl @Inject constructor(
 
     override fun createUserWithPhone(phone: String, callback: (Resource<String>) -> Unit) {
         val activity = context as Activity
+
+        // Паттерн Builder
         val options = PhoneAuthOptions.newBuilder(_auth)
             .setPhoneNumber(phone)
             .setTimeout(60L, TimeUnit.SECONDS)
             .setActivity(activity)
             .setCallbacks(object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
                 override fun onVerificationCompleted(credential: PhoneAuthCredential) {
-                    // Auto-retrieval scenario
                     _auth.signInWithCredential(credential)
                         .addOnCompleteListener { task ->
                             if (task.isSuccessful) {
