@@ -165,8 +165,8 @@ dependencies {
 //    implementation("io.github.sceneview:sceneview:2.2.1")
     implementation("io.github.sceneview:arsceneview:2.1.0")
 
-    // Oceanic Kalendar: Represents the WeekView.
-    implementation("com.himanshoe:kalendar:1.3.2")
+    // week compose Calendar https://github.com/kizitonwose/Calendar/tree/main
+    implementation("com.kizitonwose.calendar:compose:2.6.0")
     implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.3.2")
 
 }

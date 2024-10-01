@@ -41,11 +41,8 @@ import com.example.asnova.ui.theme.BottomBarHeight
 import com.example.asnova.utils.Router
 import com.example.asnova.utils.ScheduleScreenSkeleton
 import com.example.asnova.utils.SkeletonScreen
-import com.himanshoe.kalendar.Kalendar
-import com.himanshoe.kalendar.KalendarType
-import kotlinx.datetime.Clock
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
+import com.kizitonwose.calendar.compose.WeekCalendar
+import com.kizitonwose.calendar.compose.weekcalendar.rememberWeekCalendarState
 import java.time.LocalDate
 
 
@@ -96,10 +93,6 @@ fun ScheduleScreen(
             isLoading = state.loading,
             skeleton = { ScheduleScreenSkeleton(userData, screenHeight) }
         ) {
-            val now = Clock.System.now()
-            val tz = TimeZone.currentSystemDefault()
-            val today = now.toLocalDateTime(tz).date
-
             LazyColumn(
                 Modifier
                     .fillMaxSize()
