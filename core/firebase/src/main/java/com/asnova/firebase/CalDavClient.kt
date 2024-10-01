@@ -1,4 +1,5 @@
-import android.util.Log
+package com.asnova.firebase
+
 import com.asnova.model.Schedule
 import net.fortuna.ical4j.data.CalendarBuilder
 import net.fortuna.ical4j.model.Calendar
@@ -13,13 +14,6 @@ import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
-
-/*
-private val calDavClient = CalDavClient(
-    "https://calendar.mail.ru/principals/vk.com/ankudinovazaecologiy/calendars/e44497c4-4978-4518-81de-0530cf40c794/",
-    "ankudinovazaecologiy@vk.com",
-    "FYnERU8DZC1zvTm12NV3"
-)   */
 
 class CalDavClient(
     private val baseUrl: String,
@@ -54,36 +48,6 @@ class CalDavClient(
 
         val events: List<VEvent> = calendar.components.filterIsInstance<VEvent>()
         return events.map { event ->
-            Log.e(
-                "calendar_info",
-                "CREATED " + event.getProperty<Property>(Property.CREATED)?.value.toString()
-            )
-            Log.e(
-                "calendar_info",
-                "DTSTART " + event.getProperty<Property>(Property.DTSTART)?.value.toString()
-            )
-            Log.e(
-                "calendar_info",
-                "DTEND " + event.getProperty<Property>(Property.DTEND)?.value.toString()
-            )
-
-            Log.e("calendar_info", "\n")
-
-            Log.e(
-                "calendar_info",
-                "parseDate CREATED " + parseDate(event.getProperty<Property>(Property.CREATED)?.value)
-            )
-            Log.e(
-                "calendar_info",
-                "parseDate DTSTART " + parseDate(event.getProperty<Property>(Property.DTSTART)?.value)
-            )
-            Log.e(
-                "calendar_info",
-                "parseDate DTEND " + parseDate(event.getProperty<Property>(Property.DTEND)?.value)
-            )
-
-            Log.e("calendar_info", "__________________")
-
             // Паттерн Static factory method
             Schedule.createPrivateSchedule(
                 summary = event.getProperty<Property>(Property.SUMMARY)?.value,

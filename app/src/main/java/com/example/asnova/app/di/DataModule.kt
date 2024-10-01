@@ -1,6 +1,6 @@
 package com.example.asnova.app.di
 
-import CalDavClient
+import com.asnova.firebase.CalDavClient
 import android.content.Context
 import android.content.SharedPreferences
 import com.asnova.domain.repository.firebase.NewsRepository

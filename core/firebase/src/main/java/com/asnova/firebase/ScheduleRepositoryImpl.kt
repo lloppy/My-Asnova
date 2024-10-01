@@ -1,6 +1,5 @@
 package com.asnova.firebase
 
-import CalDavClient
 import android.util.Log
 import com.asnova.domain.repository.firebase.ScheduleRepository
 import com.asnova.model.AsnovaStudentsClass
