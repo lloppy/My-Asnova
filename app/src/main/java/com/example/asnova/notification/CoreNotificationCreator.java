@@ -49,6 +49,8 @@ public abstract class CoreNotificationCreator {
     }
 
     @Nullable
+    // Паттерн Factory method
+    // сам метод в абстрактном создателе
     protected abstract CoreNotification factoryMethod(String messageType, RemoteMessage remoteMessage);
 
     private final static int DEFAULT_NOTIFICATION_ID = 15;
