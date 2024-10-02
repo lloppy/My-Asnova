@@ -78,6 +78,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
      */
     private fun scheduleJob() {
         // [START dispatch_job]
+        // Паттерн Builder
         val work = OneTimeWorkRequest.Builder(MyWorker::class.java).build()
         WorkManager.getInstance(this).beginWith(work).enqueue()
         // [END dispatch_job]
@@ -121,6 +122,8 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
 
         val channelId = getString(R.string.default_notification_channel_id)
         val defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+
+        // Паттерн Builder
         val notificationBuilder = NotificationCompat.Builder(this, channelId)
             .setSmallIcon(R.drawable.ic_stat_ic_notification)
             .setContentTitle(getString(R.string.fcm_message))
@@ -129,8 +132,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
             .setSound(defaultSoundUri)
             .setContentIntent(pendingIntent)
 
-        val notificationManager =
-            getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
         // Since android Oreo notification channel is needed.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
