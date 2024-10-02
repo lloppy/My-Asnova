@@ -21,7 +21,7 @@ import com.example.asnova.screen.main.feed.FeedScreen
 import com.example.asnova.screen.main.settings.components.ChatScreen
 import com.example.asnova.screen.main.settings.ProfileSettingsScreen
 import com.example.asnova.screen.main.schedule.ScheduleScreen
-import com.example.asnova.screen.main.settings.components.ChooseClassScreen
+import com.example.asnova.screen.main.settings.components.SelectClassScreen
 import com.example.asnova.ui.theme.BottomBarHeight
 import com.example.asnova.utils.Router
 import com.example.bottombar.AnimatedBottomBar
@@ -75,7 +75,7 @@ fun SetupNavGraph(
             ChatScreen()
         }
         composable(Screen.ChooseClass.route) {
-            ChooseClassScreen()
+            SelectClassScreen()
         }
     }
 }

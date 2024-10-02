@@ -63,7 +63,6 @@ fun WeekNavigationRow(
         dateList.value.forEach { date ->
             DateBox(
                 date = date,
-                currentDate = currentDate,
                 isSelected = (date == selectedMutableDate.value),
                 modifier = Modifier.weight(1f),
                 onDateSelected = { selectedDate ->
@@ -90,7 +89,6 @@ fun WeekNavigationRow(
 @Composable
 fun DateBox(
     date: LocalDate,
-    currentDate: LocalDate,
     isSelected: Boolean,
     modifier: Modifier = Modifier,
     onDateSelected: (LocalDate) -> Unit

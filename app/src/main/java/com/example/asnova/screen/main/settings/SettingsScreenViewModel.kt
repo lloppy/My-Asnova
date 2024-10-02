@@ -51,6 +51,13 @@ class SettingsScreenViewModel @Inject constructor(
         })
     }
 
+    fun canLoadAdminAccess(): Boolean {
+        return when (UserManager.getRole()) {
+            Role.ADMIN -> true
+            else -> false
+        }
+    }
+
     private fun handleAsnovaClassesResult(result: Resource<List<AsnovaStudentsClass>>) {
         Log.d("studentsClasses", "handleAsnovaClassesResult")
 

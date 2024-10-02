@@ -45,6 +45,8 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.LifecycleCoroutineScope
 import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.asnova.model.Resource
 import com.asnova.model.User
@@ -72,9 +74,11 @@ fun ProfileSettingsScreen(
                 is Resource.Success -> {
                     userData = resource.data
                 }
+
                 is Resource.Error -> {
                     // Handle error
                 }
+
                 else -> {}
             }
         }
@@ -108,6 +112,7 @@ fun ProfileSettingsScreen(
     ) { padding ->
         LogInContent(
             padding = padding,
+            viewModel = viewModel,
             userData = userData,
             navigateToSelectClass = navigateToSelectClass,
             onSignOut = {
@@ -123,6 +128,7 @@ fun ProfileSettingsScreen(
 fun LogInContent(
     padding: PaddingValues,
     userData: User?,
+    viewModel: SettingsScreenViewModel,
     navigateToSelectClass: () -> Unit,
     onSignOut: () -> Unit
 ) {
@@ -156,11 +162,12 @@ fun LogInContent(
                         fontWeight = FontWeight.SemiBold
                     )
 
-                    Button(onClick =  navigateToSelectClass ) {
-                        Text(text = "Выбрать учебную группу")
+                    if (viewModel.canLoadAdminAccess()) {
+                        Button(onClick = navigateToSelectClass) {
+                            Text(text = "Выбрать учебную группу")
+                        }
+                        Spacer(modifier = Modifier.height(36.dp))
                     }
-
-                    Spacer(modifier = Modifier.height(36.dp))
                 }
             }
             Button(
