@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:name=".app.AsnovaApplication"
@@ -15,7 +15,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Asnova"
         tools:targetApi="31">
-
+        <activity
+            android:name=".screen.main.settings.components.MessageActivity"
+            android:exported="false" />
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -23,10 +25,10 @@
             android:theme="@style/Theme.Asnova">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
 
         <service
             android:name=".notification.MyFirebaseMessagingService"
@@ -36,14 +38,12 @@
             </intent-filter>
         </service>
 
-
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"
             android:resource="@drawable/sm_asnova_logo" />
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_color"
             android:resource="@color/white" />
-
     </application>
 
 </manifest>
