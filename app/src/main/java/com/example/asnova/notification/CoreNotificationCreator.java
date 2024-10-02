@@ -71,6 +71,7 @@ public abstract class CoreNotificationCreator {
         return builder;
     }
 
+    // Паттерн Builder
     private void notify(@NonNull NotificationCompat.Builder builder) {
         final String notificationTag = getNotificationTag(builder);
         notificationManager.cancel(notificationTag, DEFAULT_NOTIFICATION_ID);
