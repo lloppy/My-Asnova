@@ -16,6 +16,8 @@ import com.google.firebase.messaging.RemoteMessage;
 
 import java.util.Map;
 
+// Паттерн Factory method
+// создатель абстрактный
 public abstract class CoreNotificationCreator {
 
     private static final String KEY_NOTIFICATION_TAG = "CoreNotificationCreator.TagKey";

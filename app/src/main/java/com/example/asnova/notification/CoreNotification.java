@@ -7,7 +7,7 @@ package com.example.asnova.notification;
 //  для каждой нотификации во всех реализациях этого интерфейса.
 //  Поэтому было принято решение избежать дублирования кода через абстрактный класс,
 //  который содержит методы getTitleFromMessage() и getContentFromMessage().
-
+//  https://habr.com/ru/articles/332006/
 
 import android.app.PendingIntent;
 import android.content.Context;
@@ -18,12 +18,12 @@ import com.google.firebase.messaging.RemoteMessage;
 
 import java.util.Map;
 
+// Паттерн Factory method
+// продукт абстрактный
 public abstract class CoreNotification {
     public static final String KEY_FROM_PUSH = "CoreNotification.FromNotification";
-
     private static final String KEY_TITLE = "title";
     private static final String KEY_CONTENT = "body";
-
     protected static final String STRING_EMPTY = "";
 
     protected RemoteMessage remoteMessage;
