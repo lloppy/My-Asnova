@@ -16,7 +16,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.asnova.model.User
-import com.example.asnova.screen.main.schedule.components.ScheduleHeader
+import com.example.asnova.screen.schedule.components.ScheduleHeader
 
 @Composable
 fun ScheduleScreenSkeleton(userData: User?, screenHeight: Dp, content: @Composable () -> Unit) {

@@ -17,11 +17,11 @@ import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.example.asnova.screen.main.feed.FeedScreen
-import com.example.asnova.screen.main.settings.components.ChatScreen
-import com.example.asnova.screen.main.settings.ProfileSettingsScreen
-import com.example.asnova.screen.main.schedule.ScheduleScreen
-import com.example.asnova.screen.main.settings.components.SelectClassScreen
+import com.example.asnova.screen.feed.FeedScreen
+import com.example.asnova.screen.schedule.ScheduleScreen
+import com.example.asnova.screen.settings.ProfileSettingsScreen
+import com.example.asnova.screen.settings.components.ChatScreen
+import com.example.asnova.screen.settings.components.SelectClassScreen
 import com.example.asnova.ui.theme.BottomBarHeight
 import com.example.asnova.utils.Router
 import com.example.bottombar.AnimatedBottomBar
@@ -58,6 +58,8 @@ fun SetupNavGraph(
             )
         }
         composable(Screen.ProfileSettings.route) {
+            //ProfileScreen(externalRouter = router, context = context, lifecycleScope = lifecycleScope, lifecycleOwner = lifecycleOwner)
+
             ProfileSettingsScreen(
                 externalRouter = router,
                 context = context,

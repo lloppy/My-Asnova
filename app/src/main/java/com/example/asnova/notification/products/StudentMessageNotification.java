@@ -6,7 +6,7 @@ import android.content.Intent;
 
 import com.example.asnova.R;
 import com.example.asnova.notification.CoreNotification;
-import com.example.asnova.screen.main.settings.components.MessageActivity;
+import com.example.asnova.screen.settings.components.MessageActivity;
 import com.google.firebase.messaging.RemoteMessage;
 
 // Паттерн Factory method

@@ -1,4 +1,4 @@
-package com.example.asnova.screen.main.settings.components
+package com.example.asnova.screen.settings.components
 
 import android.util.Log
 import androidx.compose.foundation.background
@@ -41,7 +41,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.asnova.model.AsnovaStudentsClass
 import com.asnova.model.Resource
-import com.example.asnova.screen.main.settings.SettingsScreenViewModel
+import com.example.asnova.screen.settings.SettingsScreenViewModel
 import com.example.asnova.ui.theme.BottomBarHeight
 import com.example.asnova.ui.theme.backgroundAsnova
 import com.example.asnova.utils.SkeletonScreen

@@ -1,4 +1,4 @@
-package com.example.asnova.screen.main.settings
+package com.example.asnova.screen.settings
 
 import android.content.Context
 import androidx.compose.foundation.background

@@ -1,4 +1,4 @@
-package com.example.asnova.screen.main.settings.components
+package com.example.asnova.screen.settings.components
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*

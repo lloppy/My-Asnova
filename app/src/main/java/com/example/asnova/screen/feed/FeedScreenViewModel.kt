@@ -1,4 +1,4 @@
-package com.example.asnova.screen.main.feed
+package com.example.asnova.screen.feed
 
 import android.util.Log
 import androidx.compose.runtime.State
@@ -17,7 +17,7 @@ import com.asnova.model.Role
 import com.asnova.model.User
 import com.asnova.model.WallItem
 import com.example.asnova.data.UserManager
-import com.example.asnova.screen.main.feed.components.Segments
+import com.example.asnova.screen.feed.components.Segments
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject

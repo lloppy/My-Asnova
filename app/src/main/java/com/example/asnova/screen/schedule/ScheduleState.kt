@@ -1,4 +1,4 @@
-package com.example.asnova.screen.main.schedule
+package com.example.asnova.screen.schedule
 
 import com.asnova.model.ScheduleAsnovaPrivate
 import com.asnova.model.ScheduleAsnovaSite

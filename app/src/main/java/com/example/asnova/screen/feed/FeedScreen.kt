@@ -1,4 +1,4 @@
-package com.example.asnova.screen.main.feed
+package com.example.asnova.screen.feed
 
 import android.content.Intent
 import android.net.Uri
@@ -35,9 +35,9 @@ import androidx.navigation.NavController
 import com.asnova.model.Resource
 import com.asnova.model.User
 import com.example.asnova.R
-import com.example.asnova.screen.main.feed.components.FeedItemView
-import com.example.asnova.screen.main.feed.components.HeaderSection
-import com.example.asnova.screen.main.feed.components.Segments
+import com.example.asnova.screen.feed.components.FeedItemView
+import com.example.asnova.screen.feed.components.HeaderSection
+import com.example.asnova.screen.feed.components.Segments
 import com.example.asnova.ui.theme.BottomBarHeight
 import com.example.asnova.ui.theme.FeedItemHeight
 import com.example.asnova.ui.theme.backgroundAsnova

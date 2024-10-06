@@ -1,4 +1,4 @@
-package com.example.asnova.screen.main.schedule
+package com.example.asnova.screen.schedule
 
 
 import android.content.Context
@@ -34,10 +34,10 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.LifecycleOwner
 import com.asnova.model.Resource
 import com.asnova.model.User
-import com.example.asnova.screen.main.schedule.components.GroupScheduleItem
-import com.example.asnova.screen.main.schedule.components.ScheduleHeader
-import com.example.asnova.screen.main.schedule.components.SiteScheduleItem
-import com.example.asnova.screen.main.schedule.components.WeekNavigationRow
+import com.example.asnova.screen.schedule.components.GroupScheduleItem
+import com.example.asnova.screen.schedule.components.ScheduleHeader
+import com.example.asnova.screen.schedule.components.SiteScheduleItem
+import com.example.asnova.screen.schedule.components.WeekNavigationRow
 import com.example.asnova.ui.theme.BottomBarHeight
 import com.example.asnova.utils.Router
 import com.example.asnova.utils.ScheduleScreenSkeleton

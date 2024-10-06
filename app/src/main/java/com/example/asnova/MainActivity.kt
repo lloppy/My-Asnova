@@ -23,7 +23,7 @@ import com.asnova.model.Role
 import com.example.asnova.data.UserManager
 import com.example.asnova.navigation.Screen
 import com.example.asnova.screen.greeting.GreetingScreen
-import com.example.asnova.screen.main.MainScreen
+import com.example.asnova.screen.MainScreen
 import com.example.asnova.screen.sign_in.SignInScreen
 import com.example.asnova.screen.sign_in.SignInScreenViewModel
 import com.example.asnova.ui.theme.AsnovaTheme

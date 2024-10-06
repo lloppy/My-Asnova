@@ -1,4 +1,4 @@
-package com.example.asnova.screen.main.schedule.components
+package com.example.asnova.screen.schedule.components
 
 import android.content.Context
 import androidx.compose.foundation.background

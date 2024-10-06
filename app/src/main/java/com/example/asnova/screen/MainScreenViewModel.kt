@@ -1,4 +1,4 @@
-package com.example.asnova.screen.main
+package com.example.asnova.screen
 
 import androidx.lifecycle.ViewModel
 import com.example.asnova.data.UserManager
