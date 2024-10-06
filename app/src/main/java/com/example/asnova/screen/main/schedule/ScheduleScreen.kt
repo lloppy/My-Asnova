@@ -137,8 +137,22 @@ fun ScheduleScreen(
                             }
                         )
                     }
-                    items(state.value.privateSchedule) { item ->
-                        GroupScheduleItem(item, context)
+                    if (state.value.privateSchedule.isEmpty()) {
+                        item {
+                            Column(modifier = Modifier
+                                .fillMaxSize()
+                                .padding(start = 32.dp, end = 32.dp, top = 32.dp),
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.Center
+                            ){
+                                if (currentDate == selectedMutableDate.value) Text("Сегодня занятий нет")
+                                else Text("Занятий нет")
+                            }
+                        }
+                    } else {
+                        items(state.value.privateSchedule) { item ->
+                            GroupScheduleItem(item, context)
+                        }
                     }
                 } else {
                     items(state.value.siteSchedule) { item ->
