@@ -13,6 +13,7 @@ import com.asnova.storage.KEY_USER_SETTING
 // Паттерн Singleton
 object UserManager {
     private var _role: String = Role.NONE
+    var status = _role == Role.ADMIN
     fun init(sharedPreferences: SharedPreferences) {
         val userRole = sharedPreferences.getString(KEY_USER_SETTING, Role.NONE) ?: Role.NONE
         _role = userRole

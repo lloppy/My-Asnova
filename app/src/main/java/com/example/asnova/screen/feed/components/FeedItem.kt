@@ -1,4 +1,4 @@
-package com.example.asnova.screen.main.feed.components
+package com.example.asnova.screen.feed.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background

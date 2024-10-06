@@ -1,4 +1,4 @@
-package com.example.asnova.screen.main.settings.components
+package com.example.asnova.screen.settings.components
 
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition

@@ -1,4 +1,4 @@
-package com.example.asnova.screen.main.settings.components
+package com.example.asnova.screen.settings.components
 
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge

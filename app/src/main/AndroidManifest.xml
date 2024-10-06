@@ -16,7 +16,7 @@
         android:theme="@style/Theme.Asnova"
         tools:targetApi="31">
         <activity
-            android:name=".screen.main.settings.components.MessageActivity"
+            android:name=".screen.settings.components.MessageActivity"
             android:exported="false" />
         <activity
             android:name=".MainActivity"

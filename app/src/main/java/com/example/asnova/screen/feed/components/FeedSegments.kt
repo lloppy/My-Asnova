@@ -1,4 +1,4 @@
-package com.example.asnova.screen.main.feed.components
+package com.example.asnova.screen.feed.components
 
 // Паттерн Singleton
 object Segments {

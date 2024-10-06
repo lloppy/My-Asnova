@@ -175,6 +175,9 @@ dependencies {
     implementation("com.kizitonwose.calendar:compose:2.6.0")
     implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.3.2")
 
+    //https://github.com/maxkeppeler/sheets-compose-dialogs
+    implementation("com.maxkeppeler.sheets-compose-dialogs:core:1.3.0")
+
 }
 
 kapt {

@@ -1,4 +1,4 @@
-package com.example.asnova.screen.main
+package com.example.asnova.screen
 
 import android.annotation.SuppressLint
 import android.content.Context

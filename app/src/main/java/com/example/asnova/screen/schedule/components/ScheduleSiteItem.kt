@@ -1,4 +1,4 @@
-package com.example.asnova.screen.main.schedule.components
+package com.example.asnova.screen.schedule.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable

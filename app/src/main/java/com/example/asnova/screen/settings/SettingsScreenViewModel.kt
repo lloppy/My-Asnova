@@ -1,4 +1,4 @@
-package com.example.asnova.screen.main.settings
+package com.example.asnova.screen.settings
 
 import android.content.SharedPreferences
 import android.util.Log
@@ -14,7 +14,6 @@ import com.asnova.model.Role
 import com.asnova.model.User
 import com.asnova.storage.KEY_USER_SETTING
 import com.example.asnova.data.UserManager
-import com.example.asnova.screen.main.feed.FeedState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 

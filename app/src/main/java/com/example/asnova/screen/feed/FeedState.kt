@@ -1,4 +1,4 @@
-package com.example.asnova.screen.main.feed
+package com.example.asnova.screen.feed
 
 import com.asnova.model.WallItem
 

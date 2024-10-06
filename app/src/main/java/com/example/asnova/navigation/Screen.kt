@@ -17,6 +17,8 @@ sealed class Screen(val route: String, val iconId: Int, val icon: ImageVector? =
     object Greeting : Screen(route = "greeting_screen", iconId = R.drawable.ic_launcher_foreground)
     object ChooseClass : Screen(route = "choose_class_screen", iconId = R.drawable.ic_launcher_foreground)
 
+    object ProfileDetail: Screen("profile_detail",  iconId = R.drawable.ic_launcher_foreground)
+
 
     object Feed :
         Screen(route = "feed_screen", iconId = R.drawable.ic_home, icon = Icons.Filled.Home)
