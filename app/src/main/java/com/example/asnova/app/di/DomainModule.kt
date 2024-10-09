@@ -39,11 +39,16 @@ import com.asnova.domain.usecase.SignInUseCase
 import com.asnova.domain.usecase.SignInWithIntentUseCase
 import com.asnova.domain.usecase.SignInWithOtpUseCase
 import com.asnova.domain.usecase.SignOutUserUseCase
+import com.asnova.model.Role
+import com.example.asnova.data.UserManager
+import com.example.asnova.screen.chat.factory.AdminChatFactory
+import com.example.asnova.screen.chat.factory.ChatFactory
+import com.example.asnova.screen.chat.factory.GuestChatFactory
+import com.example.asnova.screen.chat.factory.StudentChatFactory
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ViewModelComponent
-import javax.inject.Singleton
 
 @Module
 @InstallIn(ViewModelComponent::class)

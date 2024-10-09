@@ -38,7 +38,7 @@ import kotlin.time.DurationUnit.MILLISECONDS
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ChatScreen() {
+fun ChatScreen2() {
     Text(text = "ChatScreen")
 
     Box(modifier = Modifier.fillMaxSize()) {
