@@ -8,7 +8,7 @@ class GetScheduleUseCase(
     private val scheduleRepository: ScheduleRepository
 ) {
     operator fun invoke(callback: (Resource<List<ScheduleAsnovaPrivate>>) -> Unit) {
-        // получаем расписание только из календаря
-        return scheduleRepository.getScheduleFromCalDav(callback)
+        // получаем расписание только из внутреннего календаря
+        return scheduleRepository.getPrivateSchedule(callback)
     }
 }

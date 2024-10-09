@@ -30,10 +30,10 @@ const val DEFAULT_IMAGE_RESOURCE_URL = "resource://ic_asnova_default_news"
 
 class NewsRepositoryImpl @Inject constructor(
     private val groupsApi: GroupsApi
-
 ) : NewsRepository {
     // https://dev.vk.com/ru/method/groups
-    private val accessToken = "2c7485642c7485642c748564202f6dcfcc22c742c7485644afaf2742c0714f09e3fa61a"
+    private val accessToken =
+        "2c7485642c7485642c748564202f6dcfcc22c742c7485644afaf2742c0714f09e3fa61a"
 
     private val _database: FirebaseFirestore = FirebaseFirestore.getInstance()
     private val _databaseReference: CollectionReference = _database.collection("news")
@@ -181,7 +181,10 @@ class NewsRepositoryImpl @Inject constructor(
         )
     }
 
-    override fun onDownloadMoreAsnovaNewsUseCase(offset: Int, callback: (Resource<List<WallItem>>) -> Unit) {
+    override fun onDownloadMoreAsnovaNewsUseCase(
+        offset: Int,
+        callback: (Resource<List<WallItem>>) -> Unit
+    ) {
         fetchWallNews(
             ownerId = -162375388,
             offset = offset,
@@ -190,7 +193,10 @@ class NewsRepositoryImpl @Inject constructor(
         )
     }
 
-    override fun onDownloadMoreSafetyNewsUseCase(offset: Int, callback: (Resource<List<WallItem>>) -> Unit) {
+    override fun onDownloadMoreSafetyNewsUseCase(
+        offset: Int,
+        callback: (Resource<List<WallItem>>) -> Unit
+    ) {
         fetchWallNews(
             ownerId = -80108699,
             offset = offset,
@@ -224,29 +230,33 @@ class NewsRepositoryImpl @Inject constructor(
                 )
 
                 withContext(Dispatchers.Main) {
-                    val wallItems = wallResponse.response?.items?.filter { it.text.isNotBlank() }?.map { response ->
-                        WallItem(
-                            id = response.id,
-                            text = response.text,
-                            title = getHeadline(response.text),
-                            withoutTitle = removeHeadlineAndHashtags(response.text),
-                            date = Date(response.date * 1000L),
-                            userLikes = response.likes.userLikes,
-                            likesCount = response.likes.count,
-                            images = response.attachments.filter { it.type == "photo" }.map {
-                                WallImageItem(
-                                    id = it.photo.id,
-                                    height = it.photo.sizes.filter { resized -> resized.type == "r" }.getOrNull(0)?.height ?: 0,
-                                    width = it.photo.sizes.filter { resized -> resized.type == "r" }.getOrNull(0)?.width ?: 0,
-                                    url = it.photo.sizes.filter { resized -> resized.type == "r" }.getOrNull(0)?.url ?: DEFAULT_IMAGE_RESOURCE_URL
-                                )
-                            }.ifEmpty {
-                                listOf(WallImageItem(0, 0, 0, DEFAULT_IMAGE_RESOURCE_URL))
-                            },
-                            hashtags = extractHashtags(response.text),
-                            postUrl = "https://vk.com/$baseUrl?w=wall${response.ownerId}_${response.id}"
-                        )
-                    } ?: emptyList()
+                    val wallItems = wallResponse.response?.items?.filter { it.text.isNotBlank() }
+                        ?.map { response ->
+                            WallItem(
+                                id = response.id,
+                                text = response.text,
+                                title = getHeadline(response.text),
+                                withoutTitle = removeHeadlineAndHashtags(response.text),
+                                date = Date(response.date * 1000L),
+                                userLikes = response.likes.userLikes,
+                                likesCount = response.likes.count,
+                                images = response.attachments.filter { it.type == "photo" }.map {
+                                    WallImageItem(
+                                        id = it.photo.id,
+                                        height = it.photo.sizes.filter { resized -> resized.type == "r" }
+                                            .getOrNull(0)?.height ?: 0,
+                                        width = it.photo.sizes.filter { resized -> resized.type == "r" }
+                                            .getOrNull(0)?.width ?: 0,
+                                        url = it.photo.sizes.filter { resized -> resized.type == "r" }
+                                            .getOrNull(0)?.url ?: DEFAULT_IMAGE_RESOURCE_URL
+                                    )
+                                }.ifEmpty {
+                                    listOf(WallImageItem(0, 0, 0, DEFAULT_IMAGE_RESOURCE_URL))
+                                },
+                                hashtags = extractHashtags(response.text),
+                                postUrl = "https://vk.com/$baseUrl?w=wall${response.ownerId}_${response.id}"
+                            )
+                        } ?: emptyList()
 
                     callback(Resource.Success(wallItems))
                 }

@@ -1,6 +1,6 @@
 package com.example.asnova.app.di
 
-import com.asnova.firebase.CalDavClient
+import com.asnova.firebase.schedule.CalDavAdapteeImpl
 import android.content.Context
 import android.content.SharedPreferences
 import com.asnova.domain.repository.firebase.NewsRepository
@@ -13,6 +13,7 @@ import com.asnova.domain.repository.storage.ScheduleStateRepository
 import com.asnova.domain.repository.storage.ScheduleStateStorage
 import com.asnova.domain.repository.storage.ThemeSettingRepository
 import com.asnova.domain.repository.storage.ThemeSettingStorage
+import com.asnova.firebase.schedule.CalDavAdapter
 import com.asnova.firebase.NewsRepositoryImpl
 import com.asnova.firebase.ScheduleRepositoryImpl
 import com.asnova.firebase.UserRepositoryImpl
@@ -82,16 +83,12 @@ class DataModule {
     @Provides
     @Singleton
     fun provideScheduleRepository(): ScheduleRepository {
-        // https://help.mail.ru/mail/security/protection/external/
-        // генерация пароля для внешних приложений: https://account.mail.ru/user/2-step-auth/passwords/
+        // Паттерн Adapter
+        val calDavAdapteeImpl = CalDavAdapteeImpl()
+        val calDavAdapter = CalDavAdapter(calDavAdapteeImpl)
 
-        return ScheduleRepositoryImpl(
-            CalDavClient(
-                "https://calendar.mail.ru/principals/uc-ot.ru/mikhail/calendars/3bb28671-7672-4822-81d6-88806ee7b6cc/",
-                "mikhail@uc-ot.ru",
-                "cRcJLt8KqgR5QpLfQDiC"
-            )
-        )
+        // using the Adapter with Adaptee instance
+        return ScheduleRepositoryImpl(calDavAdapter)
     }
 
     @Provides

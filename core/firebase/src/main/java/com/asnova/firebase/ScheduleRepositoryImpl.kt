@@ -1,6 +1,7 @@
 package com.asnova.firebase
 
 import android.util.Log
+import com.asnova.domain.repository.firebase.CalendarService
 import com.asnova.domain.repository.firebase.ScheduleRepository
 import com.asnova.model.AsnovaStudentsClass
 import com.asnova.model.ScheduleAsnovaPrivate
@@ -24,7 +25,7 @@ import java.util.Date
 import javax.inject.Inject
 
 class ScheduleRepositoryImpl @Inject constructor(
-    private val calDavClient: CalDavClient
+    private val calendarService: CalendarService
 ) : ScheduleRepository {
     private val _database: FirebaseFirestore = FirebaseFirestore.getInstance()
     private val _databaseReference: CollectionReference = _database.collection("schedule")
@@ -116,12 +117,12 @@ class ScheduleRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun getScheduleFromCalDav(callback: (Resource<List<ScheduleAsnovaPrivate>>) -> Unit) {
+    override fun getPrivateSchedule(callback: (Resource<List<ScheduleAsnovaPrivate>>) -> Unit) {
         callback(Resource.Loading())
 
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                val scheduleList = calDavClient.getScheduleList()
+                val scheduleList = calendarService.getPrivateSchedule()
 
                 scheduleList.forEach {
                     Log.d("calendar_info", it.summary.toString())
@@ -163,7 +164,7 @@ class ScheduleRepositoryImpl @Inject constructor(
     }
 
     override fun getAsnovaClasses(callback: (Resource<List<AsnovaStudentsClass>>) -> Unit) {
-        getScheduleFromCalDav { resource ->
+        getPrivateSchedule { resource ->
             when (resource) {
                 is Resource.Loading -> {
                     callback(Resource.Loading())
