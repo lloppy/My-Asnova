@@ -29,6 +29,7 @@ class SettingsScreenViewModel @Inject constructor(
     private val _state = mutableStateOf(SettingsState())
     val state: State<SettingsState> = _state
 
+
     fun getUserData(callback: (Resource<User?>) -> Unit) {
         getUserDataUseCase.invoke(callback)
     }
@@ -44,7 +45,7 @@ class SettingsScreenViewModel @Inject constructor(
     fun getAsnovaClasses(callback: (Resource<List<AsnovaStudentsClass>>) -> Unit) {
         Log.d("studentsClasses", "Fetching Asnova classes...")
 
-        getAsnovaClassesUseCase.invoke(callback= { result ->
+        getAsnovaClassesUseCase.invoke(callback = { result ->
             Log.d("studentsClasses", "Received result from use case")
             handleAsnovaClassesResult(result)
         })
@@ -67,8 +68,10 @@ class SettingsScreenViewModel @Inject constructor(
                 Log.d("studentsClasses", _state.value.asnovaClasses?.first()?.name.toString())
 
             }
+
             is Resource.Error -> {
-                _state.value = SettingsState(error = result.message ?: "Ошибка. Проверьте интернет-соединение")
+                _state.value =
+                    SettingsState(error = result.message ?: "Ошибка. Проверьте интернет-соединение")
             }
 
             is Resource.Loading -> {
