@@ -1,6 +1,8 @@
-package com.asnova.firebase
+package com.asnova.firebase.schedule
 
+import com.asnova.model.CalDavConfig
 import com.asnova.model.Schedule
+import com.asnova.model.ScheduleAsnovaPrivate
 import net.fortuna.ical4j.data.CalendarBuilder
 import net.fortuna.ical4j.model.Calendar
 import net.fortuna.ical4j.model.Property
@@ -15,35 +17,14 @@ import java.time.LocalTime
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 
-class CalDavClient(
-    private val baseUrl: String,
-    private val username: String,
-    private val password: String
-) {
+// Паттерн Adapter
+// нужно для создания экземпляра    val adaptee: Adaptee = AdapteeImpl()
+class CalDavAdapteeImpl() : CalDavAdaptee {
+
     private val client = OkHttpClient()
 
-    private fun fetchCalendarData(): String? {
-        // Паттерн Builder
-        val request = Request.Builder()
-            .url(baseUrl)
-            .header("Authorization", Credentials.basic(username, password))
-            .build()
-
-        client.newCall(request).execute().use { response ->
-            return if (!response.isSuccessful) null else response.body?.string()
-        }
-    }
-
-    private fun parseCalendarData(data: String): Calendar {
-        val stringReader = StringReader(data)
-
-        // Паттерн Builder
-        return CalendarBuilder().build(stringReader)
-    }
-
-    fun getScheduleList(): List<com.asnova.model.ScheduleAsnovaPrivate> {
-        val calendarData = fetchCalendarData()
-
+    override fun getPrivateScheduleFromCalDav(config: CalDavConfig): List<ScheduleAsnovaPrivate> {
+        val calendarData = fetchCalendarData(config)
         val calendar = calendarData?.let { parseCalendarData(it) } ?: return emptyList()
 
         val events: List<VEvent> = calendar.components.filterIsInstance<VEvent>()
@@ -81,5 +62,24 @@ class CalDavClient(
         } catch (e: Exception) {
             fallbackDate
         }
+    }
+
+    private fun fetchCalendarData(config: CalDavConfig): String? {
+        // Паттерн Builder
+        val request = Request.Builder()
+            .url(config.baseUrl)
+            .header("Authorization", Credentials.basic(config.username, config.password))
+            .build()
+
+        client.newCall(request).execute().use { response ->
+            return if (!response.isSuccessful) null else response.body?.string()
+        }
+    }
+
+    private fun parseCalendarData(data: String): Calendar {
+        val stringReader = StringReader(data)
+
+        // Паттерн Builder
+        return CalendarBuilder().build(stringReader)
     }
 }
