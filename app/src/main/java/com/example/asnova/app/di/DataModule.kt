@@ -18,6 +18,7 @@ import com.asnova.firebase.NewsRepositoryImpl
 import com.asnova.firebase.ScheduleRepositoryImpl
 import com.asnova.firebase.UserRepositoryImpl
 import com.asnova.firebase.api.GroupsApi
+import com.asnova.model.Role
 import com.asnova.storage.IsAuthedUserStorageImpl
 import com.asnova.storage.LanguageSettingStorageImpl
 import com.asnova.storage.NotificationsSettingStorageImpl
@@ -26,6 +27,11 @@ import com.asnova.storage.ScheduleStateRepositoryImpl
 import com.asnova.storage.ScheduleStateStorageImpl
 import com.asnova.storage.ThemeSettingRepositoryImpl
 import com.asnova.storage.ThemeSettingStorageImpl
+import com.example.asnova.data.UserManager
+import com.example.asnova.screen.chat.factory.AdminChatFactory
+import com.example.asnova.screen.chat.factory.ChatFactory
+import com.example.asnova.screen.chat.factory.GuestChatFactory
+import com.example.asnova.screen.chat.factory.StudentChatFactory
 import com.google.android.gms.auth.api.identity.Identity
 import com.google.android.gms.auth.api.identity.SignInClient
 import dagger.Module
@@ -43,6 +49,19 @@ class DataModule {
     @Singleton
     fun provideUserSharedPreferences(@ApplicationContext context: Context): SharedPreferences {
         return context.getSharedPreferences(SHARED_PREFS_USER_SETTING, Context.MODE_PRIVATE)
+    }
+
+    @Provides
+    fun provideChatFactory(): ChatFactory {
+        // Паттерн Abstract factory
+        // в зависимости от выбранной роли отображаем чат
+        return when (UserManager.getRole()) {
+            Role.ADMIN -> return AdminChatFactory()
+            Role.STUDENT -> return StudentChatFactory()
+            Role.WORKER -> return StudentChatFactory()
+            Role.GUEST -> return GuestChatFactory()
+            else -> return GuestChatFactory()
+        }
     }
 
     @Provides
