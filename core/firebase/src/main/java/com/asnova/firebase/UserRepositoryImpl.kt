@@ -18,6 +18,8 @@ import com.google.firebase.auth.PhoneAuthCredential
 import com.google.firebase.auth.PhoneAuthOptions
 import com.google.firebase.auth.PhoneAuthProvider
 import com.google.firebase.auth.auth
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.database
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
@@ -29,10 +31,22 @@ class UserRepositoryImpl @Inject constructor(
     private val context: Context,
     private val oneTapClient: SignInClient
 ) : UserRepository {
+    private lateinit var database: DatabaseReference
+
     private val _auth: FirebaseAuth = Firebase.auth
     private val _database: FirebaseFirestore = FirebaseFirestore.getInstance()
-    private val _databaseReference: CollectionReference = _database.collection("users")
+    private val _usersReference: CollectionReference = _database.collection("users")
     private lateinit var onVerificationCode: String
+
+    init {
+        database = Firebase.database.reference
+    }
+
+    fun writeNewUser(userId: String, name: String, email: String) {
+        val user = User(name, email)
+
+        database.child("users").child(userId).setValue(user)
+    }
 
     override fun signOut() {
         _auth.signOut()
@@ -114,7 +128,7 @@ class UserRepositoryImpl @Inject constructor(
         callback(Resource.Loading())
         var user: User? = null
         _auth.addAuthStateListener {
-            _databaseReference.document(it.uid.toString()).get().addOnSuccessListener { snapshot ->
+            _usersReference.document(it.uid.toString()).get().addOnSuccessListener { snapshot ->
                 if (snapshot.data != null) {
                     val currentUser = snapshot.toObject(com.asnova.firebase.model.User::class.java)
                     if (currentUser != null) {
@@ -142,7 +156,7 @@ class UserRepositoryImpl @Inject constructor(
             val user = it.data
             val list: MutableList<String> = mutableListOf()
             if (user != null) {
-                _databaseReference.document(user.userId).get().addOnSuccessListener { snapshot ->
+                _usersReference.document(user.userId).get().addOnSuccessListener { snapshot ->
                     if (snapshot.data != null) {
                         val userData = snapshot.toObject(com.asnova.firebase.model.User::class.java)
 //                        userData?.favorites?.forEach { favoritesNewsItem ->
