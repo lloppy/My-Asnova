@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.IntentSender
+import android.util.Log
 import com.asnova.domain.repository.firebase.UserRepository
 import com.asnova.model.Resource
 import com.asnova.model.SignInResult
@@ -31,22 +32,25 @@ class UserRepositoryImpl @Inject constructor(
     private val context: Context,
     private val oneTapClient: SignInClient
 ) : UserRepository {
-    private lateinit var database: DatabaseReference
+    private var database: DatabaseReference = Firebase.database.reference
 
     private val _auth: FirebaseAuth = Firebase.auth
     private val _database: FirebaseFirestore = FirebaseFirestore.getInstance()
     private val _usersReference: CollectionReference = _database.collection("users")
-    private lateinit var onVerificationCode: String
 
-    init {
-        database = Firebase.database.reference
-    }
-
-    fun writeNewUser(userId: String, name: String, email: String) {
+    override fun writeNewUser(userId: String, name: String, email: String, onSuccess: () -> Unit, onFailure: (String) -> Unit) {
         val user = User(name, email)
 
-        database.child("users").child(userId).setValue(user)
+        database.child("users").child("0").setValue(user)
+            .addOnSuccessListener {
+                onSuccess()
+            }
+            .addOnFailureListener { exception ->
+                onFailure(exception.message ?: "Unknown error")
+                Log.e("UserRepository", "Error writing user data", exception)
+            }
     }
+
 
     override fun signOut() {
         _auth.signOut()

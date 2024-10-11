@@ -1,9 +1,11 @@
 package com.example.asnova
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
@@ -22,22 +24,19 @@ import androidx.navigation.compose.rememberNavController
 import com.asnova.model.Role
 import com.example.asnova.data.UserManager
 import com.example.asnova.navigation.Screen
+import com.example.asnova.screen.main.MainScreen
 import com.example.asnova.screen.greeting.GreetingScreen
-import com.example.asnova.screen.MainScreen
 import com.example.asnova.screen.sign_in.SignInScreen
 import com.example.asnova.screen.sign_in.SignInScreenViewModel
 import com.example.asnova.ui.theme.AsnovaTheme
 import com.example.asnova.utils.SplashScreen
 import com.example.asnova.utils.createExternalRouter
 import com.example.asnova.utils.navigate
+import com.google.android.gms.tasks.OnCompleteListener
+import com.google.firebase.messaging.FirebaseMessaging
 import com.vk.id.VKID
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
-import android.Manifest
-import android.util.Log
-import android.widget.Toast
-import com.google.android.gms.tasks.OnCompleteListener
-import com.google.firebase.messaging.FirebaseMessaging
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -55,13 +54,11 @@ class MainActivity : ComponentActivity() {
                 return@OnCompleteListener
             }
 
-            // Get new FCM registration token
             val token = task.result
 
-            // Log and toast
             val msg = getString(R.string.msg_token_fmt, token)
             Log.d("token_fcm", msg)
-            Toast.makeText(baseContext, msg, Toast.LENGTH_SHORT).show()
+            UserManager.fmc = token
         })
 
         setContent {
