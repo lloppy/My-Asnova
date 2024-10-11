@@ -178,6 +178,8 @@ dependencies {
     //https://github.com/maxkeppeler/sheets-compose-dialogs
     implementation("com.maxkeppeler.sheets-compose-dialogs:core:1.3.0")
 
+    implementation("androidx.lifecycle:lifecycle-common:2.1.0")
+
 }
 
 kapt {
