@@ -73,7 +73,8 @@ class MainActivity : ComponentActivity() {
                         if (result.resultCode == RESULT_OK) {
                             lifecycleScope.launch {
                                 val signInResult = viewModel.signInWithIntent(
-                                    intent = result.data ?: return@launch
+                                    intent = result.data ?: return@launch,
+                                    role = UserManager.getRole()
                                 )
                                 viewModel.onSignInResult(signInResult)
                             }

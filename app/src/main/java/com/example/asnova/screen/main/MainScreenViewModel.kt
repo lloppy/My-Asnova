@@ -1,7 +1,9 @@
 package com.example.asnova.screen.main
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.asnova.domain.repository.firebase.UserRepository
+import com.asnova.model.Role
 import com.asnova.model.User
 import com.example.asnova.data.UserManager
 import com.example.asnova.navigation.Screen
@@ -15,11 +17,19 @@ class MainScreenViewModel @Inject constructor(
     private val _bottomItems = listOf(Screen.Feed, Screen.Schedule, Screen.ProfileSettings)
     val bottomItems = _bottomItems
     var userData: User? = null
-    private val role = UserManager.getRole()
+    private var role = UserManager.getRole()
 
     init {
         userRepository.getUserData { resource ->
             userData = resource.data
+        }
+
+        userRepository.checkIsAdmin{ isAdmin ->
+            if (isAdmin.data == true) {
+                UserManager.setRole(Role.ADMIN)
+                role = Role.ADMIN
+                Log.d("UserManager", "${UserManager.getRole()}")
+            }
         }
     }
 

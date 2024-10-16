@@ -7,6 +7,7 @@ import android.content.IntentSender
 import android.util.Log
 import com.asnova.domain.repository.firebase.UserRepository
 import com.asnova.model.Resource
+import com.asnova.model.Role
 import com.asnova.model.SignInResult
 import com.asnova.model.User
 import com.google.android.gms.auth.api.identity.BeginSignInRequest
@@ -156,7 +157,7 @@ class UserRepositoryImpl @Inject constructor(
             .build()
     }
 
-    override suspend fun signInWithIntent(intent: Intent): SignInResult {
+    override suspend fun signInWithIntent(intent: Intent, role: String): SignInResult {
         val credential = oneTapClient.getSignInCredentialFromIntent(intent)
         val googleIdToken = credential.googleIdToken
         val googleCredentials = GoogleAuthProvider.getCredential(googleIdToken, null)
@@ -172,7 +173,8 @@ class UserRepositoryImpl @Inject constructor(
                     surname = "",
                     email = user.email,
                     phone = "",
-                    profilePictureUrl = user.photoUrl?.toString()
+                    profilePictureUrl = user.photoUrl?.toString(),
+                    role = role
                 )
 
                 database.child("users").child(userId).setValue(newUser)
@@ -252,6 +254,28 @@ class UserRepositoryImpl @Inject constructor(
                     callback(Resource.Error(exception.message.toString()))
                 }
             }
+        }
+    }
+
+    override fun checkIsAdmin(callback: (Resource<Boolean>) -> Unit) {
+        val userId = _auth.currentUser?.uid
+
+        if (userId != null) {
+            database.child("users").child(userId).child("role").get()
+                .addOnSuccessListener { snapshot ->
+                    if (snapshot.exists()) {
+                        val role = snapshot.value as? String
+                        val isAdmin = role == "Администратор"
+                        callback(Resource.Success(isAdmin))
+                    } else {
+                        callback(Resource.Error("User does not exist"))
+                    }
+                }
+                .addOnFailureListener { exception ->
+                    callback(Resource.Error(exception.message ?: "Unknown error"))
+                }
+        } else {
+            callback(Resource.Error("User not authenticated"))
         }
     }
 
