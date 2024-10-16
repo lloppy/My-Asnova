@@ -38,35 +38,37 @@ class UserRepositoryImpl @Inject constructor(
     private val _database: FirebaseFirestore = FirebaseFirestore.getInstance()
     private val _usersReference: CollectionReference = _database.collection("users")
 
-    override fun writeNewDataUser(userId: String, name: String, email: String, onSuccess: () -> Unit, onFailure: (String) -> Unit) {
-        val testdatabase = Firebase.database
-        val myRef = testdatabase.getReference("users")
+    override fun writeNewDataUser(
+        name: String,
+        surname: String,
+        email: String,
+        phone: String,
+        onSuccess: () -> Unit,
+        onFailure: (String) -> Unit
+    ) {
+        val userId = FirebaseAuth.getInstance().currentUser?.uid
+        if (userId != null) {
+            val user = User(
+                userId = userId,
+                username = email,
+                name = name,
+                surname = surname,
+                email = email,
+                phone = phone
+            )
 
-        val userData = mapOf("name" to name, "email" to email)
-
-        myRef.setValue(userData)
-            .addOnSuccessListener {
-                onSuccess()
-                Log.e("UserRepository", "onSuccess")
-
-            }
-            .addOnFailureListener { error ->
-                onFailure(error.message ?: "Unknown error")
-                Log.e("UserRepository", "Error writing data", error)
-            }
-
-        val user = User(name, email)
-
-        database.child("users").child("0").setValue(user)
-            .addOnSuccessListener {
-                onSuccess()
-            }
-            .addOnFailureListener { exception ->
-                onFailure(exception.message ?: "Unknown error")
-                Log.e("UserRepository", "Error writing user data", exception)
-            }
+            database.child("users").child(userId).setValue(user)
+                .addOnSuccessListener {
+                    onSuccess()
+                }
+                .addOnFailureListener { exception ->
+                    onFailure(exception.message ?: "Unknown error")
+                    Log.e("UserRepository", "Error writing user data", exception)
+                }
+        } else {
+            onFailure("User not authenticated")
+        }
     }
-
 
     override fun signOut() {
         _auth.signOut()
@@ -90,6 +92,7 @@ class UserRepositoryImpl @Inject constructor(
         callback(Resource.Success(user))
     }
 
+    @Suppress("DEPRECATION")
     override suspend fun signIn(): IntentSender? {
         val result = try {
             oneTapClient.beginSignIn(

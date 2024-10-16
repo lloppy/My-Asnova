@@ -116,6 +116,7 @@ dependencies {
     implementation("androidx.compose.runtime:runtime-livedata:1.6.8")
 
     // Firebase
+    implementation(platform("com.google.firebase:firebase-bom:33.4.0"))
     implementation("com.google.firebase:firebase-database:21.0.0")
     implementation("com.google.firebase:firebase-analytics:22.0.2")
     implementation("com.firebaseui:firebase-ui-auth:8.0.2")
