@@ -276,7 +276,7 @@ private fun getHeadline(messageText: String): String {
 }
 
 private fun extractHashtags(text: String): List<String> {
-    val hashtagPattern = "#(?!_lp_block)\\w+".toRegex()
+    val hashtagPattern = "#(?!_lp_block)(?!http)\\w+".toRegex()
     return hashtagPattern.findAll(text)
         .map { it.value }
         .toList()

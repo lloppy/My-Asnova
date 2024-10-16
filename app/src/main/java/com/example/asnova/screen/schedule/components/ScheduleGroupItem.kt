@@ -76,7 +76,11 @@ fun GroupScheduleItem(
                         .padding(horizontal = 12.dp, vertical = 8.dp)
                         .wrapContentWidth()
                         .wrapContentHeight(),
-                    text = "· Аудитория №" + item.classroomNumber,
+                    text = if (item.classroomNumber.isNullOrEmpty() && item.trimmedSummary.contains("выездное", ignoreCase = true)) {
+                        "· Выездное обучение"
+                    } else if (item.classroomNumber.isNullOrEmpty()) {
+                        "· Нет информации об аудитории"
+                    } else "· Аудитория №" + item.classroomNumber,
                     color = Color.Black,
                     style = MaterialTheme.typography.bodySmall,
                     overflow = TextOverflow.Ellipsis,
