@@ -24,8 +24,8 @@ class MainScreenViewModel @Inject constructor(
     }
 
     fun checkUserData(callback: (Boolean) -> Unit) {
-        userRepository.getUserData { resource ->
-            callback(resource.data == null)
+        userRepository.checkUserData { resource ->
+            resource.data?.let { callback(it) }
         }
     }
 

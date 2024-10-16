@@ -46,15 +46,17 @@ class UserRepositoryImpl @Inject constructor(
         onSuccess: () -> Unit,
         onFailure: (String) -> Unit
     ) {
-        val userId = FirebaseAuth.getInstance().currentUser?.uid
+        val currentUser = FirebaseAuth.getInstance().currentUser
+        val userId = currentUser?.uid
         if (userId != null) {
             val user = User(
                 userId = userId,
-                username = email,
+                username = currentUser.displayName,
                 name = name,
                 surname = surname,
-                email = email,
-                phone = phone
+                email = currentUser.email,
+                phone = phone,
+                profilePictureUrl = currentUser.photoUrl?.toString()
             )
 
             database.child("users").child(userId).setValue(user)
@@ -80,19 +82,51 @@ class UserRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun getUserData(callback: (Resource<User?>) -> Unit) {
-        val user = _auth.currentUser?.let {
-            User(
-                userId = it.uid,
-                username = it.displayName,
-                email = it.email,
-                profilePictureUrl = it.photoUrl?.toString()
-            )
+    override fun checkUserData(callback: (Resource<Boolean>) -> Unit) {
+        val userId = _auth.currentUser?.uid
+
+        if (userId != null) {
+            database.child("users").child(userId).get()
+                .addOnSuccessListener { snapshot ->
+                    if (snapshot.exists()) {
+                        val name = snapshot.child("name").value as? String
+                        val surname = snapshot.child("surname").value as? String
+                        val phone = snapshot.child("phone").value as? String
+
+                        val isEmpty = name.isNullOrEmpty() || surname.isNullOrEmpty() || phone.isNullOrEmpty()
+                        callback(Resource.Success(isEmpty))
+                    } else {
+                        callback(Resource.Error("User не заполнил данные"))
+                    }
+                }
+                .addOnFailureListener { exception ->
+                    callback(Resource.Error(exception.message ?: "Unknown error"))
+                }
+        } else {
+            callback(Resource.Error("User not authenticated"))
         }
-        callback(Resource.Success(user))
     }
 
-    @Suppress("DEPRECATION")
+    override fun getUserData(callback: (Resource<User?>) -> Unit) {
+        val userId = _auth.currentUser?.uid
+
+        if (userId != null) {
+            database.child("users").child(userId).get()
+                .addOnSuccessListener { snapshot ->
+                    if (snapshot.exists()) {
+                        val user = snapshot.getValue(User::class.java)
+                        callback(Resource.Success(user))
+                    } else {
+                        callback(Resource.Error("User does not exist"))
+                    }
+                }
+                .addOnFailureListener { exception ->
+                    callback(Resource.Error(exception.message ?: "Unknown error"))
+                }
+        } else {
+            callback(Resource.Error("User not authenticated"))
+        }
+    } @Suppress("DEPRECATION")
     override suspend fun signIn(): IntentSender? {
         val result = try {
             oneTapClient.beginSignIn(
@@ -105,6 +139,8 @@ class UserRepositoryImpl @Inject constructor(
         }
         return result?.pendingIntent?.intentSender
     }
+
+
 
     private fun buildSignInRequest(): BeginSignInRequest {
         // Паттерн Builder
@@ -126,6 +162,28 @@ class UserRepositoryImpl @Inject constructor(
         val googleCredentials = GoogleAuthProvider.getCredential(googleIdToken, null)
         return try {
             val user = _auth.signInWithCredential(googleCredentials).await().user
+
+            if (user != null) {
+                val userId = user.uid
+                val newUser = User(
+                    userId = userId,
+                    username = user.displayName,
+                    name = "",
+                    surname = "",
+                    email = user.email,
+                    phone = "",
+                    profilePictureUrl = user.photoUrl?.toString()
+                )
+
+                database.child("users").child(userId).setValue(newUser)
+                    .addOnSuccessListener {
+                        Log.d("UserRepository", "User data saved successfully")
+                    }
+                    .addOnFailureListener { exception ->
+                        Log.e("UserRepository", "Error writing user data", exception)
+                    }
+            }
+
             SignInResult(
                 data = user?.run {
                     User(

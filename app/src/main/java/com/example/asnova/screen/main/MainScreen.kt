@@ -21,6 +21,8 @@ import androidx.lifecycle.LifecycleCoroutineScope
 import androidx.lifecycle.LifecycleOwner
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.asnova.model.Role
+import com.example.asnova.data.UserManager
 import com.example.asnova.navigation.BottomNavigationBar
 import com.example.asnova.navigation.Screen
 import com.example.asnova.navigation.SetupNavGraph
@@ -54,10 +56,12 @@ fun MainScreen(
     val configuration = LocalConfiguration.current
     val screenHeight = configuration.screenHeightDp.dp
 
-    LaunchedEffect(Unit) {
-        viewModel.checkUserData { userDataExists ->
-            if (!userDataExists) {
-                showBottomSheet = true
+    if (UserManager.getRole() == Role.STUDENT) {
+        LaunchedEffect(Unit) {
+            viewModel.checkUserData { userDataNotExists ->
+                if (userDataNotExists) {
+                    showBottomSheet = true
+                }
             }
         }
     }
