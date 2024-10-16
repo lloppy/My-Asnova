@@ -39,7 +39,6 @@ dependencies {
     implementation(project(":core:domain"))
 
     implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.appcompat)
     implementation(libs.material)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
@@ -73,5 +72,6 @@ dependencies {
     implementation("com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:0.8.0")
     implementation("com.squareup.okhttp3:logging-interceptor:4.9.1")
 
+    implementation("androidx.appcompat:appcompat:1.7.0")
 
 }

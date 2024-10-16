@@ -66,7 +66,6 @@ android {
 dependencies {
     implementation(libs.firebase.messaging.ktx)
     implementation(libs.androidx.work.runtime.ktx)
-    implementation(libs.androidx.appcompat)
     implementation(libs.material)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
@@ -121,6 +120,7 @@ dependencies {
     implementation("com.google.firebase:firebase-analytics:22.0.2")
     implementation("com.firebaseui:firebase-ui-auth:8.0.2")
     implementation("com.google.android.gms:play-services-auth:21.2.0")
+
     implementation("com.google.firebase:firebase-storage:21.0.0")
 
     // Lottie
@@ -179,7 +179,7 @@ dependencies {
     implementation("com.maxkeppeler.sheets-compose-dialogs:core:1.3.0")
 
     implementation("androidx.lifecycle:lifecycle-common:2.1.0")
-
+    implementation("androidx.appcompat:appcompat:1.7.0")
 }
 
 kapt {

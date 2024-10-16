@@ -82,7 +82,7 @@ fun MainScreen(
                 showBottomSheet = showBottomSheet,
                 onDismiss = { showBottomSheet = false },
                 onSubmit = { name, surname, email, phone ->
-                    viewModel.createUser(name, surname, email, phone,
+                    viewModel.writeNewDataUser(name, surname, email, phone,
                         onSuccess = {
                             coroutineScope.launch {
                                 snackbarHostState.showSnackbar("Данные успешно сохранены")

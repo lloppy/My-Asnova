@@ -29,8 +29,8 @@ class MainScreenViewModel @Inject constructor(
         }
     }
 
-    fun createUser(name: String, surname: String, email: String, phone: String, onSuccess: () -> Unit, onFailure: (String) -> Unit) {
-        userRepository.writeNewUser(phone, name, email, onSuccess, onFailure)
+    fun writeNewDataUser(name: String, surname: String, email: String, phone: String, onSuccess: () -> Unit, onFailure: (String) -> Unit) {
+        userRepository.writeNewDataUser(phone, name, email, onSuccess, onFailure)
     // нужно поменять местами параметры, добавить фамилию
     }
 

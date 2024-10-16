@@ -38,7 +38,23 @@ class UserRepositoryImpl @Inject constructor(
     private val _database: FirebaseFirestore = FirebaseFirestore.getInstance()
     private val _usersReference: CollectionReference = _database.collection("users")
 
-    override fun writeNewUser(userId: String, name: String, email: String, onSuccess: () -> Unit, onFailure: (String) -> Unit) {
+    override fun writeNewDataUser(userId: String, name: String, email: String, onSuccess: () -> Unit, onFailure: (String) -> Unit) {
+        val testdatabase = Firebase.database
+        val myRef = testdatabase.getReference("users")
+
+        val userData = mapOf("name" to name, "email" to email)
+
+        myRef.setValue(userData)
+            .addOnSuccessListener {
+                onSuccess()
+                Log.e("UserRepository", "onSuccess")
+
+            }
+            .addOnFailureListener { error ->
+                onFailure(error.message ?: "Unknown error")
+                Log.e("UserRepository", "Error writing data", error)
+            }
+
         val user = User(name, email)
 
         database.child("users").child("0").setValue(user)
