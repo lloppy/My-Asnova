@@ -8,6 +8,7 @@ const val KEY_SCHEDULE_STATE_YEAR = "schedule_state_year"
 const val KEY_SCHEDULE_STATE_MONTH = "schedule_state_month"
 const val KEY_SCHEDULE_STATE_DAY_OF_MONTH = "schedule_state_day_of_month"
 
+// Паттерн Bridge
 class ScheduleStateStorageImpl(context: Context) :
     ScheduleStateStorage {
     private val sharedPreferences =

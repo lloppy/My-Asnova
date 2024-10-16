@@ -1,6 +1,7 @@
 package com.asnova.domain.repository.storage
 
-interface IsAuthedUserStorage {
-    fun save(status: String)
-    fun get() : String
+// Паттерн Bridge
+interface IsAuthedUserStorage : Storage<String> {
+    override fun save(status: String)
+    override fun get() : String
 }

@@ -2,8 +2,8 @@ package com.asnova.domain.repository.storage
 
 import com.asnova.model.LanguageOption
 
-
-interface LanguageSettingStorage {
-    fun save(language: LanguageOption)
-    fun get() : LanguageOption
+// Паттерн Bridge
+interface LanguageSettingStorage : Storage<LanguageOption> {
+    override fun save(language: LanguageOption)
+    override fun get(): LanguageOption
 }

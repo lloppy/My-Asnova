@@ -7,6 +7,7 @@ import com.asnova.domain.repository.storage.ThemeSettingStorage
 const val SHARED_PREFS_THEME_SETTING = "shared_prefs_theme_setting"
 const val KEY_THEME_SETTING = "theme_setting"
 
+// Паттерн Bridge
 class ThemeSettingStorageImpl(context: Context) :
     ThemeSettingStorage {
     private val sharedPreferences =
