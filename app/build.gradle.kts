@@ -157,7 +157,6 @@ dependencies {
     val accompanistVersion = "0.34.0"
     implementation("com.google.accompanist:accompanist-navigation-animation:$accompanistVersion")
 
-
     // Networking
     implementation("com.squareup.okhttp3:okhttp:4.9.3")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3")
