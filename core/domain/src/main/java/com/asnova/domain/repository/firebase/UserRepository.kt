@@ -13,7 +13,6 @@ interface UserRepository {
     fun isAuthedUser(callback: (Resource<Boolean>) -> Unit)
     fun getUserData(callback: (Resource<User?>) -> Unit)
     fun writeNewDataUser(userId: String, name: String, email: String, onSuccess: () -> Unit, onFailure: (String) -> Unit)
-
     suspend fun signIn(): IntentSender?
     suspend fun signInWithIntent(intent: Intent): SignInResult
     fun signInWithOtp(otp: String, verificationId: String, callback: (Resource<SignInResult>) -> Unit)

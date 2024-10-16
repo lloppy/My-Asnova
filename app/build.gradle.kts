@@ -178,7 +178,9 @@ dependencies {
     implementation("com.maxkeppeler.sheets-compose-dialogs:core:1.3.0")
 
     implementation("androidx.lifecycle:lifecycle-common:2.1.0")
+
     implementation("androidx.appcompat:appcompat:1.7.0")
+
 }
 
 kapt {
