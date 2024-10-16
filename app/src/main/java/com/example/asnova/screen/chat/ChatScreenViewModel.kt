@@ -29,7 +29,7 @@ class ChatScreenViewModel @Inject constructor(
         loadMessages(channels.first().id)
     }
 
-    fun loadMessages(channelId: Long) {
+    private fun loadMessages(channelId: Long) {
         val messages = chat.getMessages(channelId)
         _state.value.messages = messages
     }

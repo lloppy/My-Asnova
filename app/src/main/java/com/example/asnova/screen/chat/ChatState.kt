@@ -2,7 +2,6 @@ package com.example.asnova.screen.chat
 
 import com.asnova.model.User
 
-
 data class ChatState(
     var channels: List<Channel> = emptyList(),
     var messages: List<Message> = emptyList()
