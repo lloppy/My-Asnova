@@ -8,8 +8,9 @@ import com.asnova.model.Resource
 import com.asnova.model.Schedule
 import com.asnova.model.ScheduleAsnovaPrivate
 import com.asnova.model.ScheduleAsnovaSite
-import com.google.firebase.firestore.CollectionReference
-import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.ktx.database
+import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -22,8 +23,8 @@ import javax.inject.Inject
 class ScheduleRepositoryImpl @Inject constructor(
     private val calendarService: CalendarService
 ) : ScheduleRepository {
-    private val _database: FirebaseFirestore = FirebaseFirestore.getInstance()
-    private val _databaseReference: CollectionReference = _database.collection("someNode")
+    private val _database: DatabaseReference = Firebase.database.reference
+    private val excludedWords = _database.child("excludedWords")
 
     override fun getPrivateSchedule(callback: (Resource<List<ScheduleAsnovaPrivate>>) -> Unit) {
         callback(Resource.Loading())
@@ -77,28 +78,43 @@ class ScheduleRepositoryImpl @Inject constructor(
                 is Resource.Success -> {
                     val schedules = resource.data
 
-                    val uniqueClasses = schedules
-                        ?.mapNotNull { it.trimmedSummary }
-                        ?.filter { className ->
-                            (className.count { char -> char == '"' } >= 2
-                                    || className.contains("Обучение", ignoreCase = true))
-                                    && !className.contains("выездное", ignoreCase = true)
-                                    && !className.contains("выезное", ignoreCase = true)
-                                    && !className.contains("экзамен", ignoreCase = true)
-                                    && !className.contains(
-                                "Организационное собрание",
-                                ignoreCase = true
-                            )
-                                    && !className.contains("Орг.собрание", ignoreCase = true)
-                                    && !className.contains("Орг. собрание", ignoreCase = true)
+                    excludedWords.get().addOnSuccessListener { snapshot ->
+                        val includeWords = mutableListOf<String>()
+                        val excludeWords = mutableListOf<String>()
+
+                        snapshot.children.forEach { doc ->
+                            val word = doc.child("word").getValue(String::class.java)
+                            val include = doc.child("include").getValue(Boolean::class.java)
+
+                            if (word != null && include != null) {
+                                if (include) {
+                                    includeWords.add(word)
+                                } else {
+                                    excludeWords.add(word)
+                                }
+                            }
                         }
-                        ?.distinct()
+                        Log.i("excludedWords", "Include words: $includeWords")
+                        Log.i("excludedWords", "Exclude words: $excludeWords")
 
-                    val asnovaClasses = uniqueClasses?.map { className ->
-                        AsnovaStudentsClass(name = className)
+                        val uniqueClasses = schedules
+                            ?.mapNotNull { it.trimmedSummary }
+                            ?.filter { className ->
+                                (className.count { char -> char == '"' } >= 2 ||  includeWords.all { word -> className.contains(word, ignoreCase = true) })
+                                        &&  excludeWords.none { word -> className.contains(word, ignoreCase = true) }
+                            }
+                            ?.distinct()
+
+                        val asnovaClasses = uniqueClasses?.map { className ->
+                            AsnovaStudentsClass(name = className)
+                        }
+                        callback(Resource.Success(asnovaClasses))
+
+
+                    }.addOnFailureListener {
+                        Log.e("excludedWords", "Error getting data", it)
+                        callback(Resource.Error(it.message ?: "Unknown error"))
                     }
-
-                    callback(Resource.Success(asnovaClasses))
                 }
 
                 is Resource.Error -> {

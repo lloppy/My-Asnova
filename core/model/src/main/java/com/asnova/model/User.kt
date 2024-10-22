@@ -1,7 +1,7 @@
 package com.asnova.model
 
 data class User(
-    val userId: String = "",
+    val userUid: String = "",
     val username: String? = "",
 
     val name: String? = "",

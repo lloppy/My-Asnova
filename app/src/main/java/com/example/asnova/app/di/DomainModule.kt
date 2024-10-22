@@ -26,7 +26,6 @@ import com.asnova.domain.usecase.GetUserDataUseCase
 import com.asnova.domain.usecase.IsAuthedUserUseCase
 import com.asnova.domain.usecase.OnDownloadMoreAsnovaNewsUseCase
 import com.asnova.domain.usecase.OnDownloadMoreSafetyNewsUseCase
-import com.asnova.domain.usecase.PullRequestUserUseCase
 import com.asnova.domain.usecase.SaveAuthStatusUseCase
 import com.asnova.domain.usecase.SaveLanguageSettingUseCase
 import com.asnova.domain.usecase.SaveNotificationsSettingUseCase
@@ -233,10 +232,4 @@ class DomainModule {
         return SaveAuthStatusUseCase(isAuthedUserStorage)
     }
 
-    @Provides
-    fun providePullRequestUserUseCase(
-        userRepository: UserRepository
-    ): PullRequestUserUseCase {
-        return PullRequestUserUseCase(userRepository)
-    }
 }

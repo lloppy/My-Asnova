@@ -8,7 +8,6 @@ import com.asnova.model.SignInResult
 import com.asnova.model.User
 
 interface UserRepository {
-    fun pullRequest(callback: (Resource<User?>) -> Unit)
     fun isAuthedUser(callback: (Resource<Boolean>) -> Unit)
     fun getUserData(callback: (Resource<User?>) -> Unit)
     fun checkUserData(callback: (Resource<Boolean>) -> Unit)

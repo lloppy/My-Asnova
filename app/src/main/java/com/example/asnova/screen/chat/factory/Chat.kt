@@ -18,13 +18,13 @@ class AdminChat : Chat {
             Channel(
                 1, "Admin Channel", users = listOf(
                     User(
-                        userId = "1",
+                        userUid = "1",
                         username = "student_name",
                         email = "student_user1@email.com",
                         role = Role.STUDENT
                     ),
                     User(
-                        userId = "1",
+                        userUid = "1",
                         username = "worker_name",
                         email = "worker_user1@email.com",
                         role = Role.STUDENT
@@ -45,7 +45,7 @@ class GuestChat : Chat {
             Channel(
                 2, "Guest Channel", listOf(
                     User(
-                        userId = "1",
+                        userUid = "1",
                         username = "admin",
                         email = "admin_official@email.com",
                         role = Role.ADMIN
@@ -67,7 +67,7 @@ class StudentChat : Chat {
             Channel(
                 3, "Student Channel", listOf(
                     User(
-                        userId = "1",
+                        userUid = "1",
                         username = "admin",
                         email = "admin_official@email.com",
                         role = Role.ADMIN

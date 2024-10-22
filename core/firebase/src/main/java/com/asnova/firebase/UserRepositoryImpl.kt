@@ -7,7 +7,6 @@ import android.content.IntentSender
 import android.util.Log
 import com.asnova.domain.repository.firebase.UserRepository
 import com.asnova.model.Resource
-import com.asnova.model.Role
 import com.asnova.model.SignInResult
 import com.asnova.model.User
 import com.google.android.gms.auth.api.identity.BeginSignInRequest
@@ -34,10 +33,7 @@ class UserRepositoryImpl @Inject constructor(
     private val oneTapClient: SignInClient
 ) : UserRepository {
     private var database: DatabaseReference = Firebase.database.reference
-
     private val _auth: FirebaseAuth = Firebase.auth
-    private val _database: FirebaseFirestore = FirebaseFirestore.getInstance()
-    private val _usersReference: CollectionReference = _database.collection("users")
 
     override fun writeNewDataUser(
         name: String,
@@ -48,10 +44,10 @@ class UserRepositoryImpl @Inject constructor(
         onFailure: (String) -> Unit
     ) {
         val currentUser = FirebaseAuth.getInstance().currentUser
-        val userId = currentUser?.uid
-        if (userId != null) {
+        val userUid = currentUser?.uid
+        if (userUid != null) {
             val user = User(
-                userId = userId,
+                userUid = userUid,
                 username = currentUser.displayName,
                 name = name,
                 surname = surname,
@@ -60,7 +56,7 @@ class UserRepositoryImpl @Inject constructor(
                 profilePictureUrl = currentUser.photoUrl?.toString()
             )
 
-            database.child("users").child(userId).setValue(user)
+            database.child("users").child(userUid).setValue(user)
                 .addOnSuccessListener {
                     onSuccess()
                 }
@@ -84,10 +80,10 @@ class UserRepositoryImpl @Inject constructor(
     }
 
     override fun checkUserData(callback: (Resource<Boolean>) -> Unit) {
-        val userId = _auth.currentUser?.uid
+        val userUid = _auth.currentUser?.uid
 
-        if (userId != null) {
-            database.child("users").child(userId).get()
+        if (userUid != null) {
+            database.child("users").child(userUid).get()
                 .addOnSuccessListener { snapshot ->
                     if (snapshot.exists()) {
                         val name = snapshot.child("name").value as? String
@@ -109,10 +105,10 @@ class UserRepositoryImpl @Inject constructor(
     }
 
     override fun getUserData(callback: (Resource<User?>) -> Unit) {
-        val userId = _auth.currentUser?.uid
+        val userUid = _auth.currentUser?.uid
 
-        if (userId != null) {
-            database.child("users").child(userId).get()
+        if (userUid != null) {
+            database.child("users").child(userUid).get()
                 .addOnSuccessListener { snapshot ->
                     if (snapshot.exists()) {
                         val user = snapshot.getValue(User::class.java)
@@ -150,9 +146,9 @@ class UserRepositoryImpl @Inject constructor(
             val user = _auth.signInWithCredential(googleCredentials).await().user
 
             if (user != null) {
-                val userId = user.uid
+                val userUid = user.uid
                 val newUser = User(
-                    userId = userId,
+                    userUid = userUid,
                     username = user.displayName,
                     name = "",
                     surname = "",
@@ -162,7 +158,7 @@ class UserRepositoryImpl @Inject constructor(
                     role = role
                 )
 
-                database.child("users").child(userId).setValue(newUser)
+                database.child("users").child(userUid).setValue(newUser)
                     .addOnSuccessListener {
                         Log.d("UserRepository", "User data saved successfully")
                     }
@@ -174,7 +170,7 @@ class UserRepositoryImpl @Inject constructor(
             SignInResult(
                 data = user?.run {
                     User(
-                        userId = uid,
+                        userUid = uid,
                         username = displayName,
                         email = email,
                         profilePictureUrl = photoUrl?.toString()
@@ -192,37 +188,11 @@ class UserRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun pullRequest(callback: (Resource<User?>) -> Unit) {
-        callback(Resource.Loading())
-        var user: User? = null
-        _auth.addAuthStateListener {
-            _usersReference.document(it.uid.toString()).get().addOnSuccessListener { snapshot ->
-                if (snapshot.data != null) {
-                    val currentUser = snapshot.toObject(com.asnova.firebase.model.User::class.java)
-                    if (currentUser != null) {
-                        user = User(
-                            userId = currentUser.userId,
-                            profilePictureUrl = currentUser.profilePictureUrl,
-                            username = currentUser.username,
-                            email = currentUser.email
-                        )
-                    }
-                }
-            }.addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    callback(Resource.Success(user))
-                }
-            }.addOnFailureListener { exception ->
-                callback(Resource.Error(exception.message.toString()))
-            }
-        }
-    }
-
     override fun checkIsAdmin(callback: (Resource<Boolean>) -> Unit) {
-        val userId = _auth.currentUser?.uid
+        val userUid = _auth.currentUser?.uid
 
-        if (userId != null) {
-            database.child("users").child(userId).child("role").get()
+        if (userUid != null) {
+            database.child("users").child(userUid).child("role").get()
                 .addOnSuccessListener { snapshot ->
                     if (snapshot.exists()) {
                         val role = snapshot.value as? String
@@ -253,7 +223,7 @@ class UserRepositoryImpl @Inject constructor(
                     val result = SignInResult(
                         data = user?.run {
                             User(
-                                userId = uid,
+                                userUid = uid,
                                 username = displayName,
                                 email = email,
                                 profilePictureUrl = photoUrl?.toString()
