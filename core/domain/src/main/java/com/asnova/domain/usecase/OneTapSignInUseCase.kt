@@ -1,14 +1,12 @@
 package com.asnova.domain.usecase
 
+import android.content.IntentSender
 import com.asnova.domain.repository.firebase.UserRepository
-import com.asnova.model.Resource
-import com.asnova.model.SignInResult
 
-class OneTapSignInUseCase(
+class SignInWithLauncher(
     private val userRepository: UserRepository
 ) {
-    operator fun invoke(callback: (Resource<SignInResult>) -> Unit)
-    {
-        userRepository.oneTapSignIn(callback)
+    suspend fun invoke(): IntentSender? {
+        return userRepository.signInWithLauncher()
     }
 }

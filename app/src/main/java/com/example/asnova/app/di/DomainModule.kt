@@ -33,8 +33,8 @@ import com.asnova.domain.usecase.SaveLanguageSettingUseCase
 import com.asnova.domain.usecase.SaveNotificationsSettingUseCase
 import com.asnova.domain.usecase.SaveScheduleStateUseCase
 import com.asnova.domain.usecase.SaveThemeSettingUseCase
-import com.asnova.domain.usecase.OneTapSignInUseCase
 import com.asnova.domain.usecase.SignInWithIntentUseCase
+import com.asnova.domain.usecase.SignInWithLauncher
 import com.asnova.domain.usecase.SignInWithOtpUseCase
 import com.asnova.domain.usecase.SignOutUserUseCase
 import dagger.Module
@@ -102,10 +102,10 @@ class DomainModule {
     }
 
     @Provides
-    fun provideSignInUseCase(
+    fun provideSignInWithLauncherUseCase(
         userRepository: UserRepository
-    ): OneTapSignInUseCase {
-        return OneTapSignInUseCase(userRepository)
+    ): SignInWithLauncher {
+        return SignInWithLauncher(userRepository)
     }
 
     @Provides

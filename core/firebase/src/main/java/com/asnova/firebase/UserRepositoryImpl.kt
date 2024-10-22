@@ -5,6 +5,8 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentSender
 import android.util.Log
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.IntentSenderRequest
 import com.asnova.domain.repository.firebase.UserRepository
 import com.asnova.model.Resource
 import com.asnova.model.SignInResult
@@ -21,7 +23,11 @@ import com.google.firebase.auth.PhoneAuthProvider
 import com.google.firebase.auth.auth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.database
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.withContext
 import java.util.concurrent.CancellationException
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
@@ -146,27 +152,30 @@ class UserRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun oneTapSignIn(callback: (Resource<SignInResult>) -> Unit) {
-        try {
-            val result = oneTapClient.
-            beginSignIn(buildSignInRequest())
-            val intentSender = result.pendingIntent.intentSender
-
-            // Если вы хотите вернуть IntentSender, используйте его для дальнейшей аутентификации
-            callback(Resource.Success(SignInResult(intentSender = intentSender)))
+    override suspend fun signInWithLauncher(): IntentSender? {
+        val result = try {
+            oneTapClient.beginSignIn(
+                buildSignInRequest()
+            ).await()
         } catch (e: Exception) {
             e.printStackTrace()
             if (e is CancellationException) throw e
-            callback(Resource.Error(e.message ?: "Unknown error"))
+            null
         }
+        return result?.pendingIntent?.intentSender
     }
 
-    override fun signInWithIntent(intent: Intent, role: String, fmc: String, callback: (Resource<SignInResult>) -> Unit) {
+    override fun signInWithIntent(
+        intent: Intent,
+        role: String,
+        fmc: String,
+        callback: (Resource<SignInResult>) -> Unit
+    ) {
         val credential = oneTapClient.getSignInCredentialFromIntent(intent)
         val googleIdToken = credential.googleIdToken
         val googleCredentials = GoogleAuthProvider.getCredential(googleIdToken, null)
 
-        _auth.signInWithCredential(googleCredentials).addOnCompleteListener{ task ->
+        _auth.signInWithCredential(googleCredentials).addOnCompleteListener { task ->
             if (task.isSuccessful) {
                 val user = task.result?.user
 

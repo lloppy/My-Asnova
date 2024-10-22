@@ -9,6 +9,7 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
+import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -107,8 +108,12 @@ class MainActivity : ComponentActivity() {
                             state = state,
                             onSignInClick = {
                                 lifecycleScope.launch {
-                                    // viewModel.oneTapSignIn()
-
+                                    val signInIntentSender = viewModel.signInWithLauncher()
+                                    launcher.launch(
+                                        IntentSenderRequest.Builder(
+                                            signInIntentSender ?: return@launch
+                                        ).build()
+                                    )
                                 }
                             },
                             goProfile = {

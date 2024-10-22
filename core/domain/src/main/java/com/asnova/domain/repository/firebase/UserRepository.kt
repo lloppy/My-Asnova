@@ -2,6 +2,8 @@ package com.asnova.domain.repository.firebase
 
 import android.content.Intent
 import android.content.IntentSender
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.IntentSenderRequest
 import com.asnova.model.Resource
 import com.asnova.model.SignInResult
 import com.asnova.model.User
@@ -11,7 +13,7 @@ interface UserRepository {
     fun signInWithIntent(intent: Intent, role: String, fmc: String, callback: (Resource<SignInResult>) -> Unit)
     fun signInWithOtp(otp: String, verificationId: String, callback: (Resource<SignInResult>) -> Unit)
     fun sendOtp(phone: String, callback: (Resource<String>) -> Unit)
-    fun oneTapSignIn(callback: (Resource<SignInResult>) -> Unit)
+    suspend fun signInWithLauncher(): IntentSender?
     fun signOut()
 
 

@@ -1,13 +1,14 @@
 package com.example.asnova.screen.sign_in
 
 import android.content.Intent
+import android.content.IntentSender
 import android.content.SharedPreferences
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.asnova.domain.usecase.CreateUserWithPhoneUseCase
 import com.asnova.domain.usecase.GetUserDataUseCase
-import com.asnova.domain.usecase.OneTapSignInUseCase
 import com.asnova.domain.usecase.SignInWithIntentUseCase
+import com.asnova.domain.usecase.SignInWithLauncher
 import com.asnova.domain.usecase.SignInWithOtpUseCase
 import com.asnova.model.Resource
 import com.asnova.model.SignInResult
@@ -24,7 +25,7 @@ class SignInScreenViewModel @Inject constructor(
     private val userSharedPreferences: SharedPreferences,
     private val getUserDataUseCase: GetUserDataUseCase,
 
-    private val oneTapSignInUseCase: OneTapSignInUseCase,
+    private val signInWithLauncher: SignInWithLauncher,
     private val signInWithIntentUseCase: SignInWithIntentUseCase,
 
     private val signInWithOtpUseCase: SignInWithOtpUseCase,
@@ -110,8 +111,8 @@ class SignInScreenViewModel @Inject constructor(
         }
     }
 
-    fun oneTapSignIn(callback: (Resource<SignInResult>) -> Unit) {
-        return oneTapSignInUseCase.invoke(callback)
+    suspend fun signInWithLauncher(): IntentSender? {
+        return signInWithLauncher.invoke()
     }
 
     fun createUserWithPhone(mobile: String) {
