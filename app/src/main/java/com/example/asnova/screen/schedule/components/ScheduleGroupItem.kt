@@ -39,25 +39,32 @@ fun GroupScheduleItem(
         .clip(RoundedCornerShape(12.dp))
         .background(color = MaterialTheme.colorScheme.onSecondary)
         .border(width = 2.dp, color = grayAsnova, shape = RoundedCornerShape(12.dp))
-        .clickable {
-
-        }) {
+        .clickable {}
+    ) {
         Column(
             modifier = Modifier
-                .fillMaxHeight()
+                .fillMaxSize()
                 .padding(14.dp),
-            verticalArrangement = Arrangement.SpaceBetween,
-            horizontalAlignment = Alignment.End
+            verticalArrangement = Arrangement.SpaceBetween
         ) {
-            Text(
-                text = "${item.startTime} - ${item.endTime}",
-                modifier = Modifier.padding(start = 4.dp),
-                color = Color.Gray,
-                fontSize = 14.sp,
-                style = MaterialTheme.typography.bodySmall,
-            )
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                horizontalAlignment = Alignment.End
+            ) {
+                Text(
+                    text = "${item.startTime} - ${item.endTime}",
+                    modifier = Modifier.padding(start = 4.dp),
+                    color = Color.Gray,
+                    fontSize = 14.sp,
+                    style = MaterialTheme.typography.bodySmall,
+                )
+            }
+
             Spacer(modifier = Modifier.height(16.dp))
-            Column {
+            Column (
+                modifier = Modifier.fillMaxSize(),
+                horizontalAlignment = Alignment.Start
+            ) {
                 Text(
                     text = item.trimmedSummary,
                     maxLines = 4,
