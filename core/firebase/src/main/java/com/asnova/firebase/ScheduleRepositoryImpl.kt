@@ -24,7 +24,8 @@ class ScheduleRepositoryImpl @Inject constructor(
     private val calendarService: CalendarService
 ) : ScheduleRepository {
     private val _database: DatabaseReference = Firebase.database.reference
-    private val excludedWords = _database.child("excludedWords")
+    private val excludedWordsRef = _database.child("excludedWords")
+    private val asnovaClassesRef = _database.child("asnovaClasses")
 
     override fun getPrivateSchedule(callback: (Resource<List<ScheduleAsnovaPrivate>>) -> Unit) {
         callback(Resource.Loading())
@@ -77,8 +78,9 @@ class ScheduleRepositoryImpl @Inject constructor(
 
                 is Resource.Success -> {
                     val schedules = resource.data
+                    Log.d("getAsnovaClasses","до " + resource.data?.size.toString())
 
-                    excludedWords.get().addOnSuccessListener { snapshot ->
+                    excludedWordsRef.get().addOnSuccessListener { snapshot ->
                         val includeWords = mutableListOf<String>()
                         val excludeWords = mutableListOf<String>()
 
@@ -98,17 +100,30 @@ class ScheduleRepositoryImpl @Inject constructor(
                         Log.i("excludedWords", "Exclude words: $excludeWords")
 
                         val uniqueClasses = schedules
-                            ?.mapNotNull { it.trimmedSummary }
+                            ?.mapNotNull { it.summary }
                             ?.filter { className ->
-                                (className.count { char -> char == '"' } >= 2 ||  includeWords.all { word -> className.contains(word, ignoreCase = true) })
-                                        &&  excludeWords.none { word -> className.contains(word, ignoreCase = true) }
+                                (className.count { char -> char == '"' } >= 2 || includeWords.all { word ->
+                                    className.contains(
+                                        word,
+                                        ignoreCase = true
+                                    )
+                                })
+                                        && excludeWords.none { word ->
+                                    className.contains(
+                                        word,
+                                        ignoreCase = true
+                                    )
+                                }
                             }
-                            ?.distinct()
+                            ?.distinct()?.toSet()
+                        Log.d("getAsnovaClasses","после " + resource.data?.size.toString())
 
                         val asnovaClasses = uniqueClasses?.map { className ->
                             AsnovaStudentsClass(name = className)
                         }
-                        callback(Resource.Success(asnovaClasses))
+                        Log.d("getAsnovaClasses","после asnovaClasses " + asnovaClasses?.size.toString())
+
+                        callback(Resource.Success(asnovaClasses?.toList()))
 
 
                     }.addOnFailureListener {
@@ -121,6 +136,21 @@ class ScheduleRepositoryImpl @Inject constructor(
                     callback(Resource.Error(resource.message ?: "Unknown error"))
                 }
             }
+        }
+    }
+
+    override fun pushAsnovaClasses(
+        asnovaClasses: List<AsnovaStudentsClass>, callback: (Resource<Boolean>) -> Unit
+    ) {
+        callback(Resource.Loading())
+        try {
+            asnovaClasses.forEach { asnovaClass ->
+                asnovaClassesRef.push().setValue(asnovaClass)
+            }
+            callback(Resource.Success(data = true))
+
+        } catch (e: Exception) {
+            callback(Resource.Error(e.message.toString()))
         }
     }
 

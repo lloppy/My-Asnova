@@ -77,7 +77,7 @@ fun SetupNavGraph(
             ChatScreen()
         }
         composable(Screen.ChooseClass.route) {
-            SelectClassScreen()
+            SelectClassScreen(context)
         }
     }
 }

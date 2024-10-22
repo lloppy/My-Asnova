@@ -1,6 +1,8 @@
 package com.example.asnova.screen.settings.components
 
+import android.content.Context
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -17,7 +19,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Download
 import androidx.compose.material.icons.rounded.Publish
-import androidx.compose.material.icons.rounded.RestartAlt
 import androidx.compose.material.icons.rounded.Sync
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
@@ -49,6 +50,7 @@ import com.example.asnova.utils.shimmerEffect
 
 @Composable
 fun SelectClassScreen(
+    context: Context,
     viewModel: SettingsScreenViewModel = hiltViewModel()
 ) {
     val state by viewModel.state
@@ -145,7 +147,7 @@ fun SelectClassScreen(
                             contentDescription = "Get from Firebase",
                             modifier = Modifier
                                 .clickable {
-                                   // viewModel.getAsnovaClassesFromFirebase { resource -> }
+                                    // viewModel.getAsnovaClassesFromFirebase { resource -> }
                                 }
                                 .padding(8.dp)
                         )
@@ -156,7 +158,9 @@ fun SelectClassScreen(
                             contentDescription = "Publish into Firebase",
                             modifier = Modifier
                                 .clickable {
-                                  //  viewModel.pushAsnovaClassesToFirebase { resource -> }
+                                    viewModel.pushAsnovaClassesToFirebase(state.asnovaClasses) {
+                                        Toast.makeText(context, "Успешно сохранено на базе данных", Toast.LENGTH_SHORT).show()
+                                    }
                                 }
                                 .padding(8.dp)
                         )
@@ -179,7 +183,8 @@ fun SelectClassScreen(
                             ?.forEach { asnovaClass ->
                                 ClassCard(
                                     asnovaClass = asnovaClass, onClickDelete = {
-                                        state.asnovaClasses = state.asnovaClasses?.filter { it.name != asnovaClass.name }
+                                        state.asnovaClasses =
+                                            state.asnovaClasses?.filter { it.name != asnovaClass.name }
                                     }
                                 ) { selected ->
                                     selectedClass = selected

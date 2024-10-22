@@ -7,6 +7,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import com.asnova.domain.usecase.GetAsnovaClassesUseCase
 import com.asnova.domain.usecase.GetUserDataUseCase
+import com.asnova.domain.usecase.PushAsnovaClassesUseCase
 import com.asnova.domain.usecase.SignOutUserUseCase
 import com.asnova.model.AsnovaStudentsClass
 import com.asnova.model.Resource
@@ -21,14 +22,12 @@ import javax.inject.Inject
 class SettingsScreenViewModel @Inject constructor(
     private val signOutUserUseCase: SignOutUserUseCase,
     private val getUserDataUseCase: GetUserDataUseCase,
-
+    private val pushAsnovaClassesUseCase: PushAsnovaClassesUseCase,
     private val getAsnovaClassesUseCase: GetAsnovaClassesUseCase,
     private val userSharedPreferences: SharedPreferences
 ) : ViewModel() {
-
     private val _state = mutableStateOf(SettingsState())
     val state: State<SettingsState> = _state
-
 
     fun getUserData(callback: (Resource<User?>) -> Unit) {
         getUserDataUseCase.invoke(callback)
@@ -82,5 +81,30 @@ class SettingsScreenViewModel @Inject constructor(
 
     fun duplicateAsnovaClass(updatedClass: AsnovaStudentsClass) {
         _state.value.asnovaClasses = _state.value.asnovaClasses?.plus(updatedClass)
+    }
+
+    fun pushAsnovaClassesToFirebase(asnovaClasses: List<AsnovaStudentsClass>?, onSuccess: () -> Unit) {
+        if (asnovaClasses.isNullOrEmpty()) {
+            Log.w("pushAsnovaClasses", "No classes to push to Firebase.")
+            return
+        }
+
+        pushAsnovaClassesUseCase.invoke(asnovaClasses) { result ->
+            when (result) {
+                is Resource.Success -> {
+                    Log.d("pushAsnovaClasses", "Successfully pushed classes to Firebase.")
+                    onSuccess()
+                }
+
+                is Resource.Error -> {
+                    Log.e("pushAsnovaClasses", "Failed to push classes: ${result.message}")
+
+                    _state.value =
+                        SettingsState(error = result.message ?: "Ошибка сохранения учебных групп")
+                }
+
+                else -> {}
+            }
+        }
     }
 }
