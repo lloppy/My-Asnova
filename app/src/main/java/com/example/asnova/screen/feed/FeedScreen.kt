@@ -86,6 +86,7 @@ fun FeedScreen(
             .background(backgroundAsnova)
             .padding(bottom = BottomBarHeight)
     ) {
+        // Паттерн Decorator
         SkeletonScreen(
             isLoading = state.loading,
             skeleton = {

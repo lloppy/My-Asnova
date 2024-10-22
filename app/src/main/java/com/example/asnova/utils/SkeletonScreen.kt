@@ -22,6 +22,7 @@ import com.example.asnova.ui.theme.grayAsnova
 import com.example.asnova.ui.theme.greenAsnova
 import com.example.asnova.ui.theme.lightGreenAsnova
 
+// Паттерн Decorator
 @Composable
 fun SkeletonScreen(
     isLoading: Boolean,
