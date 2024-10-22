@@ -1,13 +1,12 @@
 package com.example.asnova.screen.sign_in
 
 import android.content.Intent
-import android.content.IntentSender
 import android.content.SharedPreferences
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.asnova.domain.usecase.CreateUserWithPhoneUseCase
 import com.asnova.domain.usecase.GetUserDataUseCase
-import com.asnova.domain.usecase.SignInUseCase
+import com.asnova.domain.usecase.OneTapSignInUseCase
 import com.asnova.domain.usecase.SignInWithIntentUseCase
 import com.asnova.domain.usecase.SignInWithOtpUseCase
 import com.asnova.model.Resource
@@ -25,7 +24,7 @@ class SignInScreenViewModel @Inject constructor(
     private val userSharedPreferences: SharedPreferences,
     private val getUserDataUseCase: GetUserDataUseCase,
 
-    private val signInUseCase: SignInUseCase,
+    private val oneTapSignInUseCase: OneTapSignInUseCase,
     private val signInWithIntentUseCase: SignInWithIntentUseCase,
 
     private val signInWithOtpUseCase: SignInWithOtpUseCase,
@@ -77,7 +76,32 @@ class SignInScreenViewModel @Inject constructor(
         }
     }
 
-    fun onSignInResult(result: SignInResult) {
+    fun resetState() {
+        _state.update { SignInState() }
+    }
+
+    fun signInWithIntent(intent: Intent, role: String, fmc: String) {
+        signInWithIntentUseCase.invoke(intent, role, fmc) { resource ->
+            val (user, errorMessage) = when (resource) {
+                is Resource.Success -> {
+                    val signInResult = resource.data
+                    val user = signInResult?.data
+                    Pair(user, null)
+                }
+
+                is Resource.Error -> {
+                    Pair(null, resource.message)
+                }
+
+                else -> {
+                    Pair(null, "Unknown error")
+                }
+            }
+            onSignInResult(SignInResult(data = user, errorMessage = errorMessage))
+        }
+    }
+
+    private fun onSignInResult(result: SignInResult) {
         _state.update {
             it.copy(
                 isSignInSuccessful = result.data != null,
@@ -86,16 +110,8 @@ class SignInScreenViewModel @Inject constructor(
         }
     }
 
-    fun resetState() {
-        _state.update { SignInState() }
-    }
-
-    suspend fun signInWithIntent(intent: Intent, role: String, fmc: String): SignInResult {
-        return signInWithIntentUseCase.invoke(intent, role, fmc)
-    }
-
-    suspend fun signIn(): IntentSender? {
-        return signInUseCase.invoke()
+    fun oneTapSignIn(callback: (Resource<SignInResult>) -> Unit) {
+        return oneTapSignInUseCase.invoke(callback)
     }
 
     fun createUserWithPhone(mobile: String) {

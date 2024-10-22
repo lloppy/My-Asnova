@@ -33,7 +33,7 @@ import com.asnova.domain.usecase.SaveLanguageSettingUseCase
 import com.asnova.domain.usecase.SaveNotificationsSettingUseCase
 import com.asnova.domain.usecase.SaveScheduleStateUseCase
 import com.asnova.domain.usecase.SaveThemeSettingUseCase
-import com.asnova.domain.usecase.SignInUseCase
+import com.asnova.domain.usecase.OneTapSignInUseCase
 import com.asnova.domain.usecase.SignInWithIntentUseCase
 import com.asnova.domain.usecase.SignInWithOtpUseCase
 import com.asnova.domain.usecase.SignOutUserUseCase
@@ -104,8 +104,8 @@ class DomainModule {
     @Provides
     fun provideSignInUseCase(
         userRepository: UserRepository
-    ): SignInUseCase {
-        return SignInUseCase(userRepository)
+    ): OneTapSignInUseCase {
+        return OneTapSignInUseCase(userRepository)
     }
 
     @Provides

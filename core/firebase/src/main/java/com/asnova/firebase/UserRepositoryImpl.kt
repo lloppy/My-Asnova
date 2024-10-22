@@ -146,70 +146,64 @@ class UserRepositoryImpl @Inject constructor(
         }
     }
 
-    @Suppress("DEPRECATION")
+    override fun oneTapSignIn(callback: (Resource<SignInResult>) -> Unit) {
+        try {
+            val result = oneTapClient.
+            beginSignIn(buildSignInRequest())
+            val intentSender = result.pendingIntent.intentSender
 
-    override suspend fun signIn(): IntentSender? {
-        val result = try {
-            oneTapClient.beginSignIn(
-                buildSignInRequest()
-            ).await()
+            // Если вы хотите вернуть IntentSender, используйте его для дальнейшей аутентификации
+            callback(Resource.Success(SignInResult(intentSender = intentSender)))
         } catch (e: Exception) {
             e.printStackTrace()
             if (e is CancellationException) throw e
-            null
+            callback(Resource.Error(e.message ?: "Unknown error"))
         }
-        return result?.pendingIntent?.intentSender
     }
 
-    override suspend fun signInWithIntent(intent: Intent, role: String, fmc: String): SignInResult {
+    override fun signInWithIntent(intent: Intent, role: String, fmc: String, callback: (Resource<SignInResult>) -> Unit) {
         val credential = oneTapClient.getSignInCredentialFromIntent(intent)
         val googleIdToken = credential.googleIdToken
         val googleCredentials = GoogleAuthProvider.getCredential(googleIdToken, null)
-        return try {
-            val user = _auth.signInWithCredential(googleCredentials).await().user
 
-            if (user != null) {
-                val userUid = user.uid
-                val newUser = User(
-                    userUid = userUid,
-                    username = user.displayName,
-                    name = "",
-                    surname = "",
-                    email = user.email,
-                    phone = "",
-                    fmc = fmc,
-                    asnovaClass = "",
-                    profilePictureUrl = user.photoUrl?.toString(),
-                    role = role
+        _auth.signInWithCredential(googleCredentials).addOnCompleteListener{ task ->
+            if (task.isSuccessful) {
+                val user = task.result?.user
+
+                val result = SignInResult(
+                    data = user?.run {
+                        User(
+                            userUid = user.uid,
+                            username = user.displayName,
+                            name = "",
+                            surname = "",
+                            email = user.email,
+                            phone = "",
+                            fmc = fmc,
+                            asnovaClass = "",
+                            profilePictureUrl = user.photoUrl?.toString(),
+                            role = role
+                        )
+                    },
+                    errorMessage = null
                 )
 
-                _database.child("users").child(userUid).setValue(newUser)
-                    .addOnSuccessListener {
-                        Log.d("UserRepository", "User data saved successfully")
-                    }
-                    .addOnFailureListener { exception ->
-                        Log.e("UserRepository", "Error writing user data", exception)
-                    }
-            }
+                result.data?.userUid?.let { userUid ->
+                    _database.child("users").child(userUid).setValue(result.data)
+                        .addOnSuccessListener {
+                            Log.d("UserRepository", "User data saved successfully")
+                        }
+                        .addOnFailureListener { exception ->
+                            Log.e("UserRepository", "Error writing user data", exception)
+                        }
+                } ?: run {
+                    Log.e("UserRepository", "User data is null, cannot save to database")
+                }
 
-            SignInResult(
-                data = user?.run {
-                    User(
-                        userUid = uid,
-                        username = displayName,
-                        email = email,
-                        profilePictureUrl = photoUrl?.toString()
-                    )
-                },
-                errorMessage = null
-            )
-        } catch (e: Exception) {
-            e.printStackTrace()
-            if (e is CancellationException) throw e
-            SignInResult(
-                data = null,
-                errorMessage = e.message
-            )
+                callback(Resource.Success(result))
+            } else {
+                callback(Resource.Error(task.exception?.message ?: "Unknown error"))
+            }
         }
     }
 
@@ -288,7 +282,7 @@ class UserRepositoryImpl @Inject constructor(
             }
     }
 
-    override fun createUserWithPhone(phone: String, callback: (Resource<String>) -> Unit) {
+    override fun sendOtp(phone: String, callback: (Resource<String>) -> Unit) {
         val activity = context as Activity
 
         // Паттерн Builder
