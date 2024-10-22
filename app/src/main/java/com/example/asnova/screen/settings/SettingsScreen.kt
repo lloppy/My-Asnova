@@ -164,7 +164,7 @@ fun LogInContent(
 
                     if (viewModel.canLoadAdminAccess()) {
                         Button(onClick = navigateToSelectClass) {
-                            Text(text = "Выбрать учебную группу")
+                            Text(text = "Редактировать учебные группы")
                         }
                         Spacer(modifier = Modifier.height(36.dp))
                     }

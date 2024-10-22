@@ -145,9 +145,7 @@ fun SelectClassScreen(
                             contentDescription = "Get from Firebase",
                             modifier = Modifier
                                 .clickable {
-                                    viewModel.getAsnovaClasses { resource ->
-
-                                    }
+                                   // viewModel.getAsnovaClassesFromFirebase { resource -> }
                                 }
                                 .padding(8.dp)
                         )
@@ -158,9 +156,7 @@ fun SelectClassScreen(
                             contentDescription = "Publish into Firebase",
                             modifier = Modifier
                                 .clickable {
-                                    viewModel.getAsnovaClasses { resource ->
-
-                                    }
+                                  //  viewModel.pushAsnovaClassesToFirebase { resource -> }
                                 }
                                 .padding(8.dp)
                         )
@@ -181,7 +177,11 @@ fun SelectClassScreen(
                         state.asnovaClasses
                             ?.filter { it.name.contains(searchQuery, ignoreCase = true) }
                             ?.forEach { asnovaClass ->
-                                ClassCard(asnovaClass) { selected ->
+                                ClassCard(
+                                    asnovaClass = asnovaClass, onClickDelete = {
+                                        state.asnovaClasses = state.asnovaClasses?.filter { it.name != asnovaClass.name }
+                                    }
+                                ) { selected ->
                                     selectedClass = selected
                                     showEditDialog = true
                                 }

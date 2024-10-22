@@ -7,10 +7,7 @@ import com.asnova.model.Resource
 import com.asnova.model.ScheduleFirebase
 
 interface ScheduleRepository {
-    fun addNewLesson(scheduleFirebase: ScheduleFirebase, callback: (Resource<Boolean>) -> Unit)
-    fun getAllScheduleFromFirebase(callback: (Resource<List<ScheduleFirebase>>) -> Unit)
     fun getPrivateSchedule(callback: (Resource<List<ScheduleAsnovaPrivate>>) -> Unit)
-    fun getAllSchedule(callback: (Resource<List<ScheduleFirebase>>) -> Unit)
     fun getScheduleFromSite(callback: (Resource<List<ScheduleAsnovaSite>>) -> Unit)
     fun getAsnovaClasses(callback: (Resource<List<AsnovaStudentsClass>>) -> Unit)
 }

@@ -128,6 +128,7 @@ class UserRepositoryImpl @Inject constructor(
             callback(Resource.Error("User not authenticated"))
         }
     } @Suppress("DEPRECATION")
+
     override suspend fun signIn(): IntentSender? {
         val result = try {
             oneTapClient.beginSignIn(
@@ -139,22 +140,6 @@ class UserRepositoryImpl @Inject constructor(
             null
         }
         return result?.pendingIntent?.intentSender
-    }
-
-
-
-    private fun buildSignInRequest(): BeginSignInRequest {
-        // Паттерн Builder
-        return BeginSignInRequest.Builder()
-            .setGoogleIdTokenRequestOptions(
-                BeginSignInRequest.GoogleIdTokenRequestOptions.Builder()
-                    .setSupported(true)
-                    .setFilterByAuthorizedAccounts(false)
-                    .setServerClientId(context.getString(com.firebase.ui.auth.R.string.default_web_client_id))
-                    .build()
-            )
-            .setAutoSelectEnabled(true)
-            .build()
     }
 
     override suspend fun signInWithIntent(intent: Intent, role: String): SignInResult {
@@ -229,30 +214,6 @@ class UserRepositoryImpl @Inject constructor(
                 }
             }.addOnFailureListener { exception ->
                 callback(Resource.Error(exception.message.toString()))
-            }
-        }
-    }
-
-    override fun getAllFavorites(callback: (Resource<List<String>>) -> Unit) {
-        callback(Resource.Loading())
-        pullRequest {
-            val user = it.data
-            val list: MutableList<String> = mutableListOf()
-            if (user != null) {
-                _usersReference.document(user.userId).get().addOnSuccessListener { snapshot ->
-                    if (snapshot.data != null) {
-                        val userData = snapshot.toObject(com.asnova.firebase.model.User::class.java)
-//                        userData?.favorites?.forEach { favoritesNewsItem ->
-//                            list.add(favoritesNewsItem)
-//                        }
-                    }
-                }.addOnCompleteListener { task ->
-                    if (task.isSuccessful) {
-                        callback(Resource.Success(list))
-                    }
-                }.addOnFailureListener { exception ->
-                    callback(Resource.Error(exception.message.toString()))
-                }
             }
         }
     }
@@ -342,4 +303,19 @@ class UserRepositoryImpl @Inject constructor(
 
         PhoneAuthProvider.verifyPhoneNumber(options)
     }
+
+    private fun buildSignInRequest(): BeginSignInRequest {
+        // Паттерн Builder
+        return BeginSignInRequest.Builder()
+            .setGoogleIdTokenRequestOptions(
+                BeginSignInRequest.GoogleIdTokenRequestOptions.Builder()
+                    .setSupported(true)
+                    .setFilterByAuthorizedAccounts(false)
+                    .setServerClientId(context.getString(com.firebase.ui.auth.R.string.default_web_client_id))
+                    .build()
+            )
+            .setAutoSelectEnabled(true)
+            .build()
+    }
+
 }
