@@ -1,6 +1,5 @@
 package com.example.asnova.app.di
 
-import android.content.Intent
 import com.asnova.domain.repository.firebase.NewsRepository
 import com.asnova.domain.repository.firebase.ScheduleRepository
 import com.asnova.domain.repository.firebase.UserRepository
@@ -9,10 +8,8 @@ import com.asnova.domain.repository.storage.LanguageSettingStorage
 import com.asnova.domain.repository.storage.NotificationsSettingStorage
 import com.asnova.domain.repository.storage.ScheduleStateRepository
 import com.asnova.domain.repository.storage.ThemeSettingRepository
-import com.asnova.domain.usecase.AddNewLessonUseCase
 import com.asnova.domain.usecase.AddNewsArticleUseCase
 import com.asnova.domain.usecase.CreateUserWithPhoneUseCase
-import com.asnova.domain.usecase.GetAllFavoritesUseCase
 import com.asnova.domain.usecase.GetAsnovaClassesUseCase
 import com.asnova.domain.usecase.GetAsnovaNewsUseCase
 import com.asnova.domain.usecase.GetIsAuthedUserUseCase
@@ -39,12 +36,6 @@ import com.asnova.domain.usecase.SignInUseCase
 import com.asnova.domain.usecase.SignInWithIntentUseCase
 import com.asnova.domain.usecase.SignInWithOtpUseCase
 import com.asnova.domain.usecase.SignOutUserUseCase
-import com.asnova.model.Role
-import com.example.asnova.data.UserManager
-import com.example.asnova.screen.chat.factory.AdminChatFactory
-import com.example.asnova.screen.chat.factory.ChatFactory
-import com.example.asnova.screen.chat.factory.GuestChatFactory
-import com.example.asnova.screen.chat.factory.StudentChatFactory
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -247,20 +238,5 @@ class DomainModule {
         userRepository: UserRepository
     ): PullRequestUserUseCase {
         return PullRequestUserUseCase(userRepository)
-    }
-
-    @Provides
-    fun provideAddNewLessonUseCase(
-        scheduleRepository: ScheduleRepository
-    ): AddNewLessonUseCase {
-        return AddNewLessonUseCase(scheduleRepository)
-    }
-
-    @Provides
-    fun provideGetAllFavoritesUseCase(
-        newsRepository: NewsRepository,
-        userRepository: UserRepository
-    ): GetAllFavoritesUseCase {
-        return GetAllFavoritesUseCase(newsRepository, userRepository)
     }
 }
