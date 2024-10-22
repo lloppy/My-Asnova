@@ -3,6 +3,7 @@ package com.example.asnova.screen.main
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.asnova.domain.repository.firebase.UserRepository
+import com.asnova.domain.repository.storage.IsAuthedUserStorage
 import com.asnova.model.Role
 import com.asnova.model.User
 import com.example.asnova.data.UserManager
@@ -12,7 +13,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MainScreenViewModel @Inject constructor(
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val isAuthedUserStorage: IsAuthedUserStorage
 ) : ViewModel() {
     private val _bottomItems = listOf(Screen.Feed, Screen.Schedule, Screen.ProfileSettings)
     val bottomItems = _bottomItems
@@ -29,6 +31,7 @@ class MainScreenViewModel @Inject constructor(
                 UserManager.setRole(Role.ADMIN)
                 role = Role.ADMIN
                 Log.d("UserManager", "${UserManager.getRole()}")
+                isAuthedUserStorage.save(Role.ADMIN)
             }
         }
     }

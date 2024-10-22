@@ -8,8 +8,8 @@ import com.asnova.model.SignInResult
 class SignInWithIntentUseCase(
     private val userRepository: UserRepository
 ) {
-    suspend operator fun invoke(intent: Intent, role: String): SignInResult
+    suspend operator fun invoke(intent: Intent, role: String, fmc: String): SignInResult
     {
-        return userRepository.signInWithIntent(intent, role)
+        return userRepository.signInWithIntent(intent, role, fmc)
     }
 }

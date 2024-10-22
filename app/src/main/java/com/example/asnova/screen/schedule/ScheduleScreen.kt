@@ -26,7 +26,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -139,12 +138,13 @@ fun ScheduleScreen(
                     }
                     if (state.value.privateSchedule.isEmpty()) {
                         item {
-                            Column(modifier = Modifier
-                                .fillMaxSize()
-                                .padding(start = 32.dp, end = 32.dp, top = 32.dp),
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .padding(start = 32.dp, end = 32.dp, top = 32.dp),
                                 horizontalAlignment = Alignment.CenterHorizontally,
                                 verticalArrangement = Arrangement.Center
-                            ){
+                            ) {
                                 if (currentDate == selectedMutableDate.value) Text("Сегодня занятий нет")
                                 else Text("Занятий нет")
                             }

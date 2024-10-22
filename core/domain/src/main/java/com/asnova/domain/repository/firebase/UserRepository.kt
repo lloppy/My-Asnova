@@ -11,11 +11,12 @@ interface UserRepository {
     fun isAuthedUser(callback: (Resource<Boolean>) -> Unit)
     fun getUserData(callback: (Resource<User?>) -> Unit)
     fun checkUserData(callback: (Resource<Boolean>) -> Unit)
+    fun checkUserClass(callback: (Resource<Boolean>) -> Unit)
     fun checkIsAdmin(callback: (Resource<Boolean>) -> Unit)
     fun writeNewDataUser(name: String, surname: String, email: String, phone: String, onSuccess: () -> Unit, onFailure: (String) -> Unit)
     suspend fun signIn(): IntentSender?
     fun signOut()
-    suspend fun signInWithIntent(intent: Intent, role: String): SignInResult
+    suspend fun signInWithIntent(intent: Intent, role: String, fmc: String): SignInResult
     fun signInWithOtp(otp: String, verificationId: String, callback: (Resource<SignInResult>) -> Unit)
     fun createUserWithPhone(phone: String, callback: (Resource<String>) -> Unit)
 }

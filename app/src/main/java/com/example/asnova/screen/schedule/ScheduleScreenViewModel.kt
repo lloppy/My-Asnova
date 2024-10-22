@@ -5,6 +5,7 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.asnova.domain.usecase.CheckUserClassUseCase
 import com.asnova.domain.usecase.GetScheduleFromSiteUseCase
 import com.asnova.domain.usecase.GetScheduleStateUseCase
 import com.asnova.domain.usecase.GetScheduleUseCase
@@ -24,7 +25,7 @@ import javax.inject.Inject
 class ScheduleScreenViewModel @Inject constructor(
     private val getScheduleUseCase: GetScheduleUseCase,
     private val getScheduleFromSiteUseCase: GetScheduleFromSiteUseCase,
-
+    private val checkUserClassUseCase: CheckUserClassUseCase,
     private val saveScheduleStateUseCase: SaveScheduleStateUseCase,
     private val getScheduleStateUseCase: GetScheduleStateUseCase,
 
@@ -41,6 +42,10 @@ class ScheduleScreenViewModel @Inject constructor(
         loadAvailableSchedule()
     }
 
+    fun checkUserClass(callback: (Resource<Boolean>) -> Unit) {
+        checkUserClassUseCase.invoke(callback)
+    }
+
     fun canLoadPrivateSchedule(): Boolean {
         return when (UserManager.getRole()) {
             Role.STUDENT, Role.WORKER, Role.ADMIN -> true
@@ -48,6 +53,7 @@ class ScheduleScreenViewModel @Inject constructor(
             else -> false
         }
     }
+
     private fun loadAvailableSchedule() {
         when (UserManager.getRole()) {
             Role.STUDENT, Role.WORKER -> loadScheduleForGroup() // TODO () нужно передавать в параметры учителей и учеников параметр - группа, по которой нужно загрузить расписание и фильтровать по ней у админа такого фильтра просто не будет

@@ -90,8 +90,8 @@ class SignInScreenViewModel @Inject constructor(
         _state.update { SignInState() }
     }
 
-    suspend fun signInWithIntent(intent: Intent, role: String): SignInResult {
-        return signInWithIntentUseCase.invoke(intent, role)
+    suspend fun signInWithIntent(intent: Intent, role: String, fmc: String): SignInResult {
+        return signInWithIntentUseCase.invoke(intent, role, fmc)
     }
 
     suspend fun signIn(): IntentSender? {

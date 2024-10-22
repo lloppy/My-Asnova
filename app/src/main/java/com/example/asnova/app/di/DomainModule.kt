@@ -9,6 +9,7 @@ import com.asnova.domain.repository.storage.NotificationsSettingStorage
 import com.asnova.domain.repository.storage.ScheduleStateRepository
 import com.asnova.domain.repository.storage.ThemeSettingRepository
 import com.asnova.domain.usecase.AddNewsArticleUseCase
+import com.asnova.domain.usecase.CheckUserClassUseCase
 import com.asnova.domain.usecase.CreateUserWithPhoneUseCase
 import com.asnova.domain.usecase.GetAsnovaClassesUseCase
 import com.asnova.domain.usecase.GetAsnovaNewsUseCase
@@ -56,6 +57,13 @@ class DomainModule {
         repository: ScheduleRepository
     ): PushAsnovaClassesUseCase {
         return PushAsnovaClassesUseCase(repository)
+    }
+
+    @Provides
+    fun provideCheckUserClassUseCase(
+        repository: UserRepository
+    ): CheckUserClassUseCase {
+        return CheckUserClassUseCase(repository)
     }
 
     @Provides

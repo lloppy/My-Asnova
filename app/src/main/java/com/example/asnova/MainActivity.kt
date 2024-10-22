@@ -11,6 +11,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.core.content.ContextCompat
@@ -72,9 +73,11 @@ class MainActivity : ComponentActivity() {
                     onResult = { result ->
                         if (result.resultCode == RESULT_OK) {
                             lifecycleScope.launch {
+
                                 val signInResult = viewModel.signInWithIntent(
                                     intent = result.data ?: return@launch,
-                                    role = UserManager.getRole()
+                                    role = UserManager.getRole(),
+                                    fmc = UserManager.fmc
                                 )
                                 viewModel.onSignInResult(signInResult)
                             }

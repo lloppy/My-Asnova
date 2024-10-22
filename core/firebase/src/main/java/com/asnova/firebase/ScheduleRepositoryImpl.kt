@@ -158,8 +158,7 @@ class ScheduleRepositoryImpl @Inject constructor(
         Log.d("calendar_site_info", scheduleElements.text())
 
         return scheduleElements.mapNotNull { element ->
-            val linkElement =
-                element.selectFirst(".seocategory__prodblock-link") ?: return@mapNotNull null
+            val linkElement = element.selectFirst(".seocategory__prodblock-link") ?: return@mapNotNull null
             val dateAndTimeText = linkElement.text().split(", ")
             Log.d("calendar_site_info", "text $dateAndTimeText")
 

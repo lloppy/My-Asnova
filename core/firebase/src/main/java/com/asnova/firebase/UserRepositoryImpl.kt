@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.IntentSender
-import android.os.UserManager
 import android.util.Log
 import com.asnova.domain.repository.firebase.UserRepository
 import com.asnova.model.Resource
@@ -90,8 +89,30 @@ class UserRepositoryImpl @Inject constructor(
                         val surname = snapshot.child("surname").value as? String
                         val phone = snapshot.child("phone").value as? String
 
-                        val isEmpty = name.isNullOrEmpty() || surname.isNullOrEmpty() || phone.isNullOrEmpty()
+                        val isEmpty =
+                            name.isNullOrEmpty() || surname.isNullOrEmpty() || phone.isNullOrEmpty()
                         callback(Resource.Success(isEmpty))
+                    } else {
+                        callback(Resource.Error("User не заполнил данные"))
+                    }
+                }
+                .addOnFailureListener { exception ->
+                    callback(Resource.Error(exception.message ?: "Unknown error"))
+                }
+        } else {
+            callback(Resource.Error("User not authenticated"))
+        }
+    }
+
+    override fun checkUserClass(callback: (Resource<Boolean>) -> Unit) {
+        val userUid = _auth.currentUser?.uid
+
+        if (userUid != null) {
+            _database.child("users").child(userUid).get()
+                .addOnSuccessListener { snapshot ->
+                    if (snapshot.exists()) {
+                        val asnovaClass = snapshot.child("asnovaClass").value as? String
+                        callback(Resource.Success(asnovaClass.isNullOrEmpty()))
                     } else {
                         callback(Resource.Error("User не заполнил данные"))
                     }
@@ -123,7 +144,9 @@ class UserRepositoryImpl @Inject constructor(
         } else {
             callback(Resource.Error("User not authenticated"))
         }
-    } @Suppress("DEPRECATION")
+    }
+
+    @Suppress("DEPRECATION")
 
     override suspend fun signIn(): IntentSender? {
         val result = try {
@@ -138,7 +161,7 @@ class UserRepositoryImpl @Inject constructor(
         return result?.pendingIntent?.intentSender
     }
 
-    override suspend fun signInWithIntent(intent: Intent, role: String): SignInResult {
+    override suspend fun signInWithIntent(intent: Intent, role: String, fmc: String): SignInResult {
         val credential = oneTapClient.getSignInCredentialFromIntent(intent)
         val googleIdToken = credential.googleIdToken
         val googleCredentials = GoogleAuthProvider.getCredential(googleIdToken, null)
@@ -154,6 +177,8 @@ class UserRepositoryImpl @Inject constructor(
                     surname = "",
                     email = user.email,
                     phone = "",
+                    fmc = fmc,
+                    asnovaClass = "",
                     profilePictureUrl = user.photoUrl?.toString(),
                     role = role
                 )
@@ -188,6 +213,7 @@ class UserRepositoryImpl @Inject constructor(
         }
     }
 
+
     override fun checkIsAdmin(callback: (Resource<Boolean>) -> Unit) {
         var isAdmin = false
         val userUid = _auth.currentUser?.uid
@@ -202,17 +228,19 @@ class UserRepositoryImpl @Inject constructor(
 
                         isAdmin = role == "Администратор"
 
-                        if (!isAdmin){
-                            adminsRef.get().addOnSuccessListener {admins ->
+                        if (!isAdmin) {
+                            adminsRef.get().addOnSuccessListener { admins ->
 
                                 admins.children.forEach { doc ->
-                                    val isAdmin2 = doc.child("isAdmin").getValue(Boolean::class.java)
+                                    val isAdmin2 =
+                                        doc.child("isAdmin").getValue(Boolean::class.java)
                                     val email2 = doc.child("email").getValue(String::class.java)
 
                                     if (isAdmin2 != null && email2 != null) {
                                         if (isAdmin2 && email2 == email) {
                                             isAdmin = isAdmin2
-                                            _database.child("users").child(userUid).child("role").setValue("Администратор")
+                                            _database.child("users").child(userUid).child("role")
+                                                .setValue("Администратор")
                                         }
                                     }
                                 }

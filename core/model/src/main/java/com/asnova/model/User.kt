@@ -8,6 +8,8 @@ data class User(
     val surname: String? = "",
     val email: String? = "",
     val phone: String = "",
+    val fmc: String = "",
+    val asnovaClass: String = "",
 
     val profilePictureUrl: String? = "",
     val role: String? = null

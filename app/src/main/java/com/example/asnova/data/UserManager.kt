@@ -22,8 +22,7 @@ object UserManager {
 
     fun setRole(newRole: String) {
         _role = newRole
-        // TODO() в самом коде сохранение через юзкейс
-        // sharedPreferences.edit().putString(KEY_USER_SETTING, newRole).apply()
+        // TODO() в самом коде сохранение через isAuthedUserStorageImpl.save(Role.ADMIN)
     }
 
     fun getRole(): String {
