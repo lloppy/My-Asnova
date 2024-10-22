@@ -54,7 +54,7 @@ class ScheduleScreenViewModel @Inject constructor(
             Role.GUEST, Role.NONE -> loadScheduleFromSite()
             Role.ADMIN -> {
                 loadScheduleForGroup()
-                loadScheduleFromSite()
+                // loadScheduleFromSite() нужно загружать параллельно, тк стейт загрузки обновляется раньше чем надо
             }
         }
     }
@@ -68,6 +68,10 @@ class ScheduleScreenViewModel @Inject constructor(
 
         getScheduleUseCase(callback = { result ->
             when (result) {
+                is Resource.Loading -> {
+                    _state.value = ScheduleState(loading = true)
+                }
+
                 is Resource.Success -> {
                     Log.d("calendar_info", "Schedules loaded")
 
@@ -88,10 +92,6 @@ class ScheduleScreenViewModel @Inject constructor(
                     _state.value = ScheduleState(
                         error = result.message ?: "An unexpected error occurred"
                     )
-                }
-
-                is Resource.Loading -> {
-                    _state.value = ScheduleState(loading = true)
                 }
             }
         })

@@ -102,17 +102,10 @@ class ScheduleRepositoryImpl @Inject constructor(
                         val uniqueClasses = schedules
                             ?.mapNotNull { it.summary }
                             ?.filter { className ->
-                                (className.count { char -> char == '"' } >= 2 || includeWords.all { word ->
-                                    className.contains(
-                                        word,
-                                        ignoreCase = true
-                                    )
-                                })
+                                (className.count { char -> char == '"' } >= 2
+                                        || className.contains("Обучение", ignoreCase = true))
                                         && excludeWords.none { word ->
-                                    className.contains(
-                                        word,
-                                        ignoreCase = true
-                                    )
+                                    className.contains(word, ignoreCase = true)
                                 }
                             }
                             ?.distinct()?.toSet()

@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.IntentSender
+import android.os.UserManager
 import android.util.Log
 import com.asnova.domain.repository.firebase.UserRepository
 import com.asnova.model.Resource
@@ -21,8 +22,6 @@ import com.google.firebase.auth.PhoneAuthProvider
 import com.google.firebase.auth.auth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.database
-import com.google.firebase.firestore.CollectionReference
-import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
 import java.util.concurrent.CancellationException
 import java.util.concurrent.TimeUnit
@@ -32,8 +31,9 @@ class UserRepositoryImpl @Inject constructor(
     private val context: Context,
     private val oneTapClient: SignInClient
 ) : UserRepository {
-    private var database: DatabaseReference = Firebase.database.reference
+    private var _database: DatabaseReference = Firebase.database.reference
     private val _auth: FirebaseAuth = Firebase.auth
+    private val adminsRef = _database.child("asnovaAppAdmins")
 
     override fun writeNewDataUser(
         name: String,
@@ -56,7 +56,7 @@ class UserRepositoryImpl @Inject constructor(
                 profilePictureUrl = currentUser.photoUrl?.toString()
             )
 
-            database.child("users").child(userUid).setValue(user)
+            _database.child("users").child(userUid).setValue(user)
                 .addOnSuccessListener {
                     onSuccess()
                 }
@@ -83,7 +83,7 @@ class UserRepositoryImpl @Inject constructor(
         val userUid = _auth.currentUser?.uid
 
         if (userUid != null) {
-            database.child("users").child(userUid).get()
+            _database.child("users").child(userUid).get()
                 .addOnSuccessListener { snapshot ->
                     if (snapshot.exists()) {
                         val name = snapshot.child("name").value as? String
@@ -108,7 +108,7 @@ class UserRepositoryImpl @Inject constructor(
         val userUid = _auth.currentUser?.uid
 
         if (userUid != null) {
-            database.child("users").child(userUid).get()
+            _database.child("users").child(userUid).get()
                 .addOnSuccessListener { snapshot ->
                     if (snapshot.exists()) {
                         val user = snapshot.getValue(User::class.java)
@@ -158,7 +158,7 @@ class UserRepositoryImpl @Inject constructor(
                     role = role
                 )
 
-                database.child("users").child(userUid).setValue(newUser)
+                _database.child("users").child(userUid).setValue(newUser)
                     .addOnSuccessListener {
                         Log.d("UserRepository", "User data saved successfully")
                     }
@@ -189,14 +189,36 @@ class UserRepositoryImpl @Inject constructor(
     }
 
     override fun checkIsAdmin(callback: (Resource<Boolean>) -> Unit) {
+        var isAdmin = false
         val userUid = _auth.currentUser?.uid
 
         if (userUid != null) {
-            database.child("users").child(userUid).child("role").get()
+
+            _database.child("users").child(userUid).get()
                 .addOnSuccessListener { snapshot ->
                     if (snapshot.exists()) {
-                        val role = snapshot.value as? String
-                        val isAdmin = role == "Администратор"
+                        val role = snapshot.child("role").value as? String
+                        val email = snapshot.child("email").value as? String
+
+                        isAdmin = role == "Администратор"
+
+                        if (!isAdmin){
+                            adminsRef.get().addOnSuccessListener {admins ->
+
+                                admins.children.forEach { doc ->
+                                    val isAdmin2 = doc.child("isAdmin").getValue(Boolean::class.java)
+                                    val email2 = doc.child("email").getValue(String::class.java)
+
+                                    if (isAdmin2 != null && email2 != null) {
+                                        if (isAdmin2 && email2 == email) {
+                                            isAdmin = isAdmin2
+                                            _database.child("users").child(userUid).child("role").setValue("Администратор")
+                                        }
+                                    }
+                                }
+
+                            }
+                        }
                         callback(Resource.Success(isAdmin))
                     } else {
                         callback(Resource.Error("User does not exist"))
