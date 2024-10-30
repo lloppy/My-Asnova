@@ -1,5 +1,6 @@
 package com.example.asnova.app.di
 
+import com.asnova.domain.repository.firebase.NewsFacade
 import com.asnova.domain.repository.firebase.NewsRepository
 import com.asnova.domain.repository.firebase.ScheduleRepository
 import com.asnova.domain.repository.firebase.UserRepository
@@ -8,7 +9,6 @@ import com.asnova.domain.repository.storage.LanguageSettingStorage
 import com.asnova.domain.repository.storage.NotificationsSettingStorage
 import com.asnova.domain.repository.storage.ScheduleStateRepository
 import com.asnova.domain.repository.storage.ThemeSettingRepository
-import com.asnova.domain.usecase.AddNewsArticleUseCase
 import com.asnova.domain.usecase.CheckUserClassUseCase
 import com.asnova.domain.usecase.CreateUserWithPhoneUseCase
 import com.asnova.domain.usecase.GetAsnovaClassesUseCase
@@ -45,12 +45,6 @@ import dagger.hilt.android.components.ViewModelComponent
 @Module
 @InstallIn(ViewModelComponent::class)
 class DomainModule {
-    @Provides
-    fun provideAddNewsArticleUseCase(
-        repository: NewsRepository
-    ): AddNewsArticleUseCase {
-        return AddNewsArticleUseCase(repository)
-    }
 
     @Provides
     fun providePushAsnovaClassesUseCase(
@@ -117,44 +111,44 @@ class DomainModule {
 
     @Provides
     fun provideGetNewsByOrderUseCase(
-        repository: NewsRepository
+        newsFacadeImpl: NewsFacade
     ): GetNewsByOrderUseCase {
-        return GetNewsByOrderUseCase(repository)
+        return GetNewsByOrderUseCase(newsFacadeImpl)
     }
 
     @Provides
     fun provideGetSafetyNewsUseCase(
-        repository: NewsRepository
+        newsFacadeImpl: NewsFacade
     ): GetSafetyNewsUseCase {
-        return GetSafetyNewsUseCase(repository)
+        return GetSafetyNewsUseCase(newsFacadeImpl)
     }
 
     @Provides
     fun provideGetAsnovaNewsUseCase(
-        repository: NewsRepository
+        newsFacadeImpl: NewsFacade
     ): GetAsnovaNewsUseCase {
-        return GetAsnovaNewsUseCase(repository)
+        return GetAsnovaNewsUseCase(newsFacadeImpl)
     }
 
     @Provides
     fun provideGetNewsItemByIdUseCase(
-        repository: NewsRepository
+        newsFacadeImpl: NewsFacade
     ): GetNewsItemByIdUseCase {
-        return GetNewsItemByIdUseCase(repository)
+        return GetNewsItemByIdUseCase(newsFacadeImpl)
     }
 
     @Provides
     fun provideOnDownloadMoreAsnovaNewsUseCase(
-        repository: NewsRepository
+        newsFacadeImpl: NewsFacade
     ): OnDownloadMoreAsnovaNewsUseCase {
-        return OnDownloadMoreAsnovaNewsUseCase(repository)
+        return OnDownloadMoreAsnovaNewsUseCase(newsFacadeImpl)
     }
 
     @Provides
     fun provideOnDownloadMoreSafetyNewsUseCase(
-        repository: NewsRepository
+        newsFacadeImpl: NewsFacade
     ): OnDownloadMoreSafetyNewsUseCase {
-        return OnDownloadMoreSafetyNewsUseCase(repository)
+        return OnDownloadMoreSafetyNewsUseCase(newsFacadeImpl)
     }
 
     @Provides

@@ -1,8 +1,8 @@
 package com.example.asnova.app.di
 
-import com.asnova.firebase.schedule.CalDavAdapteeImpl
 import android.content.Context
 import android.content.SharedPreferences
+import com.asnova.domain.repository.firebase.NewsFacade
 import com.asnova.domain.repository.firebase.NewsRepository
 import com.asnova.domain.repository.firebase.ScheduleRepository
 import com.asnova.domain.repository.firebase.UserRepository
@@ -13,11 +13,13 @@ import com.asnova.domain.repository.storage.ScheduleStateRepository
 import com.asnova.domain.repository.storage.ScheduleStateStorage
 import com.asnova.domain.repository.storage.ThemeSettingRepository
 import com.asnova.domain.repository.storage.ThemeSettingStorage
-import com.asnova.firebase.schedule.CalDavAdapter
-import com.asnova.firebase.NewsRepositoryImpl
+import com.asnova.firebase.NewsFacadeImpl
 import com.asnova.firebase.ScheduleRepositoryImpl
 import com.asnova.firebase.UserRepositoryImpl
 import com.asnova.firebase.api.GroupsApi
+import com.asnova.firebase.schedule.CalDavAdapteeImpl
+import com.asnova.firebase.schedule.CalDavAdapter
+import com.asnova.firebase.sources.NewsRepositoryImpl
 import com.asnova.model.Role
 import com.asnova.storage.IsAuthedUserStorageImpl
 import com.asnova.storage.LanguageSettingStorageImpl
@@ -64,12 +66,13 @@ class DataModule {
         }
     }
 
+    // Паттерн Facade
     @Provides
     @Singleton
-    fun provideNewsRepository(
+    fun provideNewsFacade(
         groupsApi: GroupsApi
-    ): NewsRepository {
-        return NewsRepositoryImpl(groupsApi)
+    ): NewsFacade {
+        return NewsFacadeImpl(groupsApi)
     }
 
     @Provides

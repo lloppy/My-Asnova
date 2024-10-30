@@ -1,4 +1,4 @@
-package com.asnova.firebase
+package com.asnova.firebase.sources
 
 import android.net.Uri
 import com.asnova.domain.repository.firebase.NewsRepository
