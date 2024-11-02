@@ -90,7 +90,6 @@ fun ScheduleScreen(
             .padding(bottom = BottomBarHeight)
             .fillMaxSize()
     ) {
-        // Паттерн Decorator
         SkeletonScreen(
             isLoading = state.value.loading,
             skeleton = {

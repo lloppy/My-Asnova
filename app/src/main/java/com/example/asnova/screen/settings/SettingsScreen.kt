@@ -11,9 +11,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ChatBubble
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -45,17 +50,16 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.LifecycleCoroutineScope
 import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.asnova.model.Resource
 import com.asnova.model.User
 import com.example.asnova.R
 import com.example.asnova.ui.theme.BottomBarHeight
 import com.example.asnova.utils.Router
+import com.example.asnova.utils.SkeletonScreen
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
 fun ProfileSettingsScreen(
     externalRouter: Router,
@@ -67,6 +71,11 @@ fun ProfileSettingsScreen(
     viewModel: SettingsScreenViewModel = hiltViewModel()
 ) {
     var userData by remember { mutableStateOf<User?>(null) }
+    val state = viewModel.state
+
+    // Refresh state
+    var isRefreshing by remember { mutableStateOf(false) }
+    val stateRefresh = rememberPullRefreshState(isRefreshing, { viewModel.pullToRefresh() })
 
     LaunchedEffect(Unit) {
         viewModel.getUserData { resource ->
@@ -84,84 +93,49 @@ fun ProfileSettingsScreen(
         }
     }
 
-    Scaffold(
-        topBar = {
-            MediumTopAppBar(
-                title = {
-                    Text(
-                        text = stringResource(id = R.string.profile_settings),
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                        fontSize = 24.sp,
-                        fontWeight = FontWeight.Bold,
-                        textAlign = TextAlign.Center
-                    )
-                },
-                actions = {
-                    IconButton(onClick = {
-                        navigateToChats.invoke()
-                    }) {
-                        Icon(
-                            imageVector = Icons.Filled.ChatBubble,
-                            contentDescription = "Localized description"
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(bottom = BottomBarHeight)
+            .pullRefresh(stateRefresh)
+    ) {
+        SkeletonScreen(
+            isLoading = state.value.loading,
+            skeleton = {
+
+            }
+        ) {
+            LazyColumn(
+                Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.Top,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                // информация профиля
+                item {
+                    if (userData?.profilePictureUrl != null) {
+                        AsyncImage(
+                            model = userData!!.profilePictureUrl,
+                            contentDescription = stringResource(R.string.profile_picture),
+                            modifier = Modifier
+                                .size(150.dp)
+                                .clip(CircleShape),
+                            contentScale = ContentScale.Crop
                         )
+                        Spacer(modifier = Modifier.height(16.dp))
+
+                        if (userData?.username != null) {
+                            Text(
+                                text = userData!!.username!!,
+                                textAlign = TextAlign.Center,
+                                fontSize = 20.sp,
+                                fontWeight = FontWeight.SemiBold
+                            )
+                        }
                     }
                 }
-            )
-        }
-    ) { padding ->
-        LogInContent(
-            padding = padding,
-            viewModel = viewModel,
-            userData = userData,
-            navigateToSelectClass = navigateToSelectClass,
-            onSignOut = {
-                lifecycleScope.launch {
-                    viewModel.signOut()
-                }
-            }
-        )
-    }
-}
 
-@Composable
-fun LogInContent(
-    padding: PaddingValues,
-    userData: User?,
-    viewModel: SettingsScreenViewModel,
-    navigateToSelectClass: () -> Unit,
-    onSignOut: () -> Unit
-) {
-    Box(
-        modifier = Modifier.padding(top = padding.calculateTopPadding(), bottom = BottomBarHeight)
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(Color.White),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.SpaceBetween
-        ) {
-            Column {
-                if (userData?.profilePictureUrl != null) {
-                    AsyncImage(
-                        model = userData.profilePictureUrl,
-                        contentDescription = stringResource(R.string.profile_picture),
-                        modifier = Modifier
-                            .size(150.dp)
-                            .clip(CircleShape),
-                        contentScale = ContentScale.Crop
-                    )
-                    Spacer(modifier = Modifier.height(16.dp))
-                }
-                if (userData?.username != null) {
-                    Text(
-                        text = userData.username!!,
-                        textAlign = TextAlign.Center,
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.SemiBold
-                    )
-
+                // для админа редактировать группы Аснова
+                item{
                     if (viewModel.canLoadAdminAccess()) {
                         Button(onClick = navigateToSelectClass) {
                             Text(text = "Редактировать учебные группы")
@@ -169,22 +143,31 @@ fun LogInContent(
                         Spacer(modifier = Modifier.height(36.dp))
                     }
                 }
+
+                // кнопка выйти
+                item {
+                    Button(
+                        onClick = {
+                            lifecycleScope.launch {
+                                viewModel.signOut()
+                            }
+                        },
+                        colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)
+                    ) {
+                        Text(
+                            text = stringResource(R.string.log_out),
+                            style = TextStyle(
+                                fontSize = 16.sp,
+                                fontFamily = FontFamily(Font(R.font.pretendard)),
+                                fontWeight = FontWeight(600),
+                                color = Color.Red,
+                                textAlign = TextAlign.Center,
+                            )
+                        )
+                    }
+                }
             }
-            Button(
-                onClick = onSignOut,
-                colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)
-            ) {
-                Text(
-                    text = stringResource(R.string.log_out),
-                    style = TextStyle(
-                        fontSize = 16.sp,
-                        fontFamily = FontFamily(Font(R.font.pretendard)),
-                        fontWeight = FontWeight(600),
-                        color = Color.Red,
-                        textAlign = TextAlign.Center,
-                    )
-                )
-            }
+            PullRefreshIndicator(isRefreshing, stateRefresh, Modifier.align(Alignment.TopCenter))
         }
     }
 }

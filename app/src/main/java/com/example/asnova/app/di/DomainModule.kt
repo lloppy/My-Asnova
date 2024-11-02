@@ -9,6 +9,7 @@ import com.asnova.domain.repository.storage.LanguageSettingStorage
 import com.asnova.domain.repository.storage.NotificationsSettingStorage
 import com.asnova.domain.repository.storage.ScheduleStateRepository
 import com.asnova.domain.repository.storage.ThemeSettingRepository
+import com.asnova.domain.usecase.CheckIsAdminUseCase
 import com.asnova.domain.usecase.CheckUserClassUseCase
 import com.asnova.domain.usecase.CreateUserWithPhoneUseCase
 import com.asnova.domain.usecase.GetAsnovaClassesUseCase
@@ -114,6 +115,13 @@ class DomainModule {
         newsFacadeImpl: NewsFacade
     ): GetNewsByOrderUseCase {
         return GetNewsByOrderUseCase(newsFacadeImpl)
+    }
+
+    @Provides
+    fun provideCheckIsAdminUseCase(
+        userRepository: UserRepository
+    ): CheckIsAdminUseCase {
+        return CheckIsAdminUseCase(userRepository)
     }
 
     @Provides

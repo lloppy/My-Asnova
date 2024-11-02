@@ -5,6 +5,8 @@ import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import com.asnova.domain.repository.storage.IsAuthedUserStorage
+import com.asnova.domain.usecase.CheckIsAdminUseCase
 import com.asnova.domain.usecase.GetAsnovaClassesUseCase
 import com.asnova.domain.usecase.GetUserDataUseCase
 import com.asnova.domain.usecase.PushAsnovaClassesUseCase
@@ -22,8 +24,12 @@ import javax.inject.Inject
 class SettingsScreenViewModel @Inject constructor(
     private val signOutUserUseCase: SignOutUserUseCase,
     private val getUserDataUseCase: GetUserDataUseCase,
+
     private val pushAsnovaClassesUseCase: PushAsnovaClassesUseCase,
     private val getAsnovaClassesUseCase: GetAsnovaClassesUseCase,
+
+    private val isAuthedUserStorage: IsAuthedUserStorage,
+    private val checkIsAdminUseCase: CheckIsAdminUseCase,
     private val userSharedPreferences: SharedPreferences
 ) : ViewModel() {
     private val _state = mutableStateOf(SettingsState())
@@ -104,6 +110,16 @@ class SettingsScreenViewModel @Inject constructor(
                 }
 
                 else -> {}
+            }
+        }
+    }
+
+    fun pullToRefresh() {
+        checkIsAdminUseCase.invoke { isAdmin ->
+            if (isAdmin.data == true) {
+                UserManager.setRole(Role.ADMIN)
+                Log.d("UserManager", "${UserManager.getRole()}")
+                isAuthedUserStorage.save(Role.ADMIN)
             }
         }
     }
