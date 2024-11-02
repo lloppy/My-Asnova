@@ -34,7 +34,7 @@ fun ClassCard(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(top = 8.dp, end = 8.dp)
+            .padding(top = 8.dp, bottom = 8.dp)
             .clickable {
                 onClickEdit.invoke(asnovaClass)
             }
@@ -45,20 +45,6 @@ fun ClassCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(text = asnovaClass.name)
-
-                Spacer(modifier = Modifier.width(8.dp))
-
-                Icon(
-                    imageVector = Icons.Rounded.DeleteOutline,
-                    tint = Color.Gray,
-                    contentDescription = "Delete",
-                    modifier = Modifier
-                        .size(24.dp)
-                        .clickable {
-                            onClickDelete.invoke(asnovaClass)
-                        }
-                        .padding(8.dp)
-                )
             }
         }
     }

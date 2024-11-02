@@ -109,7 +109,15 @@ fun HeaderSection(
 
                 if (userData != null) {
                     Text(
-                        text = "С возвращением${if (userData?.username.isNullOrEmpty()) "!" else ",\n${userData!!.username}"}",
+                        text = "С возвращением${
+                            if (userData?.surname != null && userData?.name != null) {
+                                ",\n" + userData!!.name + " " + userData!!.surname  
+                            } else if (userData?.username.isNullOrEmpty()) {
+                                "!"
+                            } else {
+                                ",\n${userData!!.username}"
+                            }
+                        }",
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold,
                         color = Color.White

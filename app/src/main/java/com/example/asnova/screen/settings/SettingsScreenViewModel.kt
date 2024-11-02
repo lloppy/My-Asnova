@@ -8,8 +8,10 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.navigation.NavController
+import com.asnova.domain.repository.firebase.UserRepository
 import com.asnova.domain.repository.storage.IsAuthedUserStorage
 import com.asnova.domain.usecase.CheckIsAdminUseCase
+import com.asnova.domain.usecase.CheckUserDataUseCase
 import com.asnova.domain.usecase.GetAsnovaClassesUseCase
 import com.asnova.domain.usecase.GetUserDataUseCase
 import com.asnova.domain.usecase.PushAsnovaClassesUseCase
@@ -26,6 +28,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SettingsScreenViewModel @Inject constructor(
+    private val userRepository: UserRepository,
+
     private val signOutUserUseCase: SignOutUserUseCase,
     private val getUserDataUseCase: GetUserDataUseCase,
 
@@ -40,6 +44,27 @@ class SettingsScreenViewModel @Inject constructor(
 ) : ViewModel() {
     private val _state = mutableStateOf(SettingsState())
     val state: State<SettingsState> = _state
+    var userData: User? = null
+    private var role = UserManager.getRole()
+
+    init {
+        userRepository.getUserData { resource ->
+            userData = resource.data
+        }
+
+        userRepository.checkIsAdmin{ isAdmin ->
+            if (isAdmin.data == true) {
+                UserManager.setRole(Role.ADMIN)
+                role = Role.ADMIN
+                Log.d("UserManager", "${UserManager.getRole()}")
+                isAuthedUserStorage.save(Role.ADMIN)
+            }
+        }
+    }
+
+    fun writeNewDataUser(name: String, surname: String, email: String, phone: String, onSuccess: () -> Unit, onFailure: (String) -> Unit) {
+        userRepository.writeNewDataUser(name, surname, email, phone, onSuccess, onFailure)
+    }
 
     fun getUserData(callback: (Resource<User?>) -> Unit) {
         getUserDataUseCase.invoke(callback)

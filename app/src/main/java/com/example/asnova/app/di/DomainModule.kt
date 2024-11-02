@@ -11,6 +11,7 @@ import com.asnova.domain.repository.storage.ScheduleStateRepository
 import com.asnova.domain.repository.storage.ThemeSettingRepository
 import com.asnova.domain.usecase.CheckIsAdminUseCase
 import com.asnova.domain.usecase.CheckUserClassUseCase
+import com.asnova.domain.usecase.CheckUserDataUseCase
 import com.asnova.domain.usecase.CreateUserWithPhoneUseCase
 import com.asnova.domain.usecase.GetAsnovaClassesUseCase
 import com.asnova.domain.usecase.GetAsnovaNewsUseCase
@@ -123,6 +124,13 @@ class DomainModule {
         userRepository: UserRepository
     ): CheckIsAdminUseCase {
         return CheckIsAdminUseCase(userRepository)
+    }
+
+    @Provides
+    fun provideCheckUserDataUseCase(
+        userRepository: UserRepository
+    ): CheckUserDataUseCase {
+        return CheckUserDataUseCase(userRepository)
     }
 
     @Provides

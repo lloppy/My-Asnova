@@ -29,7 +29,7 @@ fun SettingsItemBox(
         modifier = modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(20.dp))
-            .padding(4.dp)
+            .padding(start = 4.dp, end = 4.dp)
         .clickable(onClick = onClick)
     ) {
         Row(
