@@ -14,6 +14,8 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.filled.Group
+import androidx.compose.material.icons.filled.Replay
+import androidx.compose.material.icons.filled.RestartAlt
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
@@ -36,10 +38,12 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.LifecycleCoroutineScope
 import androidx.lifecycle.LifecycleOwner
+import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.asnova.model.Resource
 import com.asnova.model.Role
 import com.asnova.model.User
+import com.example.asnova.MainActivity
 import com.example.asnova.R
 import com.example.asnova.data.UserManager
 import com.example.asnova.screen.settings.components.SettingsItemBox
@@ -59,6 +63,7 @@ fun ProfileSettingsScreen(
     navigateToSelectClass: () -> Unit,
     navigateToEnterPromocode: () -> Unit,
     onRestartApp: () -> Unit,
+    navController: NavController,
     viewModel: SettingsScreenViewModel = hiltViewModel()
 ) {
     var userData by remember { mutableStateOf<User?>(null) }
@@ -157,8 +162,19 @@ fun ProfileSettingsScreen(
                             text = stringResource(R.string.log_out),
                             onClick = {
                                 lifecycleScope.launch {
-                                    viewModel.signOut {}
+                                    viewModel.signOut()
+                                    navController.popBackStack()
                                 }
+                            }
+                        )
+                    }
+                }
+                item {
+                    if (UserManager.getRole() == Role.NONE) {
+                        SettingsItemBox(
+                            icon = Icons.Filled.Replay,
+                            text = "Перезапустить приложение и войти заново",
+                            onClick = {
                                 onRestartApp.invoke()
                             }
                         )

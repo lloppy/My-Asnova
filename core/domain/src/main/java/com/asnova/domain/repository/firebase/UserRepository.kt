@@ -25,7 +25,7 @@ interface UserRepository {
 
     fun sendOtp(phone: String, callback: (Resource<String>) -> Unit)
     suspend fun signInWithLauncher(): IntentSender?
-    fun signOut(callback: (Resource<Unit>) -> Unit)
+    fun signOut()
 
 
     // user data + check

@@ -45,25 +45,11 @@ class SettingsScreenViewModel @Inject constructor(
         getUserDataUseCase.invoke(callback)
     }
 
-    fun signOut(onSuccess: () -> Unit) {
-        Log.d("SignOutSettingsViewModel", "Initiating sign out process.")
+    fun signOut() {
+        signOutUserUseCase.invoke()
 
-        signOutUserUseCase.invoke { result ->
-            when (result) {
-                is Resource.Success -> {
-                    Log.d("SignOutSettingsViewModel", "Sign out successful.")
-                    UserManager.signOut()
-                    userSharedPreferences.edit().putString(KEY_USER_SETTING, Role.NONE).apply()
-                    onSuccess.invoke()
-                }
-                is Resource.Error -> {
-                    Log.e("SignOutSettingsViewModel", "Error signing out: ${result.message}")
-                }
-                else -> {
-                    Log.w("SignOutSettingsViewModel", "Unexpected result during sign out.")
-                }
-            }
-        }
+        UserManager.signOut()
+        userSharedPreferences.edit().putString(KEY_USER_SETTING, Role.NONE).apply()
     }
 
     fun getAsnovaClasses(callback: (Resource<List<AsnovaStudentsClass>>) -> Unit) {

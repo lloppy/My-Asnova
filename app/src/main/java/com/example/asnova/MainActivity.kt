@@ -172,9 +172,9 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun restartApp() {
-        Log.d("SignOutRestart", "restartApp ...")
-
+        val intent = Intent(this, MainActivity::class.java)
+        ContextCompat.startActivity(this, intent, null)
         finish()
-        kotlin.system.exitProcess(0)
+        Runtime.getRuntime().exit(0)
     }
 }

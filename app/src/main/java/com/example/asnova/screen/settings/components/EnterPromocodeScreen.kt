@@ -34,7 +34,7 @@ fun EnterPromocodeScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp),
+            .padding(24.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
@@ -55,16 +55,18 @@ fun EnterPromocodeScreen(
             modifier = Modifier.fillMaxWidth()
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(24.dp))
 
         Button(
             onClick = {
                 viewModel.submitPromocode(promocode.text, context, navController)
                 promocode = TextFieldValue("")
             },
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp)
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp)
         ) {
             Text(text = "Отправить")
         }
+
+        Spacer(modifier = Modifier.height(24.dp))
     }
 }

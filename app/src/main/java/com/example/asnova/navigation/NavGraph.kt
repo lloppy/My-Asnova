@@ -76,6 +76,7 @@ fun SetupNavGraph(
                 navigateToEnterPromocode = {
                     navHostController.navigate(Screen.EnterPromocode.route)
                 },
+                navController = navHostController,
                 onRestartApp = onRestartApp
             )
         }

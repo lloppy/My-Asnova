@@ -11,6 +11,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.DeleteOutline
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardColors
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -19,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.asnova.model.AsnovaStudentsClass
+import com.example.asnova.ui.theme.greenAsnova
 
 
 @Composable
@@ -31,7 +34,7 @@ fun ClassCard(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(8.dp)
+            .padding(top = 8.dp, end = 8.dp)
             .clickable {
                 onClickEdit.invoke(asnovaClass)
             }

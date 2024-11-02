@@ -70,16 +70,8 @@ class UserRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun signOut(callback: (Resource<Unit>) -> Unit) {
-        try {
-            Log.d("SignOutRepo", "Attempting to sign out user.")
-            _auth.signOut()
-            Log.d("SignOutRepo", "User signed out successfully.")
-            callback(Resource.Success(Unit))
-        } catch (e: Exception) {
-            Log.e("SignOutRepo", "Error signing out: ${e.message ?: "Unknown error"}")
-            callback(Resource.Error(e.message ?: "Unknown error"))
-        }
+    override fun signOut() {
+        _auth.signOut()
     }
 
     override fun isAuthedUser(callback: (Resource<Boolean>) -> Unit) {
