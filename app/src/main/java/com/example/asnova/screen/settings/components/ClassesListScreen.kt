@@ -58,11 +58,10 @@ fun SelectClassScreen(
     var showEditDialog by remember { mutableStateOf(false) }
     var selectedClass by remember { mutableStateOf<AsnovaStudentsClass?>(null) }
 
-    // Для управления состоянием выпадающего меню
     var expanded by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
-        viewModel.getAsnovaClasses { resource ->
+        viewModel.getAsnovaClassesFromFirebase { resource ->
             when (resource) {
                 is Resource.Success -> {
                     studentsClasses = resource.data
@@ -128,9 +127,9 @@ fun SelectClassScreen(
                                 expanded = expanded,
                                 onDismissRequest = { expanded = false }) {
                                 DropdownMenuItem(
-                                    text = { Text(text = "Загрузить список групп повторно (текущие изменения не сохранятся)") },
+                                    text = { Text(text = "Получить список групп повторно (текущие изменения не сохранятся)") },
                                     onClick = {
-                                        viewModel.getAsnovaClasses { resource ->
+                                        viewModel.getAsnovaClassesFromFirebase { resource ->
                                             if (resource is Resource.Success) {
                                                 studentsClasses = resource.data
                                             }
@@ -139,7 +138,32 @@ fun SelectClassScreen(
                                     })
 
                                 DropdownMenuItem(
-                                    text = { Text("Сохранить текущие изменения и Опубликовать новые данные") },
+                                    text = { Text(text = "Получить данные о группах заново (\"сырые\" данные из расписания)") },
+                                    onClick = {
+                                        viewModel.
+                                        getRawAsnovaClasses { resource ->
+                                            if (resource is Resource.Success) {
+                                                studentsClasses = resource.data
+                                            }
+                                        }
+                                        expanded = false
+                                    })
+
+                                DropdownMenuItem(
+                                    text = { Text(text = "Очистить всё на базе данных") },
+                                    onClick = {
+                                        viewModel.cleanDatabase { success ->
+                                            if (success) {
+                                                Toast.makeText(context, "База данных успешно очищена", Toast.LENGTH_SHORT).show()
+                                            } else {
+                                                Toast.makeText(context, "Ошибка при очистке базы данных", Toast.LENGTH_SHORT).show()
+                                            }
+                                        }
+                                    }
+                                )
+
+                                DropdownMenuItem(
+                                    text = { Text("Сохранить текущие изменения, отправив новые данные") },
                                     onClick = {
                                         viewModel.pushAsnovaClassesToFirebase(state.asnovaClasses) {
                                             Toast.makeText(
@@ -191,7 +215,7 @@ fun SelectClassScreen(
                             )
                         }?.forEach { asnovaClass ->
                             ClassCard(asnovaClass = asnovaClass, onClickDelete = {
-                                state.asnovaClasses = state.asnovaClasses?.filter { it.name != asnovaClass.name }
+                                viewModel.removeClass(asnovaClass)
                             }) { selected ->
                                 selectedClass = selected
                                 showEditDialog = true

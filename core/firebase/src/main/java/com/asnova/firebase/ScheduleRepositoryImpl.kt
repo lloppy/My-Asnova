@@ -27,6 +27,17 @@ class ScheduleRepositoryImpl @Inject constructor(
     private val excludedWordsRef = _database.child("excludedWords")
     private val asnovaClassesRef = _database.child("asnovaClasses")
 
+    override fun clearAsnovaClasses(callback: (Boolean) -> Unit) {
+        asnovaClassesRef.removeValue()
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    callback(true)
+                } else {
+                    callback(false)
+                }
+            }
+    }
+
     override fun getPrivateSchedule(callback: (Resource<List<ScheduleAsnovaPrivate>>) -> Unit) {
         callback(Resource.Loading())
 
@@ -69,7 +80,7 @@ class ScheduleRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun getAsnovaClasses(callback: (Resource<List<AsnovaStudentsClass>>) -> Unit) {
+    override fun getRawAsnovaClasses(callback: (Resource<List<AsnovaStudentsClass>>) -> Unit) {
         getPrivateSchedule { resource ->
             when (resource) {
                 is Resource.Loading -> {
@@ -113,7 +124,7 @@ class ScheduleRepositoryImpl @Inject constructor(
 
                         val asnovaClasses = uniqueClasses?.map { className ->
                             AsnovaStudentsClass(name = className)
-                        }
+                        }?.toSet()?.toList()
                         Log.d("getAsnovaClasses","после asnovaClasses " + asnovaClasses?.size.toString())
 
                         callback(Resource.Success(asnovaClasses?.toList()))
@@ -129,6 +140,20 @@ class ScheduleRepositoryImpl @Inject constructor(
                     callback(Resource.Error(resource.message ?: "Unknown error"))
                 }
             }
+        }
+    }
+
+    override fun getAsnovaClassesFromFirebase(callback: (Resource<List<AsnovaStudentsClass>>) -> Unit) {
+        callback(Resource.Loading())
+
+        asnovaClassesRef.get().addOnSuccessListener { snapshot ->
+            val asnovaClasses = snapshot.children.mapNotNull { childSnapshot ->
+                childSnapshot.getValue(AsnovaStudentsClass::class.java)
+            }
+            callback(Resource.Success(asnovaClasses))
+        }.addOnFailureListener { exception ->
+            Log.e("FirebaseError", "Error getting classes from Firebase: ${exception.message}")
+            callback(Resource.Error(exception.message ?: "Unknown error"))
         }
     }
 

@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.DeleteOutline
 import androidx.compose.material.icons.rounded.DeleteOutline
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardColors
@@ -29,7 +30,6 @@ fun ClassCard(
     asnovaClass: AsnovaStudentsClass,
     onClickDelete: (AsnovaStudentsClass) -> Unit,
     onClickEdit: (AsnovaStudentsClass) -> Unit
-
 ) {
     Card(
         modifier = Modifier
@@ -44,6 +44,17 @@ fun ClassCard(
                 modifier = Modifier.align(Alignment.CenterStart),
                 verticalAlignment = Alignment.CenterVertically
             ) {
+                Icon(
+                    imageVector = Icons.Filled.DeleteOutline,
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(24.dp)
+                        .clickable {
+                            onClickDelete.invoke(asnovaClass)
+                        }
+                )
+                Spacer(modifier = Modifier.width(16.dp))
+
                 Text(text = asnovaClass.name)
             }
         }

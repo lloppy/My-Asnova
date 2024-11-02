@@ -1,7 +1,6 @@
 package com.example.asnova.app.di
 
 import com.asnova.domain.repository.firebase.NewsFacade
-import com.asnova.domain.repository.firebase.NewsRepository
 import com.asnova.domain.repository.firebase.ScheduleRepository
 import com.asnova.domain.repository.firebase.UserRepository
 import com.asnova.domain.repository.storage.IsAuthedUserStorage
@@ -12,8 +11,10 @@ import com.asnova.domain.repository.storage.ThemeSettingRepository
 import com.asnova.domain.usecase.CheckIsAdminUseCase
 import com.asnova.domain.usecase.CheckUserClassUseCase
 import com.asnova.domain.usecase.CheckUserDataUseCase
+import com.asnova.domain.usecase.CleanAsnovaClassesFromFirebaseUseCase
 import com.asnova.domain.usecase.CreateUserWithPhoneUseCase
-import com.asnova.domain.usecase.GetAsnovaClassesUseCase
+import com.asnova.domain.usecase.GetAsnovaClassesFromFirebaseUseCase
+import com.asnova.domain.usecase.GetRawAsnovaClassesUseCase
 import com.asnova.domain.usecase.GetAsnovaNewsUseCase
 import com.asnova.domain.usecase.GetIsAuthedUserUseCase
 import com.asnova.domain.usecase.GetLanguageSettingUseCase
@@ -66,8 +67,8 @@ class DomainModule {
     @Provides
     fun provideGetAsnovaClassesUseCase(
         scheduleRepository: ScheduleRepository
-    ): GetAsnovaClassesUseCase {
-        return GetAsnovaClassesUseCase(scheduleRepository)
+    ): GetRawAsnovaClassesUseCase {
+        return GetRawAsnovaClassesUseCase(scheduleRepository)
     }
 
     @Provides
@@ -138,6 +139,20 @@ class DomainModule {
         userRepository: UserRepository
     ): SubmitPromocodeUseCase {
         return SubmitPromocodeUseCase(userRepository)
+    }
+
+    @Provides
+    fun provideCleanAsnovaClassesFromFirebaseUseCase(
+        scheduleRepository: ScheduleRepository
+    ): CleanAsnovaClassesFromFirebaseUseCase {
+        return CleanAsnovaClassesFromFirebaseUseCase(scheduleRepository)
+    }
+
+    @Provides
+    fun provideGetAsnovaClassesFromFirebaseUseCase(
+        scheduleRepository: ScheduleRepository
+    ): GetAsnovaClassesFromFirebaseUseCase {
+        return GetAsnovaClassesFromFirebaseUseCase(scheduleRepository)
     }
 
     @Provides

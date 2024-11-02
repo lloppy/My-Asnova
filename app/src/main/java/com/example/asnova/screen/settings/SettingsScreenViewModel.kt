@@ -11,8 +11,9 @@ import androidx.navigation.NavController
 import com.asnova.domain.repository.firebase.UserRepository
 import com.asnova.domain.repository.storage.IsAuthedUserStorage
 import com.asnova.domain.usecase.CheckIsAdminUseCase
-import com.asnova.domain.usecase.CheckUserDataUseCase
-import com.asnova.domain.usecase.GetAsnovaClassesUseCase
+import com.asnova.domain.usecase.CleanAsnovaClassesFromFirebaseUseCase
+import com.asnova.domain.usecase.GetAsnovaClassesFromFirebaseUseCase
+import com.asnova.domain.usecase.GetRawAsnovaClassesUseCase
 import com.asnova.domain.usecase.GetUserDataUseCase
 import com.asnova.domain.usecase.PushAsnovaClassesUseCase
 import com.asnova.domain.usecase.SignOutUserUseCase
@@ -34,9 +35,12 @@ class SettingsScreenViewModel @Inject constructor(
     private val getUserDataUseCase: GetUserDataUseCase,
 
     private val pushAsnovaClassesUseCase: PushAsnovaClassesUseCase,
-    private val getAsnovaClassesUseCase: GetAsnovaClassesUseCase,
+
+    private val getAsnovaClassesFromFirebaseUseCase: GetAsnovaClassesFromFirebaseUseCase,
+    private val getRawAsnovaClassesUseCase: GetRawAsnovaClassesUseCase,
 
     private val submitPromocodeUseCase: SubmitPromocodeUseCase,
+    private val cleanAsnovaClassesFromFirebaseUseCase: CleanAsnovaClassesFromFirebaseUseCase,
 
     private val isAuthedUserStorage: IsAuthedUserStorage,
     private val checkIsAdminUseCase: CheckIsAdminUseCase,
@@ -44,6 +48,7 @@ class SettingsScreenViewModel @Inject constructor(
 ) : ViewModel() {
     private val _state = mutableStateOf(SettingsState())
     val state: State<SettingsState> = _state
+
     var userData: User? = null
     private var role = UserManager.getRole()
 
@@ -62,6 +67,12 @@ class SettingsScreenViewModel @Inject constructor(
         }
     }
 
+    fun removeClass(asnovaClass: AsnovaStudentsClass) {
+        _state.value = _state.value.copy(
+            asnovaClasses = _state.value.asnovaClasses?.filter { it.name != asnovaClass.name }
+        )
+    }
+
     fun writeNewDataUser(name: String, surname: String, email: String, phone: String, onSuccess: () -> Unit, onFailure: (String) -> Unit) {
         userRepository.writeNewDataUser(name, surname, email, phone, onSuccess, onFailure)
     }
@@ -77,10 +88,19 @@ class SettingsScreenViewModel @Inject constructor(
         userSharedPreferences.edit().putString(KEY_USER_SETTING, Role.NONE).apply()
     }
 
-    fun getAsnovaClasses(callback: (Resource<List<AsnovaStudentsClass>>) -> Unit) {
+    fun getRawAsnovaClasses(callback: (Resource<List<AsnovaStudentsClass>>) -> Unit) {
         Log.d("studentsClasses", "Fetching Asnova classes...")
 
-        getAsnovaClassesUseCase.invoke(callback = { result ->
+        getRawAsnovaClassesUseCase.invoke(callback = { result ->
+            Log.d("studentsClasses", "Received result from use case")
+            handleAsnovaClassesResult(result)
+        })
+    }
+
+    fun getAsnovaClassesFromFirebase(callback: (Resource<List<AsnovaStudentsClass>>) -> Unit) {
+        Log.d("studentsClasses", "Fetching Asnova classes...")
+
+        getAsnovaClassesFromFirebaseUseCase.invoke(callback = { result ->
             Log.d("studentsClasses", "Received result from use case")
             handleAsnovaClassesResult(result)
         })
@@ -194,6 +214,20 @@ class SettingsScreenViewModel @Inject constructor(
                 UserManager.setRole(Role.ADMIN)
                 Log.d("UserManager", "${UserManager.getRole()}")
                 isAuthedUserStorage.save(Role.ADMIN)
+            }
+        }
+    }
+
+    fun cleanDatabase(callback: (Boolean) -> Unit) {
+        cleanAsnovaClassesFromFirebaseUseCase.invoke { result ->
+            when (result) {
+                true -> {
+                    callback(true)
+                }
+                false -> {
+                    Log.e("CleanDatabase", "Error cleaning database")
+                    callback(false)
+                }
             }
         }
     }

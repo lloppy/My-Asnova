@@ -110,7 +110,7 @@ fun HeaderSection(
                 if (userData != null) {
                     Text(
                         text = "С возвращением${
-                            if (userData?.surname != null && userData?.name != null) {
+                            if (!userData?.surname.isNullOrEmpty() && !userData?.name.isNullOrEmpty()) {
                                 ",\n" + userData!!.name + " " + userData!!.surname  
                             } else if (userData?.username.isNullOrEmpty()) {
                                 "!"

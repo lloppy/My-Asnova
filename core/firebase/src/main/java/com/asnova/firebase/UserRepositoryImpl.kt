@@ -275,7 +275,10 @@ class UserRepositoryImpl @Inject constructor(
                         callback(Resource.Success(promocode))
                     } else {
                         callback(Resource.Error("Failed to set promocode"))
-                        Log.e("PromoCode", "Ошибка при сохранении промокода: ${task.exception?.message}")
+                        Log.e(
+                            "PromoCode",
+                            "Ошибка при сохранении промокода: ${task.exception?.message}"
+                        )
                     }
                 }
             } else {

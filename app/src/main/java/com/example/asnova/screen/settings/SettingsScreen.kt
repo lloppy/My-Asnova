@@ -177,7 +177,7 @@ fun ProfileSettingsScreen(
                             Spacer(modifier = Modifier.height(16.dp))
                         }
 
-                        if (userData?.surname != null && userData?.name != null){
+                        if (!userData?.surname.isNullOrEmpty() && !userData?.name.isNullOrEmpty()){
                             Text(
                                 text =  userData!!.name + " " + userData!!.surname,
                                 textAlign = TextAlign.Center,
