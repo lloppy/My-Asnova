@@ -5,9 +5,8 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentSender
 import android.util.Log
-import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.IntentSenderRequest
 import com.asnova.domain.repository.firebase.UserRepository
+import com.asnova.model.Promocode
 import com.asnova.model.Resource
 import com.asnova.model.SignInResult
 import com.asnova.model.User
@@ -23,11 +22,7 @@ import com.google.firebase.auth.PhoneAuthProvider
 import com.google.firebase.auth.auth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.database
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
-import kotlinx.coroutines.withContext
 import java.util.concurrent.CancellationException
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
@@ -39,6 +34,7 @@ class UserRepositoryImpl @Inject constructor(
     private var _database: DatabaseReference = Firebase.database.reference
     private val _auth: FirebaseAuth = Firebase.auth
     private val adminsRef = _database.child("asnovaAppAdmins")
+    private val promoRef = _database.child("asnovaPromocode")
 
     override fun writeNewDataUser(
         name: String,
@@ -74,8 +70,16 @@ class UserRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun signOut() {
-        _auth.signOut()
+    override fun signOut(callback: (Resource<Unit>) -> Unit) {
+        try {
+            Log.d("SignOutRepo", "Attempting to sign out user.")
+            _auth.signOut()
+            Log.d("SignOutRepo", "User signed out successfully.")
+            callback(Resource.Success(Unit))
+        } catch (e: Exception) {
+            Log.e("SignOutRepo", "Error signing out: ${e.message ?: "Unknown error"}")
+            callback(Resource.Error(e.message ?: "Unknown error"))
+        }
     }
 
     override fun isAuthedUser(callback: (Resource<Boolean>) -> Unit) {
@@ -260,6 +264,35 @@ class UserRepositoryImpl @Inject constructor(
                 }
         } else {
             callback(Resource.Error("User not authenticated"))
+        }
+    }
+
+    override fun submitPromocode(
+        promocode: String,
+        userData: User,
+        callback: (Resource<String>) -> Unit
+    ) {
+        promoRef.get().addOnSuccessListener {
+            val promoKey = promoRef.push().key
+
+            if (promoKey != null) {
+                val promocodeData = Promocode(promocode, user = userData, approved = false)
+                promoRef.child(promoKey).setValue(promocodeData).addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        Log.d("PromoCode", "Промокод успешно сохранен с ключом: $promoKey")
+                        callback(Resource.Success(promocode))
+                    } else {
+                        callback(Resource.Error("Failed to set promocode"))
+                        Log.e("PromoCode", "Ошибка при сохранении промокода: ${task.exception?.message}")
+                    }
+                }
+            } else {
+                callback(Resource.Error("Failed to set promocode"))
+                Log.e("PromoCode", "Не удалось сгенерировать уникальный ключ для промокода.")
+            }
+
+        }.addOnFailureListener { exception ->
+            callback(Resource.Error(exception.message ?: "Unknown error"))
         }
     }
 

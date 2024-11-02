@@ -1,16 +1,20 @@
 package com.example.asnova.screen.settings
 
+import android.content.Context
 import android.content.SharedPreferences
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import androidx.navigation.NavController
 import com.asnova.domain.repository.storage.IsAuthedUserStorage
 import com.asnova.domain.usecase.CheckIsAdminUseCase
 import com.asnova.domain.usecase.GetAsnovaClassesUseCase
 import com.asnova.domain.usecase.GetUserDataUseCase
 import com.asnova.domain.usecase.PushAsnovaClassesUseCase
 import com.asnova.domain.usecase.SignOutUserUseCase
+import com.asnova.domain.usecase.SubmitPromocodeUseCase
 import com.asnova.model.AsnovaStudentsClass
 import com.asnova.model.Resource
 import com.asnova.model.Role
@@ -28,6 +32,8 @@ class SettingsScreenViewModel @Inject constructor(
     private val pushAsnovaClassesUseCase: PushAsnovaClassesUseCase,
     private val getAsnovaClassesUseCase: GetAsnovaClassesUseCase,
 
+    private val submitPromocodeUseCase: SubmitPromocodeUseCase,
+
     private val isAuthedUserStorage: IsAuthedUserStorage,
     private val checkIsAdminUseCase: CheckIsAdminUseCase,
     private val userSharedPreferences: SharedPreferences
@@ -39,12 +45,25 @@ class SettingsScreenViewModel @Inject constructor(
         getUserDataUseCase.invoke(callback)
     }
 
-    fun signOut() {
-        signOutUserUseCase.invoke()
+    fun signOut(onSuccess: () -> Unit) {
+        Log.d("SignOutSettingsViewModel", "Initiating sign out process.")
 
-        // тут все равно переделывать придется , нужно на регистрацию кидать, а не на выход
-        UserManager.signOut()
-        userSharedPreferences.edit().putString(KEY_USER_SETTING, Role.NONE).apply()
+        signOutUserUseCase.invoke { result ->
+            when (result) {
+                is Resource.Success -> {
+                    Log.d("SignOutSettingsViewModel", "Sign out successful.")
+                    UserManager.signOut()
+                    userSharedPreferences.edit().putString(KEY_USER_SETTING, Role.NONE).apply()
+                    onSuccess.invoke()
+                }
+                is Resource.Error -> {
+                    Log.e("SignOutSettingsViewModel", "Error signing out: ${result.message}")
+                }
+                else -> {
+                    Log.w("SignOutSettingsViewModel", "Unexpected result during sign out.")
+                }
+            }
+        }
     }
 
     fun getAsnovaClasses(callback: (Resource<List<AsnovaStudentsClass>>) -> Unit) {
@@ -89,7 +108,10 @@ class SettingsScreenViewModel @Inject constructor(
         _state.value.asnovaClasses = _state.value.asnovaClasses?.plus(updatedClass)
     }
 
-    fun pushAsnovaClassesToFirebase(asnovaClasses: List<AsnovaStudentsClass>?, onSuccess: () -> Unit) {
+    fun pushAsnovaClassesToFirebase(
+        asnovaClasses: List<AsnovaStudentsClass>?,
+        onSuccess: () -> Unit
+    ) {
         if (asnovaClasses.isNullOrEmpty()) {
             Log.w("pushAsnovaClasses", "No classes to push to Firebase.")
             return
@@ -110,6 +132,47 @@ class SettingsScreenViewModel @Inject constructor(
                 }
 
                 else -> {}
+            }
+        }
+    }
+
+    fun submitPromocode(promocode: String, context: Context, navController: NavController) {
+        getUserData { resource ->
+            when (resource) {
+                is Resource.Success -> {
+                    val userData = resource.data
+                    if (userData != null) {
+                        submitPromocodeUseCase(
+                            promocode = promocode,
+                            userData = userData,
+                            callback = { result ->
+                                Toast.makeText(
+                                    context,
+                                    "Промокод успешно отправлен на проверку",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                                navController.popBackStack()
+                            }
+                        )
+                    } else {
+                        Toast.makeText(
+                            context,
+                            "Ошибка отправки промокода. Пустые данные пользователя",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
+
+                is Resource.Error -> {
+                    Toast.makeText(
+                        context,
+                        "Ошибка отправки промокода",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+
+                is Resource.Loading -> {
+                }
             }
         }
     }

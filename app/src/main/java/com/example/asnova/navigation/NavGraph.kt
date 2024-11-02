@@ -21,6 +21,7 @@ import com.example.asnova.screen.feed.FeedScreen
 import com.example.asnova.screen.schedule.ScheduleScreen
 import com.example.asnova.screen.chat.ChatScreen
 import com.example.asnova.screen.settings.ProfileSettingsScreen
+import com.example.asnova.screen.settings.components.EnterPromocodeScreen
 import com.example.asnova.screen.settings.components.SelectClassScreen
 import com.example.asnova.ui.theme.BottomBarHeight
 import com.example.asnova.utils.Router
@@ -37,7 +38,8 @@ fun SetupNavGraph(
     context: Context,
     lifecycleScope: LifecycleCoroutineScope,
     lifecycleOwner: LifecycleOwner,
-    router: Router
+    router: Router,
+    onRestartApp: () -> Unit
 ) {
     NavHost(
         navController = navHostController,
@@ -70,7 +72,11 @@ fun SetupNavGraph(
                 },
                 navigateToSelectClass = {
                     navHostController.navigate(Screen.ChooseClass.route)
-                }
+                },
+                navigateToEnterPromocode = {
+                    navHostController.navigate(Screen.EnterPromocode.route)
+                },
+                onRestartApp = onRestartApp
             )
         }
         composable(Screen.Chats.route) {
@@ -78,6 +84,9 @@ fun SetupNavGraph(
         }
         composable(Screen.ChooseClass.route) {
             SelectClassScreen(context)
+        }
+        composable(Screen.EnterPromocode.route) {
+            EnterPromocodeScreen(context, navHostController)
         }
     }
 }

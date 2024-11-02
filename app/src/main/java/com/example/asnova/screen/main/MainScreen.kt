@@ -38,6 +38,7 @@ fun MainScreen(
     context: Context,
     lifecycleScope: LifecycleCoroutineScope,
     lifecycleOwner: LifecycleOwner,
+    onRestartApp: () -> Unit,
     router: Router,
     viewModel: MainScreenViewModel = hiltViewModel()
 ) {
@@ -79,7 +80,8 @@ fun MainScreen(
             context = context,
             lifecycleScope = lifecycleScope,
             lifecycleOwner = lifecycleOwner,
-            router = router
+            router = router,
+            onRestartApp = onRestartApp
         )
 
         if (showBottomSheet) {

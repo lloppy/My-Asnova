@@ -2,6 +2,7 @@ package com.example.asnova
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
@@ -130,6 +131,7 @@ class MainActivity : ComponentActivity() {
                             context = this@MainActivity,
                             lifecycleScope = lifecycleScope,
                             lifecycleOwner = this@MainActivity,
+                            onRestartApp = { restartApp() },
                             router = createExternalRouter { screen, params ->
                                 navController.navigate(screen, params)
                             }
@@ -167,5 +169,12 @@ class MainActivity : ComponentActivity() {
                 requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
             }
         }
+    }
+
+    private fun restartApp() {
+        Log.d("SignOutRestart", "restartApp ...")
+
+        finish()
+        kotlin.system.exitProcess(0)
     }
 }

@@ -38,6 +38,7 @@ import com.asnova.domain.usecase.SignInWithIntentUseCase
 import com.asnova.domain.usecase.SignInWithLauncher
 import com.asnova.domain.usecase.SignInWithOtpUseCase
 import com.asnova.domain.usecase.SignOutUserUseCase
+import com.asnova.domain.usecase.SubmitPromocodeUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -122,6 +123,13 @@ class DomainModule {
         userRepository: UserRepository
     ): CheckIsAdminUseCase {
         return CheckIsAdminUseCase(userRepository)
+    }
+
+    @Provides
+    fun provideSubmitPromocodeUseCase(
+        userRepository: UserRepository
+    ): SubmitPromocodeUseCase {
+        return SubmitPromocodeUseCase(userRepository)
     }
 
     @Provides

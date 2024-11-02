@@ -1,11 +1,8 @@
 package com.example.asnova.screen.settings
 
 import android.content.Context
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
@@ -15,17 +12,11 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ChatBubble
+import androidx.compose.material.icons.automirrored.filled.ExitToApp
+import androidx.compose.material.icons.filled.Group
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MediumTopAppBar
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -36,15 +27,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -52,14 +38,17 @@ import androidx.lifecycle.LifecycleCoroutineScope
 import androidx.lifecycle.LifecycleOwner
 import coil.compose.AsyncImage
 import com.asnova.model.Resource
+import com.asnova.model.Role
 import com.asnova.model.User
 import com.example.asnova.R
+import com.example.asnova.data.UserManager
+import com.example.asnova.screen.settings.components.SettingsItemBox
 import com.example.asnova.ui.theme.BottomBarHeight
 import com.example.asnova.utils.Router
 import com.example.asnova.utils.SkeletonScreen
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun ProfileSettingsScreen(
     externalRouter: Router,
@@ -68,6 +57,8 @@ fun ProfileSettingsScreen(
     lifecycleOwner: LifecycleOwner,
     navigateToChats: () -> Unit,
     navigateToSelectClass: () -> Unit,
+    navigateToEnterPromocode: () -> Unit,
+    onRestartApp: () -> Unit,
     viewModel: SettingsScreenViewModel = hiltViewModel()
 ) {
     var userData by remember { mutableStateOf<User?>(null) }
@@ -112,6 +103,8 @@ fun ProfileSettingsScreen(
             ) {
                 // информация профиля
                 item {
+                    Spacer(modifier = Modifier.height(32.dp))
+
                     if (userData?.profilePictureUrl != null) {
                         AsyncImage(
                             model = userData!!.profilePictureUrl,
@@ -122,47 +115,52 @@ fun ProfileSettingsScreen(
                             contentScale = ContentScale.Crop
                         )
                         Spacer(modifier = Modifier.height(16.dp))
+                    }
 
-                        if (userData?.username != null) {
-                            Text(
-                                text = userData!!.username!!,
-                                textAlign = TextAlign.Center,
-                                fontSize = 20.sp,
-                                fontWeight = FontWeight.SemiBold
-                            )
-                        }
+                    if (userData?.username != null) {
+                        Text(
+                            text = userData!!.username!!,
+                            textAlign = TextAlign.Center,
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
                     }
                 }
 
                 // для админа редактировать группы Аснова
-                item{
+                item {
                     if (viewModel.canLoadAdminAccess()) {
-                        Button(onClick = navigateToSelectClass) {
-                            Text(text = "Редактировать учебные группы")
-                        }
-                        Spacer(modifier = Modifier.height(36.dp))
+                        SettingsItemBox(
+                            icon = Icons.Filled.Group,
+                            text = "Редактировать учебные группы",
+                            onClick = navigateToSelectClass
+                        )
+                    }
+                }
+
+                item {
+                    if (UserManager.getRole() != Role.ADMIN && UserManager.getRole() != Role.GUEST && UserManager.getRole() != Role.NONE) {
+                        SettingsItemBox(
+                            icon = Icons.Filled.Group,
+                            text = "Ввести промокод",
+                            onClick = navigateToEnterPromocode
+                        )
                     }
                 }
 
                 // кнопка выйти
                 item {
-                    Button(
-                        onClick = {
-                            lifecycleScope.launch {
-                                viewModel.signOut()
-                            }
-                        },
-                        colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)
-                    ) {
-                        Text(
+                    if (UserManager.getRole() != Role.GUEST && UserManager.getRole() != Role.NONE) {
+                        SettingsItemBox(
+                            icon = Icons.AutoMirrored.Filled.ExitToApp,
                             text = stringResource(R.string.log_out),
-                            style = TextStyle(
-                                fontSize = 16.sp,
-                                fontFamily = FontFamily(Font(R.font.pretendard)),
-                                fontWeight = FontWeight(600),
-                                color = Color.Red,
-                                textAlign = TextAlign.Center,
-                            )
+                            onClick = {
+                                lifecycleScope.launch {
+                                    viewModel.signOut {}
+                                }
+                                onRestartApp.invoke()
+                            }
                         )
                     }
                 }
