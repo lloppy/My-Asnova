@@ -81,7 +81,8 @@ class FeedScreenViewModel @Inject constructor(
             }
 
             is Resource.Error -> {
-                _state.value = FeedState(error = result.message ?: "Ошибка. Проверьте интернет-соединение")
+                _state.value =
+                    FeedState(error = result.message ?: "Ошибка. Проверьте интернет-соединение")
             }
 
             is Resource.Loading -> {

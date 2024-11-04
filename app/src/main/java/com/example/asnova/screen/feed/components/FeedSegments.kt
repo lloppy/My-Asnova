@@ -6,6 +6,7 @@ object Segments {
     const val WORK_PROFESSIONS = "Рабочие профессии"
     const val SAFETY = "Охрана труда"
 
-    val all = listOf(MY_GROUP, WORK_PROFESSIONS, SAFETY)
+   // val all = listOf(MY_GROUP, WORK_PROFESSIONS, SAFETY)
+    val all = listOf(WORK_PROFESSIONS, SAFETY)
     val forVisitor = listOf(WORK_PROFESSIONS, SAFETY)
 }
