@@ -13,6 +13,7 @@ import com.asnova.domain.usecase.CheckUserClassUseCase
 import com.asnova.domain.usecase.CheckUserDataUseCase
 import com.asnova.domain.usecase.CleanAsnovaClassesFromFirebaseUseCase
 import com.asnova.domain.usecase.CreateUserWithPhoneUseCase
+import com.asnova.domain.usecase.DeleteAccountUseCase
 import com.asnova.domain.usecase.GetAsnovaClassesFromFirebaseUseCase
 import com.asnova.domain.usecase.GetRawAsnovaClassesUseCase
 import com.asnova.domain.usecase.GetAsnovaNewsUseCase
@@ -139,6 +140,13 @@ class DomainModule {
         userRepository: UserRepository
     ): SubmitPromocodeUseCase {
         return SubmitPromocodeUseCase(userRepository)
+    }
+
+    @Provides
+    fun provideDeleteAccountUseCase(
+        userRepository: UserRepository
+    ): DeleteAccountUseCase {
+        return DeleteAccountUseCase(userRepository)
     }
 
     @Provides

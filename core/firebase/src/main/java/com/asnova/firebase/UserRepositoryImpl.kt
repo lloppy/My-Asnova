@@ -291,6 +291,26 @@ class UserRepositoryImpl @Inject constructor(
         }
     }
 
+    override fun deleteAccount(callback: (Resource<Boolean>) -> Unit) {
+        val user = FirebaseAuth.getInstance().currentUser
+        val userUid = user?.uid
+        if (userUid != null) {
+            _database.child("users").child(userUid).removeValue().addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    user!!.delete().addOnCompleteListener { deleteTask ->
+                        if (deleteTask.isSuccessful) {
+                            callback(Resource.Success(true))
+                        } else {
+                            callback(Resource.Error("Failed to delete account: ${deleteTask.exception?.message}", false))
+                        }
+                    }
+                } else {
+                    callback(Resource.Error("Failed to remove user data: ${task.exception?.message}", false))
+                }
+            }
+        }
+    }
+
     override fun signInWithOtp(
         otp: String,
         verificationId: String,

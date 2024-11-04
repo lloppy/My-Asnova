@@ -19,12 +19,15 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ExitToApp
+import androidx.compose.material.icons.filled.DeleteOutline
 import androidx.compose.material.icons.filled.Discount
 import androidx.compose.material.icons.filled.Group
 import androidx.compose.material.icons.filled.Groups
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Portrait
 import androidx.compose.material.icons.filled.Replay
+import androidx.compose.material.icons.outlined.Discount
+import androidx.compose.material.icons.outlined.Group
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
@@ -224,7 +227,7 @@ fun ProfileSettingsScreen(
                 item {
                     if (viewModel.canLoadAdminAccess()) {
                         SettingsItemBox(
-                            icon = Icons.Filled.Group,
+                            icon = Icons.Outlined.Group,
                             text = "Редактировать учебные группы",
                             onClick = navigateToSelectClass
                         )
@@ -232,7 +235,7 @@ fun ProfileSettingsScreen(
                 }
 
                 item {
-                    if (UserManager.getRole() == Role.STUDENT) {
+                    if (UserManager.getRole() == Role.STUDENT || UserManager.getRole() == Role.ADMIN)  {
                         SettingsItemBox(
                             icon = Icons.Filled.Person,
                             text = "Редактировать информацию профиля",
@@ -244,10 +247,10 @@ fun ProfileSettingsScreen(
                 }
 
                 item {
-                    if (UserManager.getRole() == Role.STUDENT) {
+                    if (UserManager.getRole() == Role.STUDENT || UserManager.getRole() == Role.ADMIN) {
                         SettingsItemBox(
-                            icon = Icons.Filled.Groups,
-                            text = "Сменить учебную группу",
+                            icon = Icons.Filled.Group,
+                            text = "Сменить мою учебную группу",
                             onClick = {
                                 // TODO()
                             }
@@ -256,9 +259,9 @@ fun ProfileSettingsScreen(
                 }
 
                 item {
-                    if (UserManager.getRole() != Role.ADMIN && UserManager.getRole() != Role.GUEST && UserManager.getRole() != Role.NONE) {
+                    if (UserManager.getRole() != Role.GUEST && UserManager.getRole() != Role.NONE) {
                         SettingsItemBox(
-                            icon = Icons.Filled.Discount,
+                            icon = Icons.Outlined.Discount,
                             text = "Ввести промокод",
                             onClick = navigateToEnterPromocode
                         )
@@ -280,6 +283,23 @@ fun ProfileSettingsScreen(
                         )
                     }
                 }
+
+                item {
+                    if (UserManager.getRole() != Role.GUEST && UserManager.getRole() != Role.NONE) {
+                        SettingsItemBox(
+                            icon = Icons.Filled.DeleteOutline,
+                            text = "Удалить аккаунт",
+                            onClick = {
+                                lifecycleScope.launch {
+                                    viewModel.deleteAccount(context)
+                                    viewModel.signOut()
+                                    navController.popBackStack()
+                                }
+                            }
+                        )
+                    }
+                }
+
                 item {
                     if (UserManager.getRole() == Role.NONE) {
                         SettingsItemBox(

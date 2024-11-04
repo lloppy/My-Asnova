@@ -51,4 +51,6 @@ interface UserRepository {
         userData: User,
         callback: (Resource<String>) -> Unit
     )
+
+    fun deleteAccount(callback: (Resource<Boolean>) -> Unit)
 }

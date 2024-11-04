@@ -12,6 +12,7 @@ import com.asnova.domain.repository.firebase.UserRepository
 import com.asnova.domain.repository.storage.IsAuthedUserStorage
 import com.asnova.domain.usecase.CheckIsAdminUseCase
 import com.asnova.domain.usecase.CleanAsnovaClassesFromFirebaseUseCase
+import com.asnova.domain.usecase.DeleteAccountUseCase
 import com.asnova.domain.usecase.GetAsnovaClassesFromFirebaseUseCase
 import com.asnova.domain.usecase.GetRawAsnovaClassesUseCase
 import com.asnova.domain.usecase.GetUserDataUseCase
@@ -33,6 +34,7 @@ class SettingsScreenViewModel @Inject constructor(
 
     private val signOutUserUseCase: SignOutUserUseCase,
     private val getUserDataUseCase: GetUserDataUseCase,
+    private val deleteAccountUseCase: DeleteAccountUseCase,
 
     private val pushAsnovaClassesUseCase: PushAsnovaClassesUseCase,
 
@@ -57,7 +59,7 @@ class SettingsScreenViewModel @Inject constructor(
             userData = resource.data
         }
 
-        userRepository.checkIsAdmin{ isAdmin ->
+        userRepository.checkIsAdmin { isAdmin ->
             if (isAdmin.data == true) {
                 UserManager.setRole(Role.ADMIN)
                 role = Role.ADMIN
@@ -73,7 +75,14 @@ class SettingsScreenViewModel @Inject constructor(
         )
     }
 
-    fun writeNewDataUser(name: String, surname: String, email: String, phone: String, onSuccess: () -> Unit, onFailure: (String) -> Unit) {
+    fun writeNewDataUser(
+        name: String,
+        surname: String,
+        email: String,
+        phone: String,
+        onSuccess: () -> Unit,
+        onFailure: (String) -> Unit
+    ) {
         userRepository.writeNewDataUser(name, surname, email, phone, onSuccess, onFailure)
     }
 
@@ -224,9 +233,35 @@ class SettingsScreenViewModel @Inject constructor(
                 true -> {
                     callback(true)
                 }
+
                 false -> {
                     Log.e("CleanDatabase", "Error cleaning database")
                     callback(false)
+                }
+            }
+        }
+    }
+
+    fun deleteAccount(context: Context) {
+        deleteAccountUseCase.invoke { result ->
+            when (result) {
+                is Resource.Success -> {
+                    Toast.makeText(
+                        context,
+                        "Аккаунт успешно удален",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+
+                is Resource.Loading -> {}
+
+                is Resource.Error -> {
+                    Toast.makeText(
+                        context,
+                        "Ошибка удаления аккаунта: " + result.message,
+                        Toast.LENGTH_SHORT
+                    ).show()
+
                 }
             }
         }

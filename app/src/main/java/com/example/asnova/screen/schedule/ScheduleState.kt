@@ -7,5 +7,6 @@ data class ScheduleState(
     var privateSchedule: List<ScheduleAsnovaPrivate> = emptyList(),
     var siteSchedule: List<ScheduleAsnovaSite> = emptyList(),
     val error: String = "",
-    val loading: Boolean = false
+    val loading: Boolean = false,
+    var currentScheduleIsPrivate: Boolean = true,
 )

@@ -35,6 +35,7 @@ import com.asnova.model.Resource
 import com.asnova.model.User
 import com.example.asnova.screen.schedule.components.GroupScheduleItem
 import com.example.asnova.screen.schedule.components.ScheduleHeader
+import com.example.asnova.screen.schedule.components.ScheduleHeaderSegment
 import com.example.asnova.screen.schedule.components.SiteScheduleItem
 import com.example.asnova.screen.schedule.components.WeekNavigationRow
 import com.example.asnova.ui.theme.BottomBarHeight
@@ -51,7 +52,6 @@ fun ScheduleScreen(
     lifecycleOwner: LifecycleOwner,
     viewModel: ScheduleScreenViewModel = hiltViewModel()
 ) {
-
     val state = viewModel.state
     var userData by remember { mutableStateOf<User?>(null) }
 
@@ -68,6 +68,8 @@ fun ScheduleScreen(
     val dateList =
         remember { mutableStateOf(List(7) { index -> lastMonday.value.plusDays(index.toLong()) }) }
     val selectedMutableDate = remember { mutableStateOf(currentDate) }
+
+    var currentScheduleIsPrivate by remember { mutableStateOf(true) }
 
     LaunchedEffect(Unit) {
         viewModel.getUserData { resource ->
@@ -114,47 +116,73 @@ fun ScheduleScreen(
                     .fillMaxSize()
                     .pullRefresh(stateRefresh)
             ) {
-                item {
-                    Column(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Top
-                    ) {
-                        ScheduleHeader(userData, screenHeight)
-                    }
-                }
                 if (viewModel.canLoadPrivateSchedule()) {
                     item {
-                        WeekNavigationRow(
-                            lastMonday,
-                            dateList,
-                            currentDate,
-                            selectedMutableDate,
-                            onDateSelected = { selectedDate ->
-                                viewModel.saveDate(selectedDate)
-                                viewModel.loadScheduleForGroup()
-                            }
-                        )
+                        Column(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Top
+                        ) {
+                            ScheduleHeaderSegment(userData, screenHeight,
+                                onScheduleChange = { isPrivateSchedule ->
+                                currentScheduleIsPrivate = isPrivateSchedule
+                            })
+                        }
                     }
-                    if (state.value.privateSchedule.isEmpty()) {
+                    if (currentScheduleIsPrivate){
                         item {
-                            Column(
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .padding(start = 32.dp, end = 32.dp, top = 32.dp),
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                                verticalArrangement = Arrangement.Center
-                            ) {
-                                if (currentDate == selectedMutableDate.value) Text("Сегодня занятий нет")
-                                else Text("Занятий нет")
+                            WeekNavigationRow(
+                                lastMonday,
+                                dateList,
+                                currentDate,
+                                selectedMutableDate,
+                                onDateSelected = { selectedDate ->
+                                    viewModel.saveDate(selectedDate)
+                                    viewModel.loadScheduleForGroup()
+                                }
+                            )
+                        }
+                        if (state.value.privateSchedule.isEmpty()) {
+                            item {
+                                Column(
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .padding(start = 32.dp, end = 32.dp, top = 32.dp),
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                    verticalArrangement = Arrangement.Center
+                                ) {
+                                    if (currentDate == selectedMutableDate.value) Text("Сегодня занятий нет")
+                                    else Text("Занятий нет")
+                                }
+                            }
+                        } else {
+                            items(state.value.privateSchedule) { item ->
+                                GroupScheduleItem(item, context)
                             }
                         }
                     } else {
-                        items(state.value.privateSchedule) { item ->
-                            GroupScheduleItem(item, context)
+                        items(state.value.siteSchedule) { item ->
+                            SiteScheduleItem(item) {
+                                context.startActivity(
+                                    Intent(
+                                        Intent.ACTION_VIEW,
+                                        Uri.parse(item.newsLink)
+                                    )
+                                )
+                            }
                         }
                     }
                 } else {
+                    item {
+                        Column(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Top
+                        ) {
+                            ScheduleHeader(userData, screenHeight)
+                        }
+                    }
+
                     items(state.value.siteSchedule) { item ->
                         SiteScheduleItem(item) {
                             context.startActivity(
