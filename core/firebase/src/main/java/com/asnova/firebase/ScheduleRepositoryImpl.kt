@@ -89,7 +89,7 @@ class ScheduleRepositoryImpl @Inject constructor(
 
                 is Resource.Success -> {
                     val schedules = resource.data
-                    Log.d("getAsnovaClasses","до " + resource.data?.size.toString())
+                    Log.d("getAsnovaClasses", "до " + resource.data?.size.toString())
 
                     excludedWordsRef.get().addOnSuccessListener { snapshot ->
                         val includeWords = mutableListOf<String>()
@@ -120,12 +120,15 @@ class ScheduleRepositoryImpl @Inject constructor(
                                 }
                             }
                             ?.distinct()?.toSet()
-                        Log.d("getAsnovaClasses","после " + resource.data?.size.toString())
+                        Log.d("getAsnovaClasses", "после " + resource.data?.size.toString())
 
                         val asnovaClasses = uniqueClasses?.map { className ->
                             AsnovaStudentsClass(name = className)
                         }?.toSet()?.toList()
-                        Log.d("getAsnovaClasses","после asnovaClasses " + asnovaClasses?.size.toString())
+                        Log.d(
+                            "getAsnovaClasses",
+                            "после asnovaClasses " + asnovaClasses?.size.toString()
+                        )
 
                         callback(Resource.Success(asnovaClasses?.toList()))
 
@@ -146,18 +149,11 @@ class ScheduleRepositoryImpl @Inject constructor(
     override fun getAsnovaClassesFromFirebase(callback: (Resource<List<AsnovaStudentsClass>>) -> Unit) {
         callback(Resource.Loading())
 
-            asnovaClassesRef.get().addOnSuccessListener { snapshot ->
-
-                val asnovaClasses = snapshot.children.mapNotNull { childSnapshot ->
-                    try{
-                        childSnapshot.getValue(AsnovaStudentsClass::class.java)
-                    }catch(e:Exception){
-                        Log.e("FirebaseError","Error converting class:${e.message}")
-                        null
-                    }
-                }
-
-                callback(Resource.Success(asnovaClasses))
+        asnovaClassesRef.get().addOnSuccessListener { snapshot ->
+            val asnovaClasses = snapshot.children.mapNotNull { childSnapshot ->
+                childSnapshot.getValue(AsnovaStudentsClass::class.java)
+            }
+            callback(Resource.Success(asnovaClasses))
         }.addOnFailureListener { exception ->
             Log.e("FirebaseError", "Error getting classes from Firebase: ${exception.message}")
             callback(Resource.Error(exception.message ?: "Unknown error"))
@@ -190,7 +186,8 @@ class ScheduleRepositoryImpl @Inject constructor(
         Log.d("calendar_site_info", scheduleElements.text())
 
         return scheduleElements.mapNotNull { element ->
-            val linkElement = element.selectFirst(".seocategory__prodblock-link") ?: return@mapNotNull null
+            val linkElement =
+                element.selectFirst(".seocategory__prodblock-link") ?: return@mapNotNull null
             val dateAndTimeText = linkElement.text().split(", ")
             Log.d("calendar_site_info", "text $dateAndTimeText")
 

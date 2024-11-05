@@ -11,10 +11,10 @@ import com.asnova.domain.usecase.GetScheduleStateUseCase
 import com.asnova.domain.usecase.GetScheduleUseCase
 import com.asnova.domain.usecase.GetUserDataUseCase
 import com.asnova.domain.usecase.SaveScheduleStateUseCase
-import com.asnova.model.ScheduleAsnovaPrivate
-import com.asnova.model.ScheduleAsnovaSite
 import com.asnova.model.Resource
 import com.asnova.model.Role
+import com.asnova.model.ScheduleAsnovaPrivate
+import com.asnova.model.ScheduleAsnovaSite
 import com.asnova.model.User
 import com.example.asnova.data.UserManager
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -59,40 +59,10 @@ class ScheduleScreenViewModel @Inject constructor(
             Role.STUDENT, Role.WORKER -> loadScheduleForGroup() // TODO () нужно передавать в параметры учителей и учеников параметр - группа, по которой нужно загрузить расписание и фильтровать по ней у админа такого фильтра просто не будет
             Role.GUEST, Role.NONE -> loadScheduleFromSite()
             Role.ADMIN -> {
-                loadScheduleForGroupAndSite()
+                saveDate(LocalDate.now())
+                loadScheduleForGroup()
             }
         }
-    }
-
-    private fun loadScheduleForGroupAndSite() {
-        getScheduleUseCase(callback = { result ->
-            when (result) {
-                is Resource.Loading -> {
-                    _state.value = ScheduleState(loading = true)
-                }
-
-                is Resource.Success -> {
-                    _state.value = ScheduleState(privateSchedule = result.data ?: emptyList())
-                    val temp = mutableListOf<ScheduleAsnovaPrivate>()
-                    for (item in _state.value.privateSchedule) {
-                        if (selectedDateMutableState.value?.dayOfMonth == item.start.dayOfMonth &&
-                            selectedDateMutableState.value?.monthValue == item.start.monthValue &&
-                            selectedDateMutableState.value?.year == item.start.year
-                        ) {
-                            temp.add(item)
-                        }
-                    }
-                    _state.value.privateSchedule = temp
-                    loadScheduleFromSite()
-                }
-
-                is Resource.Error -> {
-                    _state.value = ScheduleState(
-                        error = result.message ?: "An unexpected error occurred"
-                    )
-                }
-            }
-        })
     }
 
     fun getUserData(callback: (Resource<User?>) -> Unit) {
@@ -174,6 +144,6 @@ class ScheduleScreenViewModel @Inject constructor(
     }
 
     fun pullToRefresh() {
-        loadAvailableSchedule()
+        if (UserManager.getRole() == Role.ADMIN) loadScheduleFromSite() else loadAvailableSchedule()
     }
 }
