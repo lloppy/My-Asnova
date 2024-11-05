@@ -146,11 +146,18 @@ class ScheduleRepositoryImpl @Inject constructor(
     override fun getAsnovaClassesFromFirebase(callback: (Resource<List<AsnovaStudentsClass>>) -> Unit) {
         callback(Resource.Loading())
 
-        asnovaClassesRef.get().addOnSuccessListener { snapshot ->
-            val asnovaClasses = snapshot.children.mapNotNull { childSnapshot ->
-                childSnapshot.getValue(AsnovaStudentsClass::class.java)
-            }
-            callback(Resource.Success(asnovaClasses))
+            asnovaClassesRef.get().addOnSuccessListener { snapshot ->
+
+                val asnovaClasses = snapshot.children.mapNotNull { childSnapshot ->
+                    try{
+                        childSnapshot.getValue(AsnovaStudentsClass::class.java)
+                    }catch(e:Exception){
+                        Log.e("FirebaseError","Error converting class:${e.message}")
+                        null
+                    }
+                }
+
+                callback(Resource.Success(asnovaClasses))
         }.addOnFailureListener { exception ->
             Log.e("FirebaseError", "Error getting classes from Firebase: ${exception.message}")
             callback(Resource.Error(exception.message ?: "Unknown error"))

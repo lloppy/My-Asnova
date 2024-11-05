@@ -69,7 +69,7 @@ fun SelectClassScreen(
                 }
 
                 is Resource.Error -> {
-                    Log.e("studentsClasses", "Error in getAsnovaClasses")
+                    Log.e("studentsClasses", "Error in getAsnovaClasses. " + resource.message)
                 }
 
                 is Resource.Loading -> {
@@ -140,8 +140,7 @@ fun SelectClassScreen(
                                 DropdownMenuItem(
                                     text = { Text(text = "Получить данные о группах заново (\"сырые\" данные из расписания)") },
                                     onClick = {
-                                        viewModel.
-                                        getRawAsnovaClasses { resource ->
+                                        viewModel.getRawAsnovaClasses { resource ->
                                             if (resource is Resource.Success) {
                                                 studentsClasses = resource.data
                                             }

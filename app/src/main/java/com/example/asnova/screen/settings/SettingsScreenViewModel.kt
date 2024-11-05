@@ -98,10 +98,10 @@ class SettingsScreenViewModel @Inject constructor(
     }
 
     fun getRawAsnovaClasses(callback: (Resource<List<AsnovaStudentsClass>>) -> Unit) {
-        Log.d("studentsClasses", "Fetching Asnova classes...")
+        Log.d("studentsClasses", "Fetching Raw Asnova classes...")
 
         getRawAsnovaClassesUseCase.invoke(callback = { result ->
-            Log.d("studentsClasses", "Received result from use case")
+            Log.d("studentsClasses", "Received Raw result from use case")
             handleAsnovaClassesResult(result)
         })
     }
