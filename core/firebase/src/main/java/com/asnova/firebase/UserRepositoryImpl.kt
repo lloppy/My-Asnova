@@ -6,6 +6,7 @@ import android.content.Intent
 import android.content.IntentSender
 import android.util.Log
 import com.asnova.domain.repository.firebase.UserRepository
+import com.asnova.model.AsnovaStudentsClass
 import com.asnova.model.Promocode
 import com.asnova.model.Resource
 import com.asnova.model.SignInResult
@@ -308,6 +309,26 @@ class UserRepositoryImpl @Inject constructor(
                     callback(Resource.Error("Failed to remove user data: ${task.exception?.message}", false))
                 }
             }
+        }
+    }
+
+    override fun selectAsnovaClass(
+        asnovaClass: AsnovaStudentsClass,
+        callback: (Resource<Boolean>) -> Unit
+    ) {
+        val currentUser = FirebaseAuth.getInstance().currentUser
+        val userUid = currentUser?.uid
+        if (userUid != null) {
+            _database.child("users").child(userUid).child("asnovaClass").setValue(asnovaClass.name)
+                .addOnSuccessListener {
+                    callback(Resource.Success(true))
+                }
+                .addOnFailureListener { exception ->
+                    callback(Resource.Error(exception.message.toString()))
+                    Log.e("UserRepository", "Error writing user asnovaClass data", exception)
+                }
+        } else {
+            callback(Resource.Error("userUid null error"))
         }
     }
 

@@ -17,6 +17,7 @@ import com.asnova.domain.usecase.GetAsnovaClassesFromFirebaseUseCase
 import com.asnova.domain.usecase.GetRawAsnovaClassesUseCase
 import com.asnova.domain.usecase.GetUserDataUseCase
 import com.asnova.domain.usecase.PushAsnovaClassesUseCase
+import com.asnova.domain.usecase.SelectClassUseCase
 import com.asnova.domain.usecase.SignOutUserUseCase
 import com.asnova.domain.usecase.SubmitPromocodeUseCase
 import com.asnova.model.AsnovaStudentsClass
@@ -37,6 +38,7 @@ class SettingsScreenViewModel @Inject constructor(
     private val deleteAccountUseCase: DeleteAccountUseCase,
 
     private val pushAsnovaClassesUseCase: PushAsnovaClassesUseCase,
+    private val selectClassUseCase: SelectClassUseCase,
 
     private val getAsnovaClassesFromFirebaseUseCase: GetAsnovaClassesFromFirebaseUseCase,
     private val getRawAsnovaClassesUseCase: GetRawAsnovaClassesUseCase,
@@ -119,6 +121,28 @@ class SettingsScreenViewModel @Inject constructor(
         return when (UserManager.getRole()) {
             Role.ADMIN -> true
             else -> false
+        }
+    }
+
+    fun selectAsnovaClass(
+        selectedClass: AsnovaStudentsClass,
+        onSuccess: () -> Unit
+    ) {
+        selectClassUseCase.invoke(selectedClass) { result ->
+            when (result) {
+                is Resource.Success -> {
+                    Log.d("selectAsnovaClass", "Successfully pushed class to Firebase.")
+                    onSuccess()
+                }
+
+                is Resource.Error -> {
+                    Log.e("selectAsnovaClass", "Failed to push class: ${result.message}")
+
+                    _state.value =
+                        SettingsState(error = result.message ?: "Ошибка")
+                }
+                else -> {}
+            }
         }
     }
 

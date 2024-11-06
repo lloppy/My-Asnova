@@ -37,6 +37,7 @@ import com.asnova.domain.usecase.SaveLanguageSettingUseCase
 import com.asnova.domain.usecase.SaveNotificationsSettingUseCase
 import com.asnova.domain.usecase.SaveScheduleStateUseCase
 import com.asnova.domain.usecase.SaveThemeSettingUseCase
+import com.asnova.domain.usecase.SelectClassUseCase
 import com.asnova.domain.usecase.SignInWithIntentUseCase
 import com.asnova.domain.usecase.SignInWithLauncher
 import com.asnova.domain.usecase.SignInWithOtpUseCase
@@ -147,6 +148,13 @@ class DomainModule {
         userRepository: UserRepository
     ): DeleteAccountUseCase {
         return DeleteAccountUseCase(userRepository)
+    }
+
+    @Provides
+    fun provideSelectClassUseCase(
+        userRepository: UserRepository
+    ): SelectClassUseCase {
+        return SelectClassUseCase(userRepository)
     }
 
     @Provides

@@ -21,6 +21,7 @@ import com.example.asnova.screen.feed.FeedScreen
 import com.example.asnova.screen.schedule.ScheduleScreen
 import com.example.asnova.screen.chat.ChatScreen
 import com.example.asnova.screen.settings.ProfileSettingsScreen
+import com.example.asnova.screen.settings.components.ChangeGroupScreen
 import com.example.asnova.screen.settings.components.EnterPromocodeScreen
 import com.example.asnova.screen.settings.components.SelectClassScreen
 import com.example.asnova.ui.theme.BottomBarHeight
@@ -73,6 +74,9 @@ fun SetupNavGraph(
                 navigateToSelectClass = {
                     navHostController.navigate(Screen.ChooseClass.route)
                 },
+                navigateToChangeGroup = {
+                    navHostController.navigate(Screen.ChangeGroup.route)
+                },
                 navigateToEnterPromocode = {
                     navHostController.navigate(Screen.EnterPromocode.route)
                 },
@@ -88,6 +92,9 @@ fun SetupNavGraph(
         }
         composable(Screen.EnterPromocode.route) {
             EnterPromocodeScreen(context, navHostController)
+        }
+        composable(Screen.ChangeGroup.route) {
+            ChangeGroupScreen(context, navHostController)
         }
     }
 }

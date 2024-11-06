@@ -53,4 +53,5 @@ interface UserRepository {
     )
 
     fun deleteAccount(callback: (Resource<Boolean>) -> Unit)
+    fun selectAsnovaClass(asnovaClass: AsnovaStudentsClass, callback: (Resource<Boolean>) -> Unit)
 }

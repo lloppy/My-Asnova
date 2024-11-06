@@ -28,6 +28,7 @@ import com.example.asnova.ui.theme.greenAsnova
 @Composable
 fun ClassCard(
     asnovaClass: AsnovaStudentsClass,
+    hideDelete: Boolean = false,
     onClickDelete: (AsnovaStudentsClass) -> Unit,
     onClickEdit: (AsnovaStudentsClass) -> Unit
 ) {
@@ -44,17 +45,18 @@ fun ClassCard(
                 modifier = Modifier.align(Alignment.CenterStart),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Icon(
-                    imageVector = Icons.Filled.DeleteOutline,
-                    contentDescription = null,
-                    modifier = Modifier
-                        .size(24.dp)
-                        .clickable {
-                            onClickDelete.invoke(asnovaClass)
-                        }
-                )
-                Spacer(modifier = Modifier.width(16.dp))
-
+                if (!hideDelete) {
+                    Icon(
+                        imageVector = Icons.Filled.DeleteOutline,
+                        contentDescription = null,
+                        modifier = Modifier
+                            .size(24.dp)
+                            .clickable {
+                                onClickDelete.invoke(asnovaClass)
+                            }
+                    )
+                    Spacer(modifier = Modifier.width(16.dp))
+                }
                 Text(text = asnovaClass.name)
             }
         }

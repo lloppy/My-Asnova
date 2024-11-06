@@ -39,6 +39,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import com.asnova.model.AsnovaStudentsClass
 import com.asnova.model.Resource
 import com.example.asnova.screen.settings.SettingsScreenViewModel
@@ -48,17 +49,18 @@ import com.example.asnova.utils.SkeletonScreen
 import com.example.asnova.utils.shimmerEffect
 
 @Composable
-fun SelectClassScreen(
+fun ChangeGroupScreen(
     context: Context,
+    navController: NavController,
     viewModel: SettingsScreenViewModel = hiltViewModel()
 ) {
     val state by viewModel.state
     var studentsClasses by remember { mutableStateOf<List<AsnovaStudentsClass>?>(emptyList()) }
     var searchQuery by remember { mutableStateOf("") }
-    var showEditDialog by remember { mutableStateOf(false) }
-    var selectedClass by remember { mutableStateOf<AsnovaStudentsClass?>(null) }
 
+    var showChooseDialog by remember { mutableStateOf(false) }
     var expanded by remember { mutableStateOf(false) }
+    var selectedClass by remember { mutableStateOf<AsnovaStudentsClass?>(null) }
 
     LaunchedEffect(Unit) {
         viewModel.getAsnovaClassesFromFirebase { resource ->
@@ -116,71 +118,10 @@ fun SelectClassScreen(
                 }
             },
             content = {
-                Column(
-                    modifier = Modifier
-                        .padding(16.dp)
-                        .fillMaxWidth()
-                ) {
-                    Box(Modifier.fillMaxWidth()) {
-                        Row(Modifier.align(Alignment.TopEnd)) {
-                            DropdownMenu(
-                                expanded = expanded,
-                                onDismissRequest = { expanded = false }) {
-                                DropdownMenuItem(
-                                    text = { Text(text = "Получить список групп повторно (текущие изменения не сохранятся)") },
-                                    onClick = {
-                                        viewModel.getAsnovaClassesFromFirebase { resource ->
-                                            if (resource is Resource.Success) {
-                                                studentsClasses = resource.data
-                                            }
-                                        }
-                                        expanded = false
-                                    })
-
-                                DropdownMenuItem(
-                                    text = { Text(text = "Получить данные о группах заново (\"сырые\" данные из расписания)") },
-                                    onClick = {
-                                        viewModel.getRawAsnovaClasses { resource ->
-                                            if (resource is Resource.Success) {
-                                                studentsClasses = resource.data
-                                            }
-                                        }
-                                        expanded = false
-                                    })
-
-                                    /*
-                                DropdownMenuItem(
-                                    text = { Text(text = "Очистить всё на базе данных") },
-                                    onClick = {
-                                        viewModel.cleanDatabase { success ->
-                                            if (success) {
-                                                Toast.makeText(context, "База данных успешно очищена", Toast.LENGTH_SHORT).show()
-                                            } else {
-                                                Toast.makeText(context, "Ошибка при очистке базы данных", Toast.LENGTH_SHORT).show()
-                                            }
-                                        }
-                                    }
-                                )
-                                     */
-
-                                DropdownMenuItem(
-                                    text = { Text("Сохранить текущие изменения, отправив новые данные") },
-                                    onClick = {
-                                        viewModel.pushAsnovaClassesToFirebase(state.asnovaClasses) {
-                                            Toast.makeText(
-                                                context,
-                                                "Успешно сохранено на базе данных",
-                                                Toast.LENGTH_SHORT
-                                            ).show()
-                                        }
-                                        expanded = false
-                                    })
-                            }
-                        }
-                    }
+                Column(modifier = Modifier.padding(16.dp).fillMaxWidth()) {
                     Row(
                         Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
+                        horizontalArrangement = Arrangement.Start,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
@@ -188,14 +129,6 @@ fun SelectClassScreen(
                             fontWeight = FontWeight.Bold,
                             fontSize = 18.sp
                         )
-
-                        Box(modifier = Modifier.clickable { expanded = true }) {
-                            Icon(
-                                imageVector = Icons.Default.MoreVert,
-                                contentDescription = "Menu",
-                                modifier = Modifier.padding(8.dp)
-                            )
-                        }
                     }
                     Spacer(modifier = Modifier.height(20.dp))
 
@@ -215,11 +148,11 @@ fun SelectClassScreen(
                                 ignoreCase = true
                             )
                         }?.forEach { asnovaClass ->
-                            ClassCard(asnovaClass = asnovaClass, onClickDelete = {
+                            ClassCard(asnovaClass = asnovaClass, hideDelete = true, onClickDelete = {
                                 viewModel.removeClass(asnovaClass)
                             }) { selected ->
                                 selectedClass = selected
-                                showEditDialog = true
+                                showChooseDialog = true
                             }
                         }
                     }
@@ -228,13 +161,16 @@ fun SelectClassScreen(
             }
         )
 
-        if (showEditDialog && selectedClass != null) {
-            EditClassDialog(
+        if (showChooseDialog && selectedClass != null) {
+            SelectClassDialog(
                 asnovaStudentsClass = selectedClass!!,
-                onDismiss = { showEditDialog = false },
-                onSave = { updatedClass ->
-                    viewModel.duplicateAsnovaClass(updatedClass)
-                    showEditDialog = false
+                onDismiss = { showChooseDialog = false },
+                onSave = { selectedClass ->
+                    viewModel.selectAsnovaClass(selectedClass, onSuccess = {
+                        Toast.makeText(context, "Группа обновлена", Toast.LENGTH_SHORT).show()
+                        navController.popBackStack()
+                    })
+                    showChooseDialog = false
                 }
             )
         }

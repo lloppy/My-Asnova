@@ -77,6 +77,7 @@ fun ProfileSettingsScreen(
     lifecycleScope: LifecycleCoroutineScope,
     lifecycleOwner: LifecycleOwner,
     navigateToChats: () -> Unit,
+    navigateToChangeGroup: () -> Unit,
     navigateToSelectClass: () -> Unit,
     navigateToEnterPromocode: () -> Unit,
     onRestartApp: () -> Unit,
@@ -251,9 +252,7 @@ fun ProfileSettingsScreen(
                         SettingsItemBox(
                             icon = Icons.Filled.Group,
                             text = "Сменить мою учебную группу",
-                            onClick = {
-                                // TODO()
-                            }
+                            onClick = navigateToChangeGroup
                         )
                     }
                 }
