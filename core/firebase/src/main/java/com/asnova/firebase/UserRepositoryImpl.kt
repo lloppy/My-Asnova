@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.IntentSender
-import android.util.Log
 import com.asnova.domain.repository.firebase.UserRepository
 import com.asnova.model.AsnovaStudentsClass
 import com.asnova.model.Promocode
@@ -64,7 +63,6 @@ class UserRepositoryImpl @Inject constructor(
                 }
                 .addOnFailureListener { exception ->
                     onFailure(exception.message ?: "Unknown error")
-                    Log.e("UserRepository", "Error writing user data", exception)
                 }
         } else {
             onFailure("User not authenticated")
@@ -196,16 +194,9 @@ class UserRepositoryImpl @Inject constructor(
 
                 result.data?.userUid?.let { userUid ->
                     _database.child("users").child(userUid).setValue(result.data)
-                        .addOnSuccessListener {
-                            Log.d("UserRepository", "User data saved successfully")
-                        }
-                        .addOnFailureListener { exception ->
-                            Log.e("UserRepository", "Error writing user data", exception)
-                        }
-                } ?: run {
-                    Log.e("UserRepository", "User data is null, cannot save to database")
-                }
-
+                        .addOnSuccessListener {}
+                        .addOnFailureListener {}
+                } ?: run {}
                 callback(Resource.Success(result))
             } else {
                 callback(Resource.Error(task.exception?.message ?: "Unknown error"))
@@ -272,19 +263,13 @@ class UserRepositoryImpl @Inject constructor(
                 val promocodeData = Promocode(promocode, user = userData, approved = false)
                 promoRef.child(promoKey).setValue(promocodeData).addOnCompleteListener { task ->
                     if (task.isSuccessful) {
-                        Log.d("PromoCode", "Промокод успешно сохранен с ключом: $promoKey")
                         callback(Resource.Success(promocode))
                     } else {
                         callback(Resource.Error("Failed to set promocode"))
-                        Log.e(
-                            "PromoCode",
-                            "Ошибка при сохранении промокода: ${task.exception?.message}"
-                        )
                     }
                 }
             } else {
                 callback(Resource.Error("Failed to set promocode"))
-                Log.e("PromoCode", "Не удалось сгенерировать уникальный ключ для промокода.")
             }
 
         }.addOnFailureListener { exception ->
@@ -302,11 +287,21 @@ class UserRepositoryImpl @Inject constructor(
                         if (deleteTask.isSuccessful) {
                             callback(Resource.Success(true))
                         } else {
-                            callback(Resource.Error("Failed to delete account: ${deleteTask.exception?.message}", false))
+                            callback(
+                                Resource.Error(
+                                    "Failed to delete account: ${deleteTask.exception?.message}",
+                                    false
+                                )
+                            )
                         }
                     }
                 } else {
-                    callback(Resource.Error("Failed to remove user data: ${task.exception?.message}", false))
+                    callback(
+                        Resource.Error(
+                            "Failed to remove user data: ${task.exception?.message}",
+                            false
+                        )
+                    )
                 }
             }
         }
@@ -319,13 +314,13 @@ class UserRepositoryImpl @Inject constructor(
         val currentUser = FirebaseAuth.getInstance().currentUser
         val userUid = currentUser?.uid
         if (userUid != null) {
-            _database.child("users").child(userUid).child("asnovaClass").setValue( if (asnovaClass != null) asnovaClass.name else "")
+            _database.child("users").child(userUid).child("asnovaClass")
+                .setValue(if (asnovaClass != null) asnovaClass.name else "")
                 .addOnSuccessListener {
                     callback(Resource.Success(true))
                 }
                 .addOnFailureListener { exception ->
                     callback(Resource.Error(exception.message.toString()))
-                    Log.e("UserRepository", "Error writing user asnovaClass data", exception)
                 }
         } else {
             callback(Resource.Error("userUid null error"))

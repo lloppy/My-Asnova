@@ -1,6 +1,5 @@
 package com.asnova.firebase
 
-import android.util.Log
 import com.asnova.domain.repository.firebase.CalendarService
 import com.asnova.domain.repository.firebase.ScheduleRepository
 import com.asnova.model.AsnovaStudentsClass
@@ -44,11 +43,6 @@ class ScheduleRepositoryImpl @Inject constructor(
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 val scheduleList = calendarService.getPrivateSchedule()
-
-                scheduleList.forEach {
-                    Log.d("calendar_info", it.summary.toString())
-                }
-
                 withContext(Dispatchers.Main) {
                     callback(Resource.Success(scheduleList))
                 }
@@ -89,7 +83,6 @@ class ScheduleRepositoryImpl @Inject constructor(
 
                 is Resource.Success -> {
                     val schedules = resource.data
-                    Log.d("getAsnovaClasses", "до " + resource.data?.size.toString())
 
                     excludedWordsRef.get().addOnSuccessListener { snapshot ->
                         val includeWords = mutableListOf<String>()
@@ -107,8 +100,6 @@ class ScheduleRepositoryImpl @Inject constructor(
                                 }
                             }
                         }
-                        Log.i("excludedWords", "Include words: $includeWords")
-                        Log.i("excludedWords", "Exclude words: $excludeWords")
 
                         val uniqueClasses = schedules
                             ?.mapNotNull { it.summary }
@@ -120,21 +111,13 @@ class ScheduleRepositoryImpl @Inject constructor(
                                 }
                             }
                             ?.distinct()?.toSet()
-                        Log.d("getAsnovaClasses", "после " + resource.data?.size.toString())
 
                         val asnovaClasses = uniqueClasses?.map { className ->
                             AsnovaStudentsClass(name = className)
                         }?.toSet()?.toList()
-                        Log.d(
-                            "getAsnovaClasses",
-                            "после asnovaClasses " + asnovaClasses?.size.toString()
-                        )
-
                         callback(Resource.Success(asnovaClasses?.toList()))
 
-
                     }.addOnFailureListener {
-                        Log.e("excludedWords", "Error getting data", it)
                         callback(Resource.Error(it.message ?: "Unknown error"))
                     }
                 }
@@ -155,7 +138,6 @@ class ScheduleRepositoryImpl @Inject constructor(
             }
             callback(Resource.Success(asnovaClasses))
         }.addOnFailureListener { exception ->
-            Log.e("FirebaseError", "Error getting classes from Firebase: ${exception.message}")
             callback(Resource.Error(exception.message ?: "Unknown error"))
         }
     }
@@ -183,13 +165,11 @@ class ScheduleRepositoryImpl @Inject constructor(
     private fun parseScheduleFromHtml(html: String, year: Int): List<ScheduleAsnovaSite> {
         val document = Jsoup.parse(html)
         val scheduleElements = document.select("div.seocategory__prodblock")
-        Log.d("calendar_site_info", scheduleElements.text())
 
         return scheduleElements.mapNotNull { element ->
             val linkElement =
                 element.selectFirst(".seocategory__prodblock-link") ?: return@mapNotNull null
             val dateAndTimeText = linkElement.text().split(", ")
-            Log.d("calendar_site_info", "text $dateAndTimeText")
 
             if (dateAndTimeText.size < 3) return@mapNotNull null
 

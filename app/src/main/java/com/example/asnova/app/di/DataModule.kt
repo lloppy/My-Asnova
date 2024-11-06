@@ -13,6 +13,8 @@ import com.asnova.domain.repository.storage.ScheduleStateRepository
 import com.asnova.domain.repository.storage.ScheduleStateStorage
 import com.asnova.domain.repository.storage.ThemeSettingRepository
 import com.asnova.domain.repository.storage.ThemeSettingStorage
+import com.asnova.firebase.LoggingScheduleRepository
+import com.asnova.firebase.LoggingUserRepository
 import com.asnova.firebase.NewsFacadeImpl
 import com.asnova.firebase.ScheduleRepositoryImpl
 import com.asnova.firebase.UserRepositoryImpl
@@ -81,7 +83,9 @@ class DataModule {
         @ApplicationContext context: Context,
         oneTapClient: SignInClient
     ): UserRepository {
-        return UserRepositoryImpl(context, oneTapClient)
+        // Паттерн Proxy
+        val originalRepository = UserRepositoryImpl(context, oneTapClient)
+        return LoggingUserRepository(originalRepository)
     }
 
     @Provides
@@ -109,8 +113,9 @@ class DataModule {
         val calDavAdapteeImpl = CalDavAdapteeImpl()
         val calDavAdapter = CalDavAdapter(calDavAdapteeImpl)
 
-        // using the Adapter with Adaptee instance
-        return ScheduleRepositoryImpl(calDavAdapter)
+        // Паттерн Proxy
+        val originalRepository = ScheduleRepositoryImpl(calDavAdapter)
+        return LoggingScheduleRepository(originalRepository)
     }
 
     @Provides
