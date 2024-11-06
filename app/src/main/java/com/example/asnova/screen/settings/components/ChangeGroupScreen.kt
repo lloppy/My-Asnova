@@ -19,6 +19,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
@@ -118,7 +119,9 @@ fun ChangeGroupScreen(
                 }
             },
             content = {
-                Column(modifier = Modifier.padding(16.dp).fillMaxWidth()) {
+                Column(modifier = Modifier
+                    .padding(16.dp)
+                    .fillMaxWidth()) {
                     Row(
                         Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.Start,
@@ -138,8 +141,16 @@ fun ChangeGroupScreen(
                         label = { Text("Поиск группы") },
                         modifier = Modifier.fillMaxWidth()
                     )
-
                     Spacer(modifier = Modifier.height(20.dp))
+                    Button(
+                        modifier = Modifier.fillMaxWidth(),
+                        onClick = { viewModel.selectAsnovaClass(null, onSuccess = {
+                            Toast.makeText(context, "Группа успешно изменена", Toast.LENGTH_SHORT).show()
+                            navController.popBackStack()
+                        }) }) {
+                        Text(text = "Показать расписание для всех групп")
+                    }
+                    Spacer(modifier = Modifier.height(10.dp))
 
                     Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
                         state.asnovaClasses?.filter {

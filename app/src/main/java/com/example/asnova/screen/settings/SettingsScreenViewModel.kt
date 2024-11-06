@@ -65,7 +65,7 @@ class SettingsScreenViewModel @Inject constructor(
             if (isAdmin.data == true) {
                 UserManager.setRole(Role.ADMIN)
                 role = Role.ADMIN
-                Log.d("UserManager", "${UserManager.getRole()}")
+                Log.d("UserManager", UserManager.getRole())
                 isAuthedUserStorage.save(Role.ADMIN)
             }
         }
@@ -125,7 +125,7 @@ class SettingsScreenViewModel @Inject constructor(
     }
 
     fun selectAsnovaClass(
-        selectedClass: AsnovaStudentsClass,
+        selectedClass: AsnovaStudentsClass?,
         onSuccess: () -> Unit
     ) {
         selectClassUseCase.invoke(selectedClass) { result ->
@@ -154,7 +154,6 @@ class SettingsScreenViewModel @Inject constructor(
                 _state.value = SettingsState(asnovaClasses = result.data)
                 Log.d("studentsClasses", "Success")
                 Log.d("studentsClasses", _state.value.asnovaClasses?.first()?.name.toString())
-
             }
 
             is Resource.Error -> {
@@ -194,7 +193,6 @@ class SettingsScreenViewModel @Inject constructor(
                     _state.value =
                         SettingsState(error = result.message ?: "Ошибка сохранения учебных групп")
                 }
-
                 else -> {}
             }
         }

@@ -76,6 +76,7 @@ fun ScheduleScreen(
             when (resource) {
                 is Resource.Success -> {
                     userData = resource.data
+                    viewModel.loadScheduleForGroup(userData?.asnovaClass)
                 }
 
                 is Resource.Error -> {
@@ -104,7 +105,7 @@ fun ScheduleScreen(
                             selectedMutableDate,
                             onDateSelected = { selectedDate ->
                                 viewModel.saveDate(selectedDate)
-                                viewModel.loadScheduleForGroup()
+                                viewModel.loadScheduleForGroup(userData?.asnovaClass)
                             }
                         )
                     }
@@ -138,7 +139,7 @@ fun ScheduleScreen(
                                 selectedMutableDate,
                                 onDateSelected = { selectedDate ->
                                     viewModel.saveDate(selectedDate)
-                                    viewModel.loadScheduleForGroup()
+                                    viewModel.loadScheduleForGroup(userData?.asnovaClass)
                                 }
                             )
                         }

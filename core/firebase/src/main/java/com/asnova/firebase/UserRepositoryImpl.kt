@@ -313,13 +313,13 @@ class UserRepositoryImpl @Inject constructor(
     }
 
     override fun selectAsnovaClass(
-        asnovaClass: AsnovaStudentsClass,
+        asnovaClass: AsnovaStudentsClass?,
         callback: (Resource<Boolean>) -> Unit
     ) {
         val currentUser = FirebaseAuth.getInstance().currentUser
         val userUid = currentUser?.uid
         if (userUid != null) {
-            _database.child("users").child(userUid).child("asnovaClass").setValue(asnovaClass.name)
+            _database.child("users").child(userUid).child("asnovaClass").setValue( if (asnovaClass != null) asnovaClass.name else "")
                 .addOnSuccessListener {
                     callback(Resource.Success(true))
                 }

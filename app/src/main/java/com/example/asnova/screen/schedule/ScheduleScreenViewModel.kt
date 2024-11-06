@@ -38,10 +38,6 @@ class ScheduleScreenViewModel @Inject constructor(
     private val selectedDateMutableState = MutableLiveData(LocalDate.now())
     val selectedDate: MutableLiveData<LocalDate?> = selectedDateMutableState
 
-    init {
-        loadAvailableSchedule()
-    }
-
     fun checkUserClass(callback: (Resource<Boolean>) -> Unit) {
         checkUserClassUseCase.invoke(callback)
     }
@@ -69,8 +65,9 @@ class ScheduleScreenViewModel @Inject constructor(
         getUserDataUseCase.invoke(callback)
     }
 
-    fun loadScheduleForGroup() {
+    fun loadScheduleForGroup(currentGroup: String? = "") {
         Log.d("calendar_info", "loadSchedule called")
+        Log.e("currentGroup", "до " + currentGroup.toString())
 
         getScheduleUseCase(callback = { result ->
             when (result) {
@@ -91,7 +88,18 @@ class ScheduleScreenViewModel @Inject constructor(
                             temp.add(item)
                         }
                     }
-                    _state.value.privateSchedule = temp
+
+                    Log.e("currentGroup", "после " + currentGroup.toString())
+                    if (!currentGroup.isNullOrEmpty()) {
+                        val filteredTemp = temp.filter {
+                            Log.e("currentGroup", "после currentGroup " +  it.trimmedSummary)
+                            it.summary == currentGroup || it.trimmedSummary == currentGroup
+                        }
+                        _state.value.privateSchedule = filteredTemp
+
+                    } else {
+                        _state.value.privateSchedule = temp
+                    }
                 }
 
                 is Resource.Error -> {
@@ -134,7 +142,17 @@ class ScheduleScreenViewModel @Inject constructor(
                 it.start.toLocalDate() == date
             } ?: false
         }
-        _state.value = _state.value.copy(privateSchedule = temp)
+
+//        if (!currentGroup.isNullOrEmpty()) {
+//            val filteredTemp = temp.filter {
+//                Log.e("currentGroup", "после currentGroup " +  it.trimmedSummary)
+//                it.summary == currentGroup || it.trimmedSummary == currentGroup
+//            }
+//            _state.value = _state.value.copy(privateSchedule = filteredTemp)
+//
+//        } else {
+            _state.value = _state.value.copy(privateSchedule = temp)
+
     }
 
 

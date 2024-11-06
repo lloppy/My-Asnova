@@ -8,7 +8,7 @@ import com.asnova.model.Resource
 class SelectClassUseCase (
     private val userRepository: UserRepository
 ) {
-    operator fun invoke(asnovaClass: AsnovaStudentsClass, callback: (Resource<Boolean>) -> Unit) {
+    operator fun invoke(asnovaClass: AsnovaStudentsClass?, callback: (Resource<Boolean>) -> Unit) {
         return userRepository.selectAsnovaClass(asnovaClass, callback)
     }
 }
