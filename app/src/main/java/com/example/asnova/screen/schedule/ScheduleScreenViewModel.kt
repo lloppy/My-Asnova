@@ -96,7 +96,7 @@ class ScheduleScreenViewModel @Inject constructor(
                     Log.e("currentGroup", "после " + currentGroup.toString())
                     if (!currentGroup.isNullOrEmpty()) {
                         val filteredTemp = temp.filter {
-                            Log.e("currentGroup", "после currentGroup " +  it.trimmedSummary)
+                            Log.e("currentGroup", "после currentGroup " + it.trimmedSummary)
                             it.summary == currentGroup || it.trimmedSummary == currentGroup
                         }
                         _state.value.privateSchedule = filteredTemp
@@ -155,7 +155,15 @@ class ScheduleScreenViewModel @Inject constructor(
 //            _state.value = _state.value.copy(privateSchedule = filteredTemp)
 //
 //        } else {
-            _state.value = _state.value.copy(privateSchedule = temp)
+        if (temp.isNotEmpty()) {
+            var set = temp.toSortedSet(compareBy {
+                it.start
+            })
+            Log.i("set", set.first().trimmedSummary)
+        }
+
+
+        _state.value = _state.value.copy(privateSchedule = temp)
 
     }
 

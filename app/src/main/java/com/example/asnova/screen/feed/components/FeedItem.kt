@@ -84,14 +84,14 @@ fun FeedItemView(
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxHeight()
-                    .padding(start = 10.dp, end = 10.dp, top = 8.dp),
+                    .padding(start = 10.dp, end = 10.dp, top = 5.dp),
                 verticalArrangement = Arrangement.SpaceBetween,
                 horizontalAlignment = Alignment.Start
             ) {
                 Column {
                     Text(
                         text = feedItem.title,
-                        maxLines = 4,
+                        maxLines = 3,
                         overflow = TextOverflow.Ellipsis,
                         fontSize = 16.sp,
                         modifier = Modifier.padding(start = 4.dp),

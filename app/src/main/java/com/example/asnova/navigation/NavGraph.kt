@@ -124,7 +124,6 @@ fun BottomNavigationBar(navController: NavController) {
         items.forEachIndexed { index, navigationItem ->
             val selected = index == selectedItem
 
-            //if (index == 0 || index == items.size) Spacer(modifier = Modifier.width(18.dp))
             BottomBarItem(
                 activeIndicatorColor = Color.Transparent,
                 selected = selected,
@@ -146,7 +145,6 @@ fun BottomNavigationBar(navController: NavController) {
                 itemStyle = ItemStyle.STYLE4,
                 iconColor = Color.Black
             )
-            //if (index == items.size) Spacer(modifier = Modifier.width(18.dp))
         }
     }
 }
