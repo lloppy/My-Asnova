@@ -147,23 +147,7 @@ class ScheduleScreenViewModel @Inject constructor(
             } ?: false
         }
 
-//        if (!currentGroup.isNullOrEmpty()) {
-//            val filteredTemp = temp.filter {
-//                Log.e("currentGroup", "после currentGroup " +  it.trimmedSummary)
-//                it.summary == currentGroup || it.trimmedSummary == currentGroup
-//            }
-//            _state.value = _state.value.copy(privateSchedule = filteredTemp)
-//
-//        } else {
-        if (temp.isNotEmpty()) {
-            var set = temp.toSortedSet(compareBy {
-                it.start
-            })
-            Log.i("set", set.first().trimmedSummary)
-        }
-
-
-        _state.value = _state.value.copy(privateSchedule = temp)
+        _state.value = _state.value.copy(privateSchedule = temp.sortedWith(compareBy { it.start }))
 
     }
 

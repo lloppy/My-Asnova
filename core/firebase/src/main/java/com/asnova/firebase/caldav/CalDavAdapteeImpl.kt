@@ -17,8 +17,6 @@ import java.time.LocalTime
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 
-// Паттерн Adapter
-// нужно для создания экземпляра    val adaptee: Adaptee = AdapteeImpl()
 class CalDavAdapteeImpl() : CalDavAdaptee {
 
     private val client = OkHttpClient()
