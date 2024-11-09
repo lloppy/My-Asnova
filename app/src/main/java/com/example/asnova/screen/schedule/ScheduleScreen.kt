@@ -4,6 +4,7 @@ package com.example.asnova.screen.schedule
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -26,6 +27,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -92,6 +94,7 @@ fun ScheduleScreen(
         modifier = Modifier
             .padding(bottom = BottomBarHeight)
             .fillMaxSize()
+            .background(Color.White)
     ) {
         SkeletonScreen(
             isLoading = state.value.loading,
@@ -126,11 +129,11 @@ fun ScheduleScreen(
                         ) {
                             ScheduleHeaderSegment(userData, screenHeight,
                                 onScheduleChange = { isPrivateSchedule ->
-                                currentScheduleIsPrivate = isPrivateSchedule
-                            })
+                                    currentScheduleIsPrivate = isPrivateSchedule
+                                })
                         }
                     }
-                    if (currentScheduleIsPrivate){
+                    if (currentScheduleIsPrivate) {
                         item {
                             WeekNavigationRow(
                                 lastMonday,

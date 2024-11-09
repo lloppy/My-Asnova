@@ -42,6 +42,10 @@ class ScheduleScreenViewModel @Inject constructor(
         checkUserClassUseCase.invoke(callback)
     }
 
+    init {
+        loadAvailableSchedule()
+    }
+
     fun canLoadPrivateSchedule(): Boolean {
         return when (UserManager.getRole()) {
             Role.STUDENT, Role.WORKER, Role.ADMIN -> true
@@ -114,6 +118,10 @@ class ScheduleScreenViewModel @Inject constructor(
     private fun loadScheduleFromSite() {
         getScheduleFromSiteUseCase(callback = { result ->
             when (result) {
+                is Resource.Loading -> {
+                    _state.value = ScheduleState(loading = true)
+                }
+
                 is Resource.Success -> {
                     _state.value = ScheduleState(siteSchedule = result.data ?: emptyList())
                     val temp = mutableListOf<ScheduleAsnovaSite>()
@@ -127,10 +135,6 @@ class ScheduleScreenViewModel @Inject constructor(
                     _state.value = ScheduleState(
                         error = result.message ?: "An unexpected error occurred"
                     )
-                }
-
-                is Resource.Loading -> {
-                    _state.value = ScheduleState(loading = false)
                 }
             }
         })

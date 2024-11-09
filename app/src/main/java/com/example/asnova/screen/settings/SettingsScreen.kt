@@ -19,12 +19,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ExitToApp
+import androidx.compose.material.icons.automirrored.filled.Login
 import androidx.compose.material.icons.filled.DeleteOutline
-import androidx.compose.material.icons.filled.Discount
 import androidx.compose.material.icons.filled.Group
-import androidx.compose.material.icons.filled.Groups
+import androidx.compose.material.icons.filled.Login
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Portrait
 import androidx.compose.material.icons.filled.Replay
 import androidx.compose.material.icons.outlined.Discount
 import androidx.compose.material.icons.outlined.Group
@@ -44,7 +43,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.paint
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -61,6 +59,7 @@ import com.asnova.model.Role
 import com.asnova.model.User
 import com.example.asnova.R
 import com.example.asnova.data.UserManager
+import com.example.asnova.navigation.Screen
 import com.example.asnova.screen.settings.components.SettingsItemBox
 import com.example.asnova.screen.settings.components.UserEditInfoModalSheet
 import com.example.asnova.ui.theme.BottomBarHeight
@@ -114,6 +113,7 @@ fun ProfileSettingsScreen(
             .fillMaxSize()
             .padding(bottom = BottomBarHeight)
             .pullRefresh(stateRefresh)
+            .background(Color.White)
     ) {
         SkeletonScreen(
             isLoading = state.value.loading,
@@ -181,15 +181,15 @@ fun ProfileSettingsScreen(
                             Spacer(modifier = Modifier.height(16.dp))
                         }
 
-                        if (!userData?.surname.isNullOrEmpty() && !userData?.name.isNullOrEmpty()){
+                        if (!userData?.surname.isNullOrEmpty() && !userData?.name.isNullOrEmpty()) {
                             Text(
-                                text =  userData!!.name + " " + userData!!.surname,
+                                text = userData!!.name + " " + userData!!.surname,
                                 textAlign = TextAlign.Center,
                                 fontSize = 20.sp,
                                 color = Color.White,
                                 fontWeight = FontWeight.SemiBold
                             )
-                            if (!userData?.asnovaClass.isNullOrEmpty()){
+                            if (!userData?.asnovaClass.isNullOrEmpty()) {
                                 Text(
                                     text = "Учебная группа: " + userData!!.asnovaClass,
                                     textAlign = TextAlign.Center,
@@ -209,7 +209,7 @@ fun ProfileSettingsScreen(
                                 color = Color.White,
                                 fontWeight = FontWeight.SemiBold
                             )
-                            if (!userData?.asnovaClass.isNullOrEmpty()){
+                            if (!userData?.asnovaClass.isNullOrEmpty()) {
                                 Text(
                                     text = "Учебная группа: " + userData!!.asnovaClass,
                                     textAlign = TextAlign.Center,
@@ -236,7 +236,7 @@ fun ProfileSettingsScreen(
                 }
 
                 item {
-                    if (UserManager.getRole() == Role.STUDENT || UserManager.getRole() == Role.ADMIN)  {
+                    if (UserManager.getRole() == Role.STUDENT || UserManager.getRole() == Role.ADMIN) {
                         SettingsItemBox(
                             icon = Icons.Filled.Person,
                             text = "Редактировать информацию профиля",
@@ -269,14 +269,14 @@ fun ProfileSettingsScreen(
 
                 // кнопка выйти
                 item {
-                    if (UserManager.getRole() != Role.GUEST && UserManager.getRole() != Role.NONE) {
+                    if (UserManager.getRole() != Role.NONE) {
                         SettingsItemBox(
                             icon = Icons.AutoMirrored.Filled.ExitToApp,
-                            text = stringResource(R.string.log_out),
+                            text = if (UserManager.getRole() == Role.GUEST) "Выйти из аккаунта гостя" else  stringResource(R.string.log_out),
                             onClick = {
                                 lifecycleScope.launch {
                                     viewModel.signOut()
-                                    navController.popBackStack()
+                                    navController.navigate(Screen.ProfileSettings.route)
                                 }
                             }
                         )
@@ -304,9 +304,7 @@ fun ProfileSettingsScreen(
                         SettingsItemBox(
                             icon = Icons.Filled.Replay,
                             text = "Перезапустить приложение и войти заново",
-                            onClick = {
-                                onRestartApp.invoke()
-                            }
+                            onClick = onRestartApp
                         )
                     }
                 }
