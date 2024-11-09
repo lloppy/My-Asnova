@@ -92,6 +92,7 @@ fun FeedItemView(
                     Text(
                         text = feedItem.title,
                         maxLines = 3,
+                        color = Color.Black,
                         overflow = TextOverflow.Ellipsis,
                         fontSize = 16.sp,
                         modifier = Modifier.padding(start = 4.dp),
