@@ -24,6 +24,7 @@ import com.asnova.domain.usecase.GetNewsItemByIdUseCase
 import com.asnova.domain.usecase.GetNotificationsSettingUseCase
 import com.asnova.domain.usecase.GetSafetyNewsUseCase
 import com.asnova.domain.usecase.GetScheduleFromSiteUseCase
+import com.asnova.domain.usecase.GetScheduleMapUseCase
 import com.asnova.domain.usecase.GetScheduleStateUseCase
 import com.asnova.domain.usecase.GetScheduleUseCase
 import com.asnova.domain.usecase.GetThemeSettingUseCase
@@ -225,6 +226,13 @@ class DomainModule {
         scheduleRepository: ScheduleRepository
     ): GetScheduleUseCase {
         return GetScheduleUseCase(scheduleRepository)
+    }
+
+    @Provides
+    fun provideGetMapScheduleUseCase(
+        scheduleRepository: ScheduleRepository
+    ): GetScheduleMapUseCase {
+        return GetScheduleMapUseCase(scheduleRepository)
     }
 
     @Provides

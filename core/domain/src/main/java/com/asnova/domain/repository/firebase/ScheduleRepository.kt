@@ -4,9 +4,12 @@ import com.asnova.model.AsnovaStudentsClass
 import com.asnova.model.Resource
 import com.asnova.model.ScheduleAsnovaPrivate
 import com.asnova.model.ScheduleAsnovaSite
+import java.time.LocalDate
 
 interface ScheduleRepository {
     fun getPrivateSchedule(callback: (Resource<List<ScheduleAsnovaPrivate>>) -> Unit)
+    fun getPrivateMapSchedule(callback: (Resource<Map<LocalDate, List<ScheduleAsnovaPrivate>>>) -> Unit)
+
     fun getScheduleFromSite(callback: (Resource<List<ScheduleAsnovaSite>>) -> Unit)
 
     fun getRawAsnovaClasses(callback: (Resource<List<AsnovaStudentsClass>>) -> Unit)

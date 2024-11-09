@@ -6,6 +6,7 @@ import com.asnova.model.AsnovaStudentsClass
 import com.asnova.model.Resource
 import com.asnova.model.ScheduleAsnovaPrivate
 import com.asnova.model.ScheduleAsnovaSite
+import java.time.LocalDate
 
 // Паттерн Proxy
 class LoggingScheduleRepository(private val repository: ScheduleRepository) :
@@ -36,6 +37,15 @@ class LoggingScheduleRepository(private val repository: ScheduleRepository) :
         callback(Resource.Loading())
         repository.getPrivateSchedule { resource ->
             logResourceResult("getPrivateSchedule", resource)
+            callback(resource)
+        }
+    }
+
+    override fun getPrivateMapSchedule(callback: (Resource<Map<LocalDate, List<ScheduleAsnovaPrivate>>>) -> Unit) {
+        Log.d(tag, "getPrivateMapSchedule called")
+        callback(Resource.Loading())
+        repository.getPrivateMapSchedule { resource ->
+            logResourceResult("getPrivateMapSchedule", resource)
             callback(resource)
         }
     }

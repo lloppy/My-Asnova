@@ -65,11 +65,10 @@ fun ScheduleScreen(
     val stateRefresh = rememberPullRefreshState(isRefreshing, { viewModel.pullToRefresh() })
 
     val currentDate = LocalDate.now()
-    val lastMonday =
-        remember { mutableStateOf(currentDate.minusDays(currentDate.dayOfWeek.value.toLong() - 1)) }
-    val dateList =
-        remember { mutableStateOf(List(7) { index -> lastMonday.value.plusDays(index.toLong()) }) }
     val selectedMutableDate = remember { mutableStateOf(currentDate) }
+
+    val lastMonday = remember { mutableStateOf(currentDate.minusDays(currentDate.dayOfWeek.value.toLong() - 1)) }
+    val dateList = remember { mutableStateOf(List(7) { index -> lastMonday.value.plusDays(index.toLong()) }) }
 
     var currentScheduleIsPrivate by remember { mutableStateOf(true) }
 
@@ -108,7 +107,6 @@ fun ScheduleScreen(
                             selectedMutableDate,
                             onDateSelected = { selectedDate ->
                                 viewModel.saveDate(selectedDate)
-                                viewModel.loadScheduleForGroup(userData?.asnovaClass)
                             }
                         )
                     }
@@ -141,12 +139,11 @@ fun ScheduleScreen(
                                 currentDate,
                                 selectedMutableDate,
                                 onDateSelected = { selectedDate ->
-                                    viewModel.saveDate(selectedDate)
-                                    viewModel.loadScheduleForGroup(userData?.asnovaClass)
+                                    selectedMutableDate.value = selectedDate
                                 }
                             )
                         }
-                        if (state.value.privateSchedule.isEmpty()) {
+                        if (state.value.privateSchedule[selectedMutableDate.value].isNullOrEmpty()) {
                             item {
                                 Column(
                                     modifier = Modifier
@@ -160,7 +157,8 @@ fun ScheduleScreen(
                                 }
                             }
                         } else {
-                            items(state.value.privateSchedule) { item ->
+                            val schedulesForSelectedDate = state.value.privateSchedule[selectedMutableDate.value] ?: emptyList()
+                            items(schedulesForSelectedDate) { item ->
                                 GroupScheduleItem(item, context)
                             }
                         }

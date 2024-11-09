@@ -7,6 +7,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.asnova.domain.usecase.CheckUserClassUseCase
 import com.asnova.domain.usecase.GetScheduleFromSiteUseCase
+import com.asnova.domain.usecase.GetScheduleMapUseCase
 import com.asnova.domain.usecase.GetScheduleStateUseCase
 import com.asnova.domain.usecase.GetScheduleUseCase
 import com.asnova.domain.usecase.GetUserDataUseCase
@@ -24,6 +25,8 @@ import javax.inject.Inject
 @HiltViewModel
 class ScheduleScreenViewModel @Inject constructor(
     private val getScheduleUseCase: GetScheduleUseCase,
+    private val getScheduleMapUseCase: GetScheduleMapUseCase,
+
     private val getScheduleFromSiteUseCase: GetScheduleFromSiteUseCase,
     private val checkUserClassUseCase: CheckUserClassUseCase,
     private val saveScheduleStateUseCase: SaveScheduleStateUseCase,
@@ -37,10 +40,6 @@ class ScheduleScreenViewModel @Inject constructor(
 
     private val selectedDateMutableState = MutableLiveData(LocalDate.now())
     val selectedDate: MutableLiveData<LocalDate?> = selectedDateMutableState
-
-    fun checkUserClass(callback: (Resource<Boolean>) -> Unit) {
-        checkUserClassUseCase.invoke(callback)
-    }
 
     init {
         loadAvailableSchedule()
@@ -70,40 +69,17 @@ class ScheduleScreenViewModel @Inject constructor(
     }
 
     fun loadScheduleForGroup(currentGroup: String? = "") {
-        Log.d("calendar_info", "loadSchedule called")
         Log.e("currentGroup", "до " + currentGroup.toString())
 
-        getScheduleUseCase(callback = { result ->
+        getScheduleMapUseCase(callback = { result ->
             when (result) {
                 is Resource.Loading -> {
                     _state.value = ScheduleState(loading = true)
                 }
 
                 is Resource.Success -> {
-                    Log.d("calendar_info", "Schedules loaded")
-
-                    _state.value = ScheduleState(privateSchedule = result.data ?: emptyList())
-                    val temp = mutableListOf<ScheduleAsnovaPrivate>()
-                    for (item in _state.value.privateSchedule) {
-                        if (selectedDateMutableState.value?.dayOfMonth == item.start.dayOfMonth &&
-                            selectedDateMutableState.value?.monthValue == item.start.monthValue &&
-                            selectedDateMutableState.value?.year == item.start.year
-                        ) {
-                            temp.add(item)
-                        }
-                    }
-
-                    Log.e("currentGroup", "после " + currentGroup.toString())
-                    if (!currentGroup.isNullOrEmpty()) {
-                        val filteredTemp = temp.filter {
-                            Log.e("currentGroup", "после currentGroup " + it.trimmedSummary)
-                            it.summary == currentGroup || it.trimmedSummary == currentGroup
-                        }
-                        _state.value.privateSchedule = filteredTemp
-
-                    } else {
-                        _state.value.privateSchedule = temp
-                    }
+                    _state.value = ScheduleState(privateSchedule = result.data ?: emptyMap())
+                        filterAndUpdateSchedules(currentGroup)
                 }
 
                 is Resource.Error -> {
@@ -113,6 +89,15 @@ class ScheduleScreenViewModel @Inject constructor(
                 }
             }
         })
+    }
+
+    private fun filterAndUpdateSchedules(currentGroup: String?) {
+        val filteredSchedules = _state.value.privateSchedule.values.flatten().filter { schedule ->
+            currentGroup.isNullOrEmpty() || schedule.summary == currentGroup || schedule.trimmedSummary == currentGroup
+        }
+
+        val updatedMap = filteredSchedules.groupBy { it.start.toLocalDate() }
+        _state.value = _state.value.copy(privateSchedule = updatedMap)
     }
 
     private fun loadScheduleFromSite() {
@@ -140,24 +125,16 @@ class ScheduleScreenViewModel @Inject constructor(
         })
     }
 
-    private fun filterScheduleBySelectedDate() {
-        val temp = _state.value.privateSchedule.filter {
-            selectedDateMutableState.value?.let { date ->
-                it.start.toLocalDate() == date
-            } ?: false
-        }
-
-        _state.value = _state.value.copy(privateSchedule = temp.sortedWith(compareBy { it.start }))
-
-    }
-
-
     fun saveDate(date: LocalDate) {
         selectedDateMutableState.value = date
-        filterScheduleBySelectedDate()
+    }
+
+    fun checkUserClass(callback: (Resource<Boolean>) -> Unit) {
+        checkUserClassUseCase.invoke(callback)
     }
 
     fun pullToRefresh() {
         if (UserManager.getRole() == Role.ADMIN) loadScheduleFromSite() else loadAvailableSchedule()
     }
+
 }

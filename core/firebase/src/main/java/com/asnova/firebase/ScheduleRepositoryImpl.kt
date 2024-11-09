@@ -54,6 +54,23 @@ class ScheduleRepositoryImpl @Inject constructor(
         }
     }
 
+    override fun getPrivateMapSchedule(callback: (Resource<Map<LocalDate, List<ScheduleAsnovaPrivate>>>) -> Unit) {
+        callback(Resource.Loading())
+
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val scheduleList = calendarService.getPrivateMapSchedule()
+                withContext(Dispatchers.Main) {
+                    callback(Resource.Success(scheduleList))
+                }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    callback(Resource.Error(e.message.toString()))
+                }
+            }
+        }
+    }
+
     override fun getScheduleFromSite(callback: (Resource<List<ScheduleAsnovaSite>>) -> Unit) {
         callback(Resource.Loading())
 

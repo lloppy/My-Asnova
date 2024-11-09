@@ -18,7 +18,6 @@ import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 
 class CalDavAdapteeImpl() : CalDavAdaptee {
-
     private val client = OkHttpClient()
 
     override fun getPrivateScheduleFromCalDav(config: CalDavConfig): List<ScheduleAsnovaPrivate> {
@@ -27,7 +26,6 @@ class CalDavAdapteeImpl() : CalDavAdaptee {
 
         val events: List<VEvent> = calendar.components.filterIsInstance<VEvent>()
         return events.map { event ->
-            // Паттерн Static factory method
             Schedule.createPrivateSchedule(
                 summary = event.getProperty<Property>(Property.SUMMARY)?.value,
                 created = parseDate(event.getProperty<Property>(Property.CREATED)?.value),
@@ -35,6 +33,30 @@ class CalDavAdapteeImpl() : CalDavAdaptee {
                 end = parseDate(event.getProperty<Property>(Property.DTEND)?.value),
                 uid = event.getProperty<Property>(Property.UID)?.value.toString()
             )
+        }
+    }
+
+    override fun getPrivateScheduleMapFromCalDav(config: CalDavConfig): Map<LocalDate, List<ScheduleAsnovaPrivate>> {
+        val calendarData = fetchCalendarData(config)
+        val calendar = calendarData?.let { parseCalendarData(it) } ?: return emptyMap()
+
+        val events: List<VEvent> = calendar.components.filterIsInstance<VEvent>()
+        val scheduleMap = mutableMapOf<LocalDate, MutableList<ScheduleAsnovaPrivate>>()
+
+        events.forEach { event ->
+            val schedule = Schedule.createPrivateSchedule(
+                summary = event.getProperty<Property>(Property.SUMMARY)?.value,
+                created = parseDate(event.getProperty<Property>(Property.CREATED)?.value),
+                start = parseDate(event.getProperty<Property>(Property.DTSTART)?.value),
+                end = parseDate(event.getProperty<Property>(Property.DTEND)?.value),
+                uid = event.getProperty<Property>(Property.UID)?.value.toString()
+            )
+
+            val startDate = schedule.start.toLocalDate()
+            scheduleMap.getOrPut(startDate) { mutableListOf() }.add(schedule)
+        }
+        return scheduleMap.mapValues { entry ->
+            entry.value.sortedBy { it.start }
         }
     }
 
@@ -63,7 +85,6 @@ class CalDavAdapteeImpl() : CalDavAdaptee {
     }
 
     private fun fetchCalendarData(config: CalDavConfig): String? {
-        // Паттерн Builder
         val request = Request.Builder()
             .url(config.baseUrl)
             .header("Authorization", Credentials.basic(config.username, config.password))
@@ -76,8 +97,6 @@ class CalDavAdapteeImpl() : CalDavAdaptee {
 
     private fun parseCalendarData(data: String): Calendar {
         val stringReader = StringReader(data)
-
-        // Паттерн Builder
         return CalendarBuilder().build(stringReader)
     }
 }
