@@ -1,6 +1,10 @@
 package com.example.asnova.screen.sign_in
 
+import com.asnova.model.User
+
 data class SignInState(
-    val isSignInSuccessful: Boolean = false,
-    var signInError: String? = null
+    val user: User? = null,
+    val errorMessage: String? = null,
+    val loading: Boolean = false,
+    val isSignInSuccessful: Boolean = false
 )

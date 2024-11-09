@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
@@ -42,11 +43,9 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.asnova.R
-import com.example.asnova.utils.OtpView
 import com.example.asnova.ui.theme.darkLinear
 import com.example.asnova.ui.theme.grayAsnova
-import com.vk.id.multibranding.OAuthListWidget
-import com.vk.id.onetap.compose.onetap.sheet.OneTapBottomSheet
+import com.example.asnova.utils.OtpView
 import com.vk.id.onetap.compose.onetap.sheet.rememberOneTapBottomSheetState
 import kotlinx.coroutines.delay
 
@@ -69,12 +68,13 @@ fun SignInScreen(
         if (!showPhone) bottomSheetState.show()
     }
 
-    LaunchedEffect(key1 = state.signInError) {
-        state.signInError?.let { error ->
+    LaunchedEffect(key1 = state.errorMessage) {
+        state.errorMessage?.let { error ->
             Log.e("login_info", "$error! Вход не выполнен")
             if (!showPhone) onSignInClick.invoke()
         }
     }
+
 
     Box(
         modifier = Modifier
@@ -100,6 +100,10 @@ fun SignInScreen(
             )
         }
 
+        if (state.loading) {
+            CircularProgressIndicator(modifier = Modifier.size(64.dp))
+        }
+
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -117,7 +121,10 @@ fun SignInScreen(
                     isError = mobile.length > 10,
                     maxLines = 1,
                     modifier = Modifier.fillMaxWidth(),
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone, imeAction = ImeAction.Next),
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Phone,
+                        imeAction = ImeAction.Next
+                    ),
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedContainerColor = Color.Transparent,
                         unfocusedContainerColor = Color.Transparent,
@@ -138,7 +145,7 @@ fun SignInScreen(
                 }
                 Spacer(modifier = Modifier.height(32.dp))
 
-                if (showOtp){
+                if (showOtp) {
                     Text(text = "Введите SMS-код", color = grayAsnova)
                     Spacer(modifier = Modifier.height(6.dp))
                     OtpView(otpText = otp) {
@@ -185,32 +192,6 @@ fun SignInScreen(
                     modifier = Modifier.align(Alignment.Center)
                 )
             }
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // VK Sign-In Button
-
-            // не работает, потому что нужно выложить приложение в плей маркет
-            // doesnt work - info here: https://id.vk.com/about/business/go/docs/ru/vkid/latest/oauth/oauth-mail/configure/application-settings#Obshie-nastrojki
-
-            OAuthListWidget(
-                onFail = { oAuth, fail ->
-                    Log.e("AuthFail", "Error: ${fail.description}")
-                },
-                onAuth = { oAuth, token ->
-                    Log.d("Auth", "Token name: ${token.userData.email}")
-                }
-            )
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // https://id.vk.com/about/business/go/docs/ru/vkid/latest/vk-id/connection/android/floating-onetap
-            OneTapBottomSheet(
-                state = bottomSheetState,
-                onAuth = { oAuth, token ->
-                    Log.d("Auth", "Token name: ${token.userData.email}")
-                },
-                serviceName = stringResource(R.string.service_name)
-            )
-
             Spacer(modifier = Modifier.height(40.dp))
 
             TextButton(onClick = {

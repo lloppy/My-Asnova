@@ -172,5 +172,5 @@ fun UserInfoModalSheet(
 }
 
 private fun checkForNullOrEmpty(value: String?): String {
-    return if (value.isNullOrEmpty()) "-" else value
+    return if (value.isNullOrEmpty()) "" else value
 }

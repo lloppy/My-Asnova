@@ -236,7 +236,7 @@ fun ProfileSettingsScreen(
                 }
 
                 item {
-                    if (UserManager.getRole() == Role.STUDENT || UserManager.getRole() == Role.ADMIN) {
+                    if (UserManager.getRole() == Role.STUDENT || UserManager.getRole() == Role.ADMIN || UserManager.getRole() == Role.WORKER) {
                         SettingsItemBox(
                             icon = Icons.Filled.Person,
                             text = "Редактировать информацию профиля",
@@ -248,7 +248,7 @@ fun ProfileSettingsScreen(
                 }
 
                 item {
-                    if (UserManager.getRole() == Role.STUDENT || UserManager.getRole() == Role.ADMIN) {
+                    if (UserManager.getRole() == Role.STUDENT || UserManager.getRole() == Role.ADMIN || UserManager.getRole() == Role.WORKER) {
                         SettingsItemBox(
                             icon = Icons.Filled.Group,
                             text = "Сменить мою учебную группу",
@@ -258,7 +258,7 @@ fun ProfileSettingsScreen(
                 }
 
                 item {
-                    if (UserManager.getRole() != Role.GUEST && UserManager.getRole() != Role.NONE) {
+                    if (UserManager.getRole() != Role.GUEST && UserManager.getRole() != Role.NONE && UserManager.getRole() != Role.WORKER) {
                         SettingsItemBox(
                             icon = Icons.Outlined.Discount,
                             text = "Ввести промокод",

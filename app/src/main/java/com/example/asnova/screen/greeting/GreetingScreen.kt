@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -31,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import com.asnova.model.Resource
 import com.asnova.model.Role
 import com.example.asnova.R
 import com.example.asnova.navigation.Screen
@@ -39,10 +41,9 @@ import com.example.asnova.ui.theme.darkLinear
 @Composable
 fun GreetingScreen(
     viewModel: GreetingScreenViewModel = hiltViewModel(),
-    navHostController: NavHostController
+    navHostController: NavHostController,
+    isLoading: Boolean
 ) {
-    val state by viewModel.state
-
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -55,6 +56,15 @@ fun GreetingScreen(
             ),
         contentAlignment = Alignment.TopCenter
     ) {
+        if (isLoading) {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator(modifier = Modifier.size(64.dp))
+            }
+        }
+
         Box(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.BottomStart

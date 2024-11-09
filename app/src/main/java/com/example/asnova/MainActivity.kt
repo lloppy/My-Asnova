@@ -12,8 +12,12 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -25,17 +29,15 @@ import androidx.navigation.compose.rememberNavController
 import com.asnova.model.Role
 import com.example.asnova.data.UserManager
 import com.example.asnova.navigation.Screen
-import com.example.asnova.screen.main.MainScreen
 import com.example.asnova.screen.greeting.GreetingScreen
+import com.example.asnova.screen.main.MainScreen
 import com.example.asnova.screen.sign_in.SignInScreen
 import com.example.asnova.screen.sign_in.SignInScreenViewModel
 import com.example.asnova.ui.theme.AsnovaTheme
 import com.example.asnova.utils.SplashScreen
 import com.example.asnova.utils.createExternalRouter
 import com.example.asnova.utils.navigate
-import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.messaging.FirebaseMessaging
-import com.vk.id.VKID
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -46,27 +48,17 @@ class MainActivity : ComponentActivity() {
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        VKID.init(this)
+
         askNotificationPermission()
-
-        FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
-            if (!task.isSuccessful) {
-                Log.w("token_fcm", "Fetching FCM registration token failed", task.exception)
-                return@OnCompleteListener
-            }
-
-            val token = task.result
-
-            val msg = getString(R.string.msg_token_fmt, token)
-            Log.d("token_fcm", msg)
-            UserManager.fmc = token
-        })
+        setupFirebaseMessaging()
 
         setContent {
             AsnovaTheme {
                 navController = rememberNavController()
                 val viewModel: SignInScreenViewModel = hiltViewModel()
                 val state by viewModel.state.collectAsStateWithLifecycle()
+
+
 
                 val launcher = rememberLauncherForActivityResult(
                     contract = ActivityResultContracts.StartIntentSenderForResult(),
@@ -94,7 +86,7 @@ class MainActivity : ComponentActivity() {
                     }
                 }
 
-                NavHost(navController = navController, startDestination = Screen.Splash.route) {
+                NavHost(navController = navController, startDestination = Screen.Greeting.route) {
                     composable(Screen.Splash.route) {
                         SplashScreen(
                             navHostController = navController,
@@ -102,7 +94,7 @@ class MainActivity : ComponentActivity() {
                         )
                     }
                     composable(Screen.Greeting.route) {
-                        GreetingScreen(navHostController = navController)
+                        GreetingScreen(navHostController = navController, isLoading = state.loading)
                     }
                     composable(Screen.LogIn.route) {
                         SignInScreen(
@@ -142,6 +134,20 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    private fun setupFirebaseMessaging() {
+        FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
+            if (!task.isSuccessful) {
+                Log.w("token_fcm", "Fetching FCM registration token failed", task.exception)
+                return@addOnCompleteListener
+            }
+
+            val token = task.result ?: return@addOnCompleteListener
+
+            Log.d("token_fcm", getString(R.string.msg_token_fmt, token))
+            UserManager.fmc = token
+        }
+    }
+
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission(),
     ) { isGranted: Boolean ->
@@ -153,19 +159,12 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun askNotificationPermission() {
-        // This is only necessary for API level >= 33 (TIRAMISU)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) ==
                 PackageManager.PERMISSION_GRANTED
             ) {
-                // FCM SDK (and your app) can post notifications.
             } else if (shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS)) {
-                // TODO: display an educational UI explaining to the user the features that will be enabled
-                //       by them granting the POST_NOTIFICATION permission. This UI should provide the user
-                //       "OK" and "No thanks" buttons. If the user selects "OK," directly request the permission.
-                //       If the user selects "No thanks," allow the user to continue without notifications.
             } else {
-                // Directly ask for the permission
                 requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
             }
         }

@@ -5,13 +5,10 @@ import android.content.IntentSender
 import android.content.SharedPreferences
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.asnova.domain.usecase.CreateUserWithPhoneUseCase
-import com.asnova.domain.usecase.GetUserDataUseCase
-import com.asnova.domain.usecase.SignInWithIntentUseCase
-import com.asnova.domain.usecase.SignInWithLauncher
-import com.asnova.domain.usecase.SignInWithOtpUseCase
+import com.asnova.domain.usecase.*
 import com.asnova.model.Resource
 import com.asnova.model.SignInResult
+import com.asnova.model.User
 import com.example.asnova.data.UserManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -24,16 +21,11 @@ import javax.inject.Inject
 class SignInScreenViewModel @Inject constructor(
     private val userSharedPreferences: SharedPreferences,
     private val getUserDataUseCase: GetUserDataUseCase,
-
     private val signInWithLauncher: SignInWithLauncher,
     private val signInWithIntentUseCase: SignInWithIntentUseCase,
-
     private val signInWithOtpUseCase: SignInWithOtpUseCase,
     private val createUserWithPhoneUseCase: CreateUserWithPhoneUseCase
-
 ) : ViewModel() {
-    // Справочник методов: https://id.vk.com/about/business/go/docs/ru/vkid/latest/vk-id/connection/api-integration/api-description#Dostup-prilozheniya-k-dannym-polzovatelya
-    // Настройка приложения: https://id.vk.com/about/business/go/docs/ru/vkid/latest/vk-id/connection/application-settings#Nastrojka-dostupov
 
     private val _state = MutableStateFlow(SignInState())
     val state = _state.asStateFlow()
@@ -44,70 +36,71 @@ class SignInScreenViewModel @Inject constructor(
     }
 
     fun signInWithOtp(otp: String, verificationId: String) {
+        _state.update { it.copy(loading = true) }
+
         signInWithOtpUseCase(otp, verificationId) { resource ->
-            val (user, errorMessage) = when (resource) {
+            when (resource) {
                 is Resource.Success -> {
-                    val signInResult = resource.data
-                    val user = signInResult?.data
-                    Pair(user, null)
+                    val user = resource.data?.data
+                    _state.update {
+                        it.copy(user = user, errorMessage = null, isSignInSuccessful = user != null, loading = false)
+                    }
                 }
-
                 is Resource.Error -> {
-                    Pair(null, resource.message)
+                    _state.update {
+                        it.copy(user = null, errorMessage = resource.message, isSignInSuccessful = false, loading = false)
+                    }
                 }
-
                 else -> {
-                    Pair(null, "Unknown error")
+                    _state.update {
+                        it.copy(user = null, errorMessage = "Unknown error", isSignInSuccessful = false, loading = false)
+                    }
                 }
             }
-            onSignInResult(SignInResult(data = user, errorMessage = errorMessage))
         }
     }
 
     private fun checkIfUserIsSignedIn() {
         viewModelScope.launch {
+            _state.update { it.copy(loading = true) }
+
             getUserDataUseCase.invoke { resource ->
                 val user = resource.data
                 if (user != null) {
-                    onSignInResult(SignInResult(data = user, errorMessage = null))
+                    _state.update { it.copy(user = user, errorMessage = null, isSignInSuccessful = true, loading = false) }
                 } else {
-                    onSignInResult(SignInResult(data = null, errorMessage = "User not signed in"))
+                    _state.update { it.copy(user = null, errorMessage = "User not signed in", isSignInSuccessful = false, loading = false) }
                 }
             }
         }
     }
 
     fun resetState() {
-        _state.update { SignInState() }
+        _state.value = SignInState()
     }
 
     fun signInWithIntent(intent: Intent, role: String, fmc: String) {
+        _state.update { it.copy(loading = true) }
+
         signInWithIntentUseCase.invoke(intent, role, fmc) { resource ->
-            val (user, errorMessage) = when (resource) {
+            when (resource) {
                 is Resource.Success -> {
-                    val signInResult = resource.data
-                    val user = signInResult?.data
-                    Pair(user, null)
+                    val user = resource.data?.data
+                    _state.update {
+                        it.copy(user = user, errorMessage = null, isSignInSuccessful = user != null, loading = false)
+                    }
                 }
-
                 is Resource.Error -> {
-                    Pair(null, resource.message)
+                    _state.update {
+                        it.copy(user = null, errorMessage = resource.message, isSignInSuccessful = false, loading = false)
+                    }
                 }
-
                 else -> {
-                    Pair(null, "Unknown error")
+                    _state.update {
+                        it.copy(user = null, errorMessage = "Unknown error", isSignInSuccessful = false, loading = false)
+                    }
                 }
             }
-            onSignInResult(SignInResult(data = user, errorMessage = errorMessage))
-        }
-    }
-
-    private fun onSignInResult(result: SignInResult) {
-        _state.update {
-            it.copy(
-                isSignInSuccessful = result.data != null,
-                signInError = result.errorMessage
-            )
         }
     }
 
@@ -116,8 +109,6 @@ class SignInScreenViewModel @Inject constructor(
     }
 
     fun createUserWithPhone(mobile: String) {
-        createUserWithPhoneUseCase(mobile) {
-
-        }
+        createUserWithPhoneUseCase(mobile) { /* Handle result if needed */ }
     }
 }
