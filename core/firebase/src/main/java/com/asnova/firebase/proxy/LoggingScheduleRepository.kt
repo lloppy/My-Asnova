@@ -1,4 +1,4 @@
-package com.asnova.firebase
+package com.asnova.firebase.proxy
 
 import android.util.Log
 import com.asnova.domain.repository.firebase.ScheduleRepository
@@ -8,14 +8,17 @@ import com.asnova.model.ScheduleAsnovaPrivate
 import com.asnova.model.ScheduleAsnovaSite
 
 // Паттерн Proxy
-class LoggingScheduleRepository(private val repository: ScheduleRepository) : ScheduleRepository {
+class LoggingScheduleRepository(private val repository: ScheduleRepository) :
+    Logger("LoggingScheduleRepository"), ScheduleRepository {
 
-    private val tag = "LoggingScheduleRepository"
-
-    private fun <T> logResourceResult(methodName: String, resource: Resource<T>) {
+    override fun <T> logResourceResult(methodName: String, resource: Resource<T>) {
         when (resource) {
             is Resource.Loading -> Log.d(tag, "$methodName called - Loading")
-            is Resource.Success -> Log.d(tag, "$methodName result: ${resource.data}, message: ${resource.message}")
+            is Resource.Success -> Log.d(
+                tag,
+                "$methodName result: ${resource.data}, message: ${resource.message}"
+            )
+
             is Resource.Error -> Log.e(tag, "$methodName error: ${resource.message}")
         }
     }
@@ -63,7 +66,10 @@ class LoggingScheduleRepository(private val repository: ScheduleRepository) : Sc
         }
     }
 
-    override fun pushAsnovaClasses(asnovaClasses: List<AsnovaStudentsClass>, callback: (Resource<Boolean>) -> Unit) {
+    override fun pushAsnovaClasses(
+        asnovaClasses: List<AsnovaStudentsClass>,
+        callback: (Resource<Boolean>) -> Unit
+    ) {
         Log.d(tag, "pushAsnovaClasses called with ${asnovaClasses.size} classes")
         callback(Resource.Loading())
         repository.pushAsnovaClasses(asnovaClasses) { resource ->

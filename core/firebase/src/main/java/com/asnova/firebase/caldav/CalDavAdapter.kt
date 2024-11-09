@@ -1,4 +1,4 @@
-package com.asnova.firebase.schedule
+package com.asnova.firebase.caldav
 
 import com.asnova.domain.repository.firebase.CalendarService
 import com.asnova.model.CalDavConfig

@@ -6,15 +6,14 @@ import com.asnova.model.WallItem
 
 
 interface NewsRepository {
-    fun addNewsItem(newsItem: NewsItem, callback: (Resource<Boolean>) -> Unit)
     fun getNewsArticlesByOrder(order: String, callback: (Resource<List<NewsItem>>) -> Unit)
     fun getNewsItemById(id: String, callback: (Resource<NewsItem>) -> Unit)
 
     // Get news
-    fun getAsnovaNewsUseCase(callback: (Resource<List<WallItem>>) -> Unit)
-    fun getSafetyNewsUseCase(callback: (Resource<List<WallItem>>) -> Unit)
+    fun getAsnovaNews(callback: (Resource<List<WallItem>>) -> Unit)
+    fun getSafetyNews(callback: (Resource<List<WallItem>>) -> Unit)
 
     // download more news
-    fun onDownloadMoreAsnovaNewsUseCase(offset: Int, callback: (Resource<List<WallItem>>) -> Unit)
-    fun onDownloadMoreSafetyNewsUseCase(offset: Int, callback: (Resource<List<WallItem>>) -> Unit)
+    fun onDownloadMoreAsnovaNews(offset: Int, callback: (Resource<List<WallItem>>) -> Unit)
+    fun onDownloadMoreSafetyNews(offset: Int, callback: (Resource<List<WallItem>>) -> Unit)
 }

@@ -1,4 +1,4 @@
-package com.asnova.firebase
+package com.asnova.firebase.proxy
 
 import android.content.Intent
 import android.content.IntentSender
@@ -10,10 +10,9 @@ import com.asnova.model.SignInResult
 import com.asnova.model.User
 
 // Паттерн Proxy
-class LoggingUserRepository(private val repository: UserRepository) : UserRepository {
-    private val tag = "LoggingUserRepository"
-
-    private fun logResourceResult(methodName: String, resource: Resource<*>) {
+class LoggingUserRepository(private val repository: UserRepository) :
+    Logger("LoggingUserRepository"),  UserRepository {
+    override fun <T> logResourceResult(methodName: String, resource: Resource<T>) {
         when (resource) {
             is Resource.Loading -> Log.d(tag, "$methodName called - Loading")
             is Resource.Success -> Log.d(tag, "$methodName result: ${resource.data}, message: ${resource.message}")

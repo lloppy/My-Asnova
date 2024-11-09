@@ -1,29 +1,19 @@
-package com.asnova.firebase.sources
+package com.asnova.firebase
 
-import android.net.Uri
 import com.asnova.domain.repository.firebase.NewsRepository
 import com.asnova.firebase.api.GroupsApi
 import com.asnova.model.NewsItem
 import com.asnova.model.Resource
 import com.asnova.model.WallImageItem
 import com.asnova.model.WallItem
-import com.google.android.gms.tasks.Task
-import com.google.android.gms.tasks.Tasks
-import com.google.firebase.Firebase
-import com.google.firebase.FirebaseException
-import com.google.firebase.Timestamp
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
-import com.google.firebase.storage.FirebaseStorage
-import com.google.firebase.storage.StorageReference
-import com.google.firebase.storage.storage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.Date
-import java.util.UUID
 import javax.inject.Inject
 
 const val DEFAULT_IMAGE_RESOURCE_URL = "resource://ic_asnova_default_news"
@@ -32,77 +22,10 @@ class NewsRepositoryImpl @Inject constructor(
     private val groupsApi: GroupsApi
 ) : NewsRepository {
     // https://dev.vk.com/ru/method/groups
-    private val accessToken =
-        "2c7485642c7485642c748564202f6dcfcc22c742c7485644afaf2742c0714f09e3fa61a"
+    private val accessToken = "2c7485642c7485642c748564202f6dcfcc22c742c7485644afaf2742c0714f09e3fa61a"
 
     private val _database: FirebaseFirestore = FirebaseFirestore.getInstance()
     private val _databaseReference: CollectionReference = _database.collection("news")
-    private val _storage: FirebaseStorage = Firebase.storage
-    private val _storageReference: StorageReference = _storage.reference
-
-    override fun addNewsItem(newsItem: NewsItem, callback: (Resource<Boolean>) -> Unit) {
-        callback(Resource.Loading())
-        val id = _databaseReference.document().id
-        val uuid = UUID.randomUUID()
-        var imageUri = ""
-        val gallery: MutableList<String> = mutableListOf()
-
-        val tasksList = mutableListOf<Task<Uri>>()
-
-        try {
-            newsItem.gallery.forEach { string ->
-                val temp = UUID.randomUUID()
-                val imageReference = _storageReference.child("images/${id}/gallery/${temp}")
-                val uploadTask = imageReference.putFile(Uri.parse(string))
-
-                tasksList.add(uploadTask.continueWithTask { task ->
-                    if (!task.isSuccessful) {
-                        throw task.exception!!
-                    }
-                    return@continueWithTask imageReference.downloadUrl
-                })
-            }
-
-            Tasks.whenAllSuccess<Uri>(tasksList).addOnSuccessListener {
-                it.forEach { uri ->
-                    gallery.add(uri.toString())
-                }
-            }.addOnCompleteListener {
-                if (it.isSuccessful) {
-                    _storageReference.child("images/${id}/${uuid}")
-                        .putFile(Uri.parse(newsItem.image)).addOnSuccessListener {
-                            _storageReference.child("images/${id}/${uuid}").downloadUrl.addOnSuccessListener { uri ->
-                                imageUri = uri.toString()
-                            }.addOnCompleteListener { task ->
-                                if (task.isSuccessful) {
-                                    val article = com.asnova.firebase.model.NewsItem(
-                                        image = imageUri,
-                                        title = newsItem.title,
-                                        published = Timestamp.now(),
-                                        content = newsItem.content,
-                                        authors = newsItem.authors,
-                                        tags = newsItem.tags,
-                                        gallery = gallery,
-                                        id = id
-                                    )
-                                    _databaseReference.document(article.id).set(article)
-                                        .addOnCompleteListener { task2 ->
-                                            if (task2.isSuccessful) {
-                                                callback(Resource.Success(data = true))
-                                            } else
-                                                callback(Resource.Success(data = false))
-                                        }.addOnFailureListener { exception ->
-                                            callback(Resource.Error(exception.message.toString()))
-                                        }
-                                }
-                            }
-                        }
-                }
-            }
-        } catch (e: FirebaseException) {
-            callback(Resource.Error(e.message.toString()))
-        }
-    }
 
     override fun getNewsArticlesByOrder(
         order: String,
@@ -115,13 +38,13 @@ class NewsRepositoryImpl @Inject constructor(
                     val list: MutableList<NewsItem> = mutableListOf()
                     snapshot.documents.forEach { document ->
                         val newsItem =
-                            document.toObject(com.asnova.firebase.model.NewsItem::class.java)
+                            document.toObject(NewsItem::class.java)
                         if (newsItem != null) {
                             list.add(
                                 NewsItem(
                                     image = newsItem.image,
                                     title = newsItem.title,
-                                    published = newsItem.published.seconds,
+                                    published = newsItem.published,
                                     content = newsItem.content,
                                     authors = newsItem.authors,
                                     gallery = newsItem.gallery,
@@ -143,12 +66,12 @@ class NewsRepositoryImpl @Inject constructor(
         callback(Resource.Loading())
         _databaseReference.document(id).get().addOnSuccessListener { snapshot ->
             if (snapshot.data != null) {
-                val temp = snapshot.toObject(com.asnova.firebase.model.NewsItem::class.java)
+                val temp = snapshot.toObject(NewsItem::class.java)
                 if (temp != null) {
                     val newsItem = NewsItem(
                         image = temp.image,
                         title = temp.title,
-                        published = temp.published.seconds,
+                        published = temp.published,
                         content = temp.content,
                         authors = temp.authors,
                         gallery = temp.gallery,
@@ -165,7 +88,7 @@ class NewsRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun getAsnovaNewsUseCase(callback: (Resource<List<WallItem>>) -> Unit) {
+    override fun getAsnovaNews(callback: (Resource<List<WallItem>>) -> Unit) {
         fetchWallNews(
             ownerId = -162375388,
             callback = callback,
@@ -173,7 +96,7 @@ class NewsRepositoryImpl @Inject constructor(
         )
     }
 
-    override fun getSafetyNewsUseCase(callback: (Resource<List<WallItem>>) -> Unit) {
+    override fun getSafetyNews(callback: (Resource<List<WallItem>>) -> Unit) {
         fetchWallNews(
             ownerId = -80108699,
             callback = callback,
@@ -181,7 +104,7 @@ class NewsRepositoryImpl @Inject constructor(
         )
     }
 
-    override fun onDownloadMoreAsnovaNewsUseCase(
+    override fun onDownloadMoreAsnovaNews(
         offset: Int,
         callback: (Resource<List<WallItem>>) -> Unit
     ) {
@@ -193,7 +116,7 @@ class NewsRepositoryImpl @Inject constructor(
         )
     }
 
-    override fun onDownloadMoreSafetyNewsUseCase(
+    override fun onDownloadMoreSafetyNews(
         offset: Int,
         callback: (Resource<List<WallItem>>) -> Unit
     ) {

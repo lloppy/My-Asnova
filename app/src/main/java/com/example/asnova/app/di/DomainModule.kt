@@ -1,6 +1,6 @@
 package com.example.asnova.app.di
 
-import com.asnova.domain.repository.firebase.NewsFacade
+import com.asnova.domain.repository.firebase.NewsRepository
 import com.asnova.domain.repository.firebase.ScheduleRepository
 import com.asnova.domain.repository.firebase.UserRepository
 import com.asnova.domain.repository.storage.IsAuthedUserStorage
@@ -117,9 +117,9 @@ class DomainModule {
 
     @Provides
     fun provideGetNewsByOrderUseCase(
-        newsFacadeImpl: NewsFacade
+        newsRepository: NewsRepository
     ): GetNewsByOrderUseCase {
-        return GetNewsByOrderUseCase(newsFacadeImpl)
+        return GetNewsByOrderUseCase(newsRepository)
     }
 
     @Provides
@@ -173,37 +173,37 @@ class DomainModule {
 
     @Provides
     fun provideGetSafetyNewsUseCase(
-        newsFacadeImpl: NewsFacade
+        newsRepository: NewsRepository
     ): GetSafetyNewsUseCase {
-        return GetSafetyNewsUseCase(newsFacadeImpl)
+        return GetSafetyNewsUseCase(newsRepository)
     }
 
     @Provides
     fun provideGetAsnovaNewsUseCase(
-        newsFacadeImpl: NewsFacade
+        newsRepository: NewsRepository
     ): GetAsnovaNewsUseCase {
-        return GetAsnovaNewsUseCase(newsFacadeImpl)
+        return GetAsnovaNewsUseCase(newsRepository)
     }
 
     @Provides
     fun provideGetNewsItemByIdUseCase(
-        newsFacadeImpl: NewsFacade
+        newsRepository: NewsRepository
     ): GetNewsItemByIdUseCase {
-        return GetNewsItemByIdUseCase(newsFacadeImpl)
+        return GetNewsItemByIdUseCase(newsRepository)
     }
 
     @Provides
     fun provideOnDownloadMoreAsnovaNewsUseCase(
-        newsFacadeImpl: NewsFacade
+        newsRepository: NewsRepository
     ): OnDownloadMoreAsnovaNewsUseCase {
-        return OnDownloadMoreAsnovaNewsUseCase(newsFacadeImpl)
+        return OnDownloadMoreAsnovaNewsUseCase(newsRepository)
     }
 
     @Provides
     fun provideOnDownloadMoreSafetyNewsUseCase(
-        newsFacadeImpl: NewsFacade
+        newsRepository: NewsRepository
     ): OnDownloadMoreSafetyNewsUseCase {
-        return OnDownloadMoreSafetyNewsUseCase(newsFacadeImpl)
+        return OnDownloadMoreSafetyNewsUseCase(newsRepository)
     }
 
     @Provides

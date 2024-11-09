@@ -2,7 +2,6 @@ package com.example.asnova.app.di
 
 import android.content.Context
 import android.content.SharedPreferences
-import com.asnova.domain.repository.firebase.NewsFacade
 import com.asnova.domain.repository.firebase.NewsRepository
 import com.asnova.domain.repository.firebase.ScheduleRepository
 import com.asnova.domain.repository.firebase.UserRepository
@@ -13,15 +12,15 @@ import com.asnova.domain.repository.storage.ScheduleStateRepository
 import com.asnova.domain.repository.storage.ScheduleStateStorage
 import com.asnova.domain.repository.storage.ThemeSettingRepository
 import com.asnova.domain.repository.storage.ThemeSettingStorage
-import com.asnova.firebase.LoggingScheduleRepository
-import com.asnova.firebase.LoggingUserRepository
-import com.asnova.firebase.NewsFacadeImpl
+import com.asnova.firebase.proxy.LoggingScheduleRepository
+import com.asnova.firebase.proxy.LoggingUserRepository
+import com.asnova.firebase.NewsRepositoryImpl
 import com.asnova.firebase.ScheduleRepositoryImpl
 import com.asnova.firebase.UserRepositoryImpl
 import com.asnova.firebase.api.GroupsApi
-import com.asnova.firebase.schedule.CalDavAdapteeImpl
-import com.asnova.firebase.schedule.CalDavAdapter
-import com.asnova.firebase.sources.NewsRepositoryImpl
+import com.asnova.firebase.caldav.CalDavAdapteeImpl
+import com.asnova.firebase.caldav.CalDavAdapter
+import com.asnova.firebase.proxy.LoggingNewsRepository
 import com.asnova.model.Role
 import com.asnova.storage.IsAuthedUserStorageImpl
 import com.asnova.storage.LanguageSettingStorageImpl
@@ -48,7 +47,6 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 class DataModule {
-    // Паттерн Singleton
     @Provides
     @Singleton
     fun provideUserSharedPreferences(@ApplicationContext context: Context): SharedPreferences {
@@ -68,13 +66,13 @@ class DataModule {
         }
     }
 
-    // Паттерн Facade
     @Provides
     @Singleton
-    fun provideNewsFacade(
+    fun provideNewsRepository(
         groupsApi: GroupsApi
-    ): NewsFacade {
-        return NewsFacadeImpl(groupsApi)
+    ): NewsRepository {
+        val originalRepository = NewsRepositoryImpl(groupsApi)
+        return LoggingNewsRepository(originalRepository)
     }
 
     @Provides
@@ -83,7 +81,6 @@ class DataModule {
         @ApplicationContext context: Context,
         oneTapClient: SignInClient
     ): UserRepository {
-        // Паттерн Proxy
         val originalRepository = UserRepositoryImpl(context, oneTapClient)
         return LoggingUserRepository(originalRepository)
     }
@@ -113,7 +110,6 @@ class DataModule {
         val calDavAdapteeImpl = CalDavAdapteeImpl()
         val calDavAdapter = CalDavAdapter(calDavAdapteeImpl)
 
-        // Паттерн Proxy
         val originalRepository = ScheduleRepositoryImpl(calDavAdapter)
         return LoggingScheduleRepository(originalRepository)
     }
