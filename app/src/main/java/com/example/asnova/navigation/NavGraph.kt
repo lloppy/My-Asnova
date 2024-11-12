@@ -61,8 +61,6 @@ fun SetupNavGraph(
             )
         }
         composable(Screen.ProfileSettings.route) {
-            //ProfileScreen(externalRouter = router, context = context, lifecycleScope = lifecycleScope, lifecycleOwner = lifecycleOwner)
-
             ProfileSettingsScreen(
                 externalRouter = router,
                 context = context,

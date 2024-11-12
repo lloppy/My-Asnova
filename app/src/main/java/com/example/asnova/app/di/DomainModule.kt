@@ -15,13 +15,13 @@ import com.asnova.domain.usecase.CleanAsnovaClassesFromFirebaseUseCase
 import com.asnova.domain.usecase.CreateUserWithPhoneUseCase
 import com.asnova.domain.usecase.DeleteAccountUseCase
 import com.asnova.domain.usecase.GetAsnovaClassesFromFirebaseUseCase
-import com.asnova.domain.usecase.GetRawAsnovaClassesUseCase
 import com.asnova.domain.usecase.GetAsnovaNewsUseCase
 import com.asnova.domain.usecase.GetIsAuthedUserUseCase
 import com.asnova.domain.usecase.GetLanguageSettingUseCase
 import com.asnova.domain.usecase.GetNewsByOrderUseCase
 import com.asnova.domain.usecase.GetNewsItemByIdUseCase
 import com.asnova.domain.usecase.GetNotificationsSettingUseCase
+import com.asnova.domain.usecase.GetRawAsnovaClassesUseCase
 import com.asnova.domain.usecase.GetSafetyNewsUseCase
 import com.asnova.domain.usecase.GetScheduleFromSiteUseCase
 import com.asnova.domain.usecase.GetScheduleMapUseCase

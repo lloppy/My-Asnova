@@ -18,14 +18,12 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 class NetworkModule {
-    // Паттерн Singleton
     @Provides
     @Singleton
     fun provideGroupsApi(
         okHttpClient: OkHttpClient,
         converterFactory: Converter.Factory
     ): GroupsApi =
-        // Паттерн Builder
         Retrofit.Builder()
             .client(okHttpClient)
             .addConverterFactory(converterFactory)
@@ -42,7 +40,6 @@ class NetworkModule {
     @Provides
     @Singleton
     fun provideOkHttpClient(): OkHttpClient =
-        // Паттерн Builder
         OkHttpClient.Builder()
             .protocols(listOf(Protocol.HTTP_1_1))
             .build()

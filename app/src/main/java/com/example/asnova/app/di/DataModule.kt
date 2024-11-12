@@ -12,8 +12,6 @@ import com.asnova.domain.repository.storage.ScheduleStateRepository
 import com.asnova.domain.repository.storage.ScheduleStateStorage
 import com.asnova.domain.repository.storage.ThemeSettingRepository
 import com.asnova.domain.repository.storage.ThemeSettingStorage
-import com.asnova.firebase.proxy.LoggingScheduleRepository
-import com.asnova.firebase.proxy.LoggingUserRepository
 import com.asnova.firebase.NewsRepositoryImpl
 import com.asnova.firebase.ScheduleRepositoryImpl
 import com.asnova.firebase.UserRepositoryImpl
@@ -21,6 +19,8 @@ import com.asnova.firebase.api.GroupsApi
 import com.asnova.firebase.caldav.CalDavAdapteeImpl
 import com.asnova.firebase.caldav.CalDavAdapter
 import com.asnova.firebase.proxy.LoggingNewsRepository
+import com.asnova.firebase.proxy.LoggingScheduleRepository
+import com.asnova.firebase.proxy.LoggingUserRepository
 import com.asnova.model.Role
 import com.asnova.storage.IsAuthedUserStorageImpl
 import com.asnova.storage.LanguageSettingStorageImpl
