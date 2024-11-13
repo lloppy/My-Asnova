@@ -86,7 +86,9 @@ fun SetupNavGraph(
             ChatScreen()
         }
         composable(Screen.ChooseClass.route) {
-            SelectClassScreen(context)
+            SelectClassScreen(
+                context = context
+            )
         }
         composable(Screen.EnterPromocode.route) {
             EnterPromocodeScreen(context, navHostController)
