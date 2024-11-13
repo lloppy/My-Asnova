@@ -37,8 +37,14 @@ class SettingsScreenViewModel @Inject constructor(
     private val getUserDataUseCase: GetUserDataUseCase,
     private val deleteAccountUseCase: DeleteAccountUseCase,
 
+    private val pushAsnovaClassesUseCase: PushAsnovaClassesUseCase,
     private val selectClassUseCase: SelectClassUseCase,
+
+    private val getAsnovaClassesFromFirebaseUseCase: GetAsnovaClassesFromFirebaseUseCase,
+    private val getRawAsnovaClassesUseCase: GetRawAsnovaClassesUseCase,
+
     private val submitPromocodeUseCase: SubmitPromocodeUseCase,
+    private val cleanAsnovaClassesFromFirebaseUseCase: CleanAsnovaClassesFromFirebaseUseCase,
 
     private val isAuthedUserStorage: IsAuthedUserStorage,
     private val checkIsAdminUseCase: CheckIsAdminUseCase,
