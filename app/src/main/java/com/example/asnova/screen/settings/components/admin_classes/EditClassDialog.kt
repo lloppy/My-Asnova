@@ -1,4 +1,4 @@
-package com.example.asnova.screen.settings.components
+package com.example.asnova.screen.settings.components.admin_classes
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth

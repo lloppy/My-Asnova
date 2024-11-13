@@ -1,4 +1,4 @@
-package com.example.asnova.screen.settings.components
+package com.example.asnova.screen.settings.components.admin_classes
 
 import android.content.Context
 import android.util.Log
@@ -42,6 +42,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.asnova.model.AsnovaStudentsClass
 import com.asnova.model.Resource
 import com.example.asnova.screen.settings.SettingsScreenViewModel
+import com.example.asnova.screen.settings.components.ClassCard
 import com.example.asnova.ui.theme.BottomBarHeight
 import com.example.asnova.ui.theme.backgroundAsnova
 import com.example.asnova.utils.SkeletonScreen
@@ -91,9 +92,11 @@ fun SelectClassScreen(
         SkeletonScreen(
             isLoading = state.loading,
             skeleton = {
-                LazyColumn(modifier = Modifier
-                    .fillMaxSize()
-                    .padding(8.dp)) {
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(8.dp)
+                ) {
                     item {
                         Text(
                             text = "Выберите группу",
@@ -148,20 +151,20 @@ fun SelectClassScreen(
                                         expanded = false
                                     })
 
-                                    /*
-                                DropdownMenuItem(
-                                    text = { Text(text = "Очистить всё на базе данных") },
-                                    onClick = {
-                                        viewModel.cleanDatabase { success ->
-                                            if (success) {
-                                                Toast.makeText(context, "База данных успешно очищена", Toast.LENGTH_SHORT).show()
-                                            } else {
-                                                Toast.makeText(context, "Ошибка при очистке базы данных", Toast.LENGTH_SHORT).show()
-                                            }
+                                /*
+                            DropdownMenuItem(
+                                text = { Text(text = "Очистить всё на базе данных") },
+                                onClick = {
+                                    viewModel.cleanDatabase { success ->
+                                        if (success) {
+                                            Toast.makeText(context, "База данных успешно очищена", Toast.LENGTH_SHORT).show()
+                                        } else {
+                                            Toast.makeText(context, "Ошибка при очистке базы данных", Toast.LENGTH_SHORT).show()
                                         }
                                     }
-                                )
-                                     */
+                                }
+                            )
+                                 */
 
                                 DropdownMenuItem(
                                     text = { Text("Сохранить текущие изменения, отправив новые данные") },

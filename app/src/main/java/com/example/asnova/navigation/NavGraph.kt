@@ -23,7 +23,7 @@ import com.example.asnova.screen.chat.ChatScreen
 import com.example.asnova.screen.settings.ProfileSettingsScreen
 import com.example.asnova.screen.settings.components.ChangeGroupScreen
 import com.example.asnova.screen.settings.components.EnterPromocodeScreen
-import com.example.asnova.screen.settings.components.SelectClassScreen
+import com.example.asnova.screen.settings.components.admin_classes.SelectClassScreen
 import com.example.asnova.ui.theme.BottomBarHeight
 import com.example.asnova.utils.Router
 import com.example.bottombar.AnimatedBottomBar

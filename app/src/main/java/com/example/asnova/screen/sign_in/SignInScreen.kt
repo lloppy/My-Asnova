@@ -58,10 +58,7 @@ fun SignInScreen(
     val bottomSheetState = rememberOneTapBottomSheetState()
 
     var showPhone by remember { mutableStateOf(false) }
-    var showOtp by remember { mutableStateOf(false) }
-
     var mobile by remember { mutableStateOf("") }
-    var otp by remember { mutableStateOf("") }
 
     LaunchedEffect(Unit) {
         delay(15000)
@@ -139,27 +136,11 @@ fun SignInScreen(
                 )
                 Spacer(modifier = Modifier.height(20.dp))
                 Button(onClick = {
-                    showOtp = !showOtp
+                    // TODO() перейти далее, отправить код на бд
                 }) {
-                    Text(text = "Получить SMS - код")
+                    Text(text = "Войти")
                 }
                 Spacer(modifier = Modifier.height(32.dp))
-
-                if (showOtp) {
-                    Text(text = "Введите SMS-код", color = grayAsnova)
-                    Spacer(modifier = Modifier.height(6.dp))
-                    OtpView(otpText = otp) {
-                        otp = it
-                    }
-                    Spacer(modifier = Modifier.height(20.dp))
-                    Button(onClick = {
-
-                    }) {
-                        Text(text = "Подтвердить")
-                    }
-                    Spacer(modifier = Modifier.height(32.dp))
-
-                }
             }
 
             // Google Sign-In Button
@@ -196,7 +177,6 @@ fun SignInScreen(
 
             TextButton(onClick = {
                 showPhone = !showPhone
-                showOtp = false
             }) {
                 Text(
                     text = stringResource(R.string.login_using_phone),
