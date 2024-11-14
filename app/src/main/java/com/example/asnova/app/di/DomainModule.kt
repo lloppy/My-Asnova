@@ -42,6 +42,7 @@ import com.asnova.domain.usecase.SelectClassUseCase
 import com.asnova.domain.usecase.SignInWithIntentUseCase
 import com.asnova.domain.usecase.SignInWithLauncher
 import com.asnova.domain.usecase.SignInWithOtpUseCase
+import com.asnova.domain.usecase.SignInWithPhoneUseCase
 import com.asnova.domain.usecase.SignOutUserUseCase
 import com.asnova.domain.usecase.SubmitPromocodeUseCase
 import dagger.Module
@@ -65,6 +66,13 @@ class DomainModule {
         repository: UserRepository
     ): CheckUserClassUseCase {
         return CheckUserClassUseCase(repository)
+    }
+
+    @Provides
+    fun provideSignInWithPhoneUseCase(
+        repository: UserRepository
+    ): SignInWithPhoneUseCase {
+        return SignInWithPhoneUseCase(repository)
     }
 
     @Provides

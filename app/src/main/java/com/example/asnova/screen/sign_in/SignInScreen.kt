@@ -1,6 +1,8 @@
 package com.example.asnova.screen.sign_in
 
+import android.content.Context
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -42,7 +44,9 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.asnova.R
+import com.example.asnova.screen.feed.FeedScreenViewModel
 import com.example.asnova.ui.theme.darkLinear
 import com.example.asnova.ui.theme.grayAsnova
 import com.example.asnova.utils.OtpView
@@ -52,11 +56,12 @@ import kotlinx.coroutines.delay
 @Composable
 fun SignInScreen(
     state: SignInState,
+    context: Context,
     onSignInClick: () -> Unit,
-    goProfile: () -> Unit
+    goProfile: () -> Unit,
+    viewModel: SignInScreenViewModel = hiltViewModel()
 ) {
     val bottomSheetState = rememberOneTapBottomSheetState()
-
     var showPhone by remember { mutableStateOf(false) }
     var mobile by remember { mutableStateOf("") }
 
@@ -71,7 +76,6 @@ fun SignInScreen(
             if (!showPhone) onSignInClick.invoke()
         }
     }
-
 
     Box(
         modifier = Modifier
@@ -135,51 +139,60 @@ fun SignInScreen(
                     )
                 )
                 Spacer(modifier = Modifier.height(20.dp))
-                Button(onClick = {
-                    // TODO() перейти далее, отправить код на бд
-                }) {
+                Button(modifier = Modifier.fillMaxWidth(),
+                    onClick =
+                    {
+                        if (mobile.length > 10){
+                            Toast.makeText(context, "Длина телефона должна быть 10 символов", Toast.LENGTH_SHORT).show()
+                        } else {
+                            viewModel.signInWithPhone(mobile)
+                        }
+                    }
+                ) {
                     Text(text = "Войти")
                 }
                 Spacer(modifier = Modifier.height(32.dp))
             }
 
-            // Google Sign-In Button
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .shadow(
-                        elevation = 2.dp,
-                        shape = RoundedCornerShape(percent = 12),
-                        spotColor = Color.Black,
-                        ambientColor = Color.Black
-                    )
-                    .background(Color.White)
-                    .clip(RoundedCornerShape(12))
-                    .clickable(onClick = onSignInClick)
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.googlelogo),
-                    contentDescription = stringResource(R.string.google_logo),
+            if (!showPhone) {
+                // Google Sign-In Button
+                Box(
                     modifier = Modifier
-                        .padding(start = 8.dp)
-                        .size(48.dp)
-                        .align(Alignment.CenterStart)
-                )
-                Text(
-                    text = stringResource(R.string.google_sign_in),
-                    fontFamily = FontFamily(Font(R.font.pretendbold)),
-                    color = Color(0xFF1F1F1F),
-                    fontSize = 16.sp,
-                    modifier = Modifier.align(Alignment.Center)
-                )
+                        .fillMaxWidth()
+                        .shadow(
+                            elevation = 2.dp,
+                            shape = RoundedCornerShape(percent = 12),
+                            spotColor = Color.Black,
+                            ambientColor = Color.Black
+                        )
+                        .background(Color.White)
+                        .clip(RoundedCornerShape(12))
+                        .clickable(onClick = onSignInClick)
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.googlelogo),
+                        contentDescription = stringResource(R.string.google_logo),
+                        modifier = Modifier
+                            .padding(start = 8.dp)
+                            .size(48.dp)
+                            .align(Alignment.CenterStart)
+                    )
+                    Text(
+                        text = stringResource(R.string.google_sign_in),
+                        fontFamily = FontFamily(Font(R.font.pretendbold)),
+                        color = Color(0xFF1F1F1F),
+                        fontSize = 16.sp,
+                        modifier = Modifier.align(Alignment.Center)
+                    )
+                }
+                Spacer(modifier = Modifier.height(40.dp))
             }
-            Spacer(modifier = Modifier.height(40.dp))
 
             TextButton(onClick = {
                 showPhone = !showPhone
             }) {
                 Text(
-                    text = stringResource(R.string.login_using_phone),
+                    text = if (!showPhone) stringResource(R.string.login_using_phone) else "или войдите с помощью Google почты",
                     color = grayAsnova,
                     fontSize = 12.sp
                 )

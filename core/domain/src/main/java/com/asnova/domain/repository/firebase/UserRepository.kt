@@ -23,7 +23,7 @@ interface UserRepository {
         verificationId: String,
         callback: (Resource<SignInResult>) -> Unit
     )
-
+    fun signInWithPhone(phone: String, callback: (Resource<SignInResult>) -> Unit)
     fun sendOtp(phone: String, callback: (Resource<String>) -> Unit)
     suspend fun signInWithLauncher(): IntentSender?
     fun signOut()

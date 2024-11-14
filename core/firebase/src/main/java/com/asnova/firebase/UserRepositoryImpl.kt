@@ -23,6 +23,7 @@ import com.google.firebase.auth.auth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.database
 import kotlinx.coroutines.tasks.await
+import java.util.UUID
 import java.util.concurrent.CancellationException
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
@@ -325,6 +326,31 @@ class UserRepositoryImpl @Inject constructor(
         } else {
             callback(Resource.Error("userUid null error"))
         }
+    }
+
+    override fun signInWithPhone(phone: String, callback: (Resource<SignInResult>) -> Unit) {
+        val currentUser = FirebaseAuth.getInstance().currentUser
+        val userUid = currentUser?.uid ?: UUID.randomUUID().toString()
+
+        val user = User(
+            userUid = userUid,
+            username = "",
+            name = "",
+            surname = "",
+            email = "",
+            phone = phone,
+            profilePictureUrl = ""
+        )
+
+        _database.child("users").child(userUid).setValue(user)
+            .addOnSuccessListener {
+                callback(Resource.Success(SignInResult(data = user, errorMessage = null)))
+            }
+            .addOnFailureListener { exception ->
+                callback(
+                    Resource.Error(exception.message ?: "Unknown error")
+                )
+            }
     }
 
     override fun signInWithOtp(

@@ -11,8 +11,12 @@ import androidx.navigation.NavController
 import com.asnova.domain.repository.firebase.UserRepository
 import com.asnova.domain.repository.storage.IsAuthedUserStorage
 import com.asnova.domain.usecase.CheckIsAdminUseCase
+import com.asnova.domain.usecase.CleanAsnovaClassesFromFirebaseUseCase
 import com.asnova.domain.usecase.DeleteAccountUseCase
+import com.asnova.domain.usecase.GetAsnovaClassesFromFirebaseUseCase
+import com.asnova.domain.usecase.GetRawAsnovaClassesUseCase
 import com.asnova.domain.usecase.GetUserDataUseCase
+import com.asnova.domain.usecase.PushAsnovaClassesUseCase
 import com.asnova.domain.usecase.SelectClassUseCase
 import com.asnova.domain.usecase.SignOutUserUseCase
 import com.asnova.domain.usecase.SubmitPromocodeUseCase
@@ -33,9 +37,14 @@ class SettingsScreenViewModel @Inject constructor(
     private val getUserDataUseCase: GetUserDataUseCase,
     private val deleteAccountUseCase: DeleteAccountUseCase,
 
+    private val pushAsnovaClassesUseCase: PushAsnovaClassesUseCase,
     private val selectClassUseCase: SelectClassUseCase,
 
+    private val getAsnovaClassesFromFirebaseUseCase: GetAsnovaClassesFromFirebaseUseCase,
+    private val getRawAsnovaClassesUseCase: GetRawAsnovaClassesUseCase,
+
     private val submitPromocodeUseCase: SubmitPromocodeUseCase,
+    private val cleanAsnovaClassesFromFirebaseUseCase: CleanAsnovaClassesFromFirebaseUseCase,
 
     private val isAuthedUserStorage: IsAuthedUserStorage,
     private val checkIsAdminUseCase: CheckIsAdminUseCase,
@@ -90,6 +99,24 @@ class SettingsScreenViewModel @Inject constructor(
         userSharedPreferences.edit().putString(KEY_USER_SETTING, Role.NONE).apply()
     }
 
+    fun getRawAsnovaClasses(callback: (Resource<List<AsnovaStudentsClass>>) -> Unit) {
+        Log.d("studentsClasses", "Fetching Raw Asnova classes...")
+
+        getRawAsnovaClassesUseCase.invoke(callback = { result ->
+            Log.d("studentsClasses", "Received Raw result from use case")
+            handleAsnovaClassesResult(result)
+        })
+    }
+
+    fun getAsnovaClassesFromFirebase(callback: (Resource<List<AsnovaStudentsClass>>) -> Unit) {
+        Log.d("studentsClasses", "Fetching Asnova classes...")
+
+        getAsnovaClassesFromFirebaseUseCase.invoke(callback = { result ->
+            Log.d("studentsClasses", "Received result from use case")
+            handleAsnovaClassesResult(result)
+        })
+    }
+
     fun canLoadAdminAccess(): Boolean {
         return when (UserManager.getRole()) {
             Role.ADMIN -> true
@@ -114,15 +141,61 @@ class SettingsScreenViewModel @Inject constructor(
                     _state.value =
                         SettingsState(error = result.message ?: "Ошибка")
                 }
-
                 else -> {}
             }
         }
     }
 
+    private fun handleAsnovaClassesResult(result: Resource<List<AsnovaStudentsClass>>) {
+        Log.d("studentsClasses", "handleAsnovaClassesResult")
+
+        when (result) {
+            is Resource.Success -> {
+                _state.value = SettingsState(asnovaClasses = result.data)
+                Log.d("studentsClasses", "Success")
+                Log.d("studentsClasses", _state.value.asnovaClasses?.first()?.name.toString())
+            }
+
+            is Resource.Error -> {
+                _state.value =
+                    SettingsState(error = result.message ?: "Ошибка. Проверьте интернет-соединение")
+            }
+
+            is Resource.Loading -> {
+                _state.value = SettingsState(loading = true)
+            }
+        }
+    }
 
     fun duplicateAsnovaClass(updatedClass: AsnovaStudentsClass) {
         _state.value.asnovaClasses = _state.value.asnovaClasses?.plus(updatedClass)
+    }
+
+    fun pushAsnovaClassesToFirebase(
+        asnovaClasses: List<AsnovaStudentsClass>?,
+        onSuccess: () -> Unit
+    ) {
+        if (asnovaClasses.isNullOrEmpty()) {
+            Log.w("pushAsnovaClasses", "No classes to push to Firebase.")
+            return
+        }
+
+        pushAsnovaClassesUseCase.invoke(asnovaClasses) { result ->
+            when (result) {
+                is Resource.Success -> {
+                    Log.d("pushAsnovaClasses", "Successfully pushed classes to Firebase.")
+                    onSuccess()
+                }
+
+                is Resource.Error -> {
+                    Log.e("pushAsnovaClasses", "Failed to push classes: ${result.message}")
+
+                    _state.value =
+                        SettingsState(error = result.message ?: "Ошибка сохранения учебных групп")
+                }
+                else -> {}
+            }
+        }
     }
 
     fun submitPromocode(promocode: String, context: Context, navController: NavController) {
@@ -134,7 +207,7 @@ class SettingsScreenViewModel @Inject constructor(
                         submitPromocodeUseCase(
                             promocode = promocode,
                             userData = userData,
-                            callback = {
+                            callback = { result ->
                                 Toast.makeText(
                                     context,
                                     "Промокод успешно отправлен на проверку",
@@ -172,6 +245,21 @@ class SettingsScreenViewModel @Inject constructor(
                 UserManager.setRole(Role.ADMIN)
                 Log.d("UserManager", "${UserManager.getRole()}")
                 isAuthedUserStorage.save(Role.ADMIN)
+            }
+        }
+    }
+
+    fun cleanDatabase(callback: (Boolean) -> Unit) {
+        cleanAsnovaClassesFromFirebaseUseCase.invoke { result ->
+            when (result) {
+                true -> {
+                    callback(true)
+                }
+
+                false -> {
+                    Log.e("CleanDatabase", "Error cleaning database")
+                    callback(false)
+                }
             }
         }
     }

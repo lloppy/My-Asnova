@@ -44,9 +44,6 @@ import androidx.navigation.NavController
 import com.asnova.model.AsnovaStudentsClass
 import com.asnova.model.Resource
 import com.example.asnova.screen.settings.SettingsScreenViewModel
-import com.example.asnova.screen.settings.components.admin_classes.command.ClassesViewModel
-import com.example.asnova.screen.settings.components.admin_classes.command.Command
-import com.example.asnova.screen.settings.components.admin_classes.command.GetFirebaseClassesCommand
 import com.example.asnova.ui.theme.BottomBarHeight
 import com.example.asnova.ui.theme.backgroundAsnova
 import com.example.asnova.utils.SkeletonScreen
@@ -56,7 +53,6 @@ import com.example.asnova.utils.shimmerEffect
 fun ChangeGroupScreen(
     context: Context,
     navController: NavController,
-    classesViewModel: ClassesViewModel = hiltViewModel(),
     viewModel: SettingsScreenViewModel = hiltViewModel()
 ) {
     val state by viewModel.state
@@ -67,12 +63,8 @@ fun ChangeGroupScreen(
     var expanded by remember { mutableStateOf(false) }
     var selectedClass by remember { mutableStateOf<AsnovaStudentsClass?>(null) }
 
-    val commandProcessor = { command: Command ->
-        classesViewModel.processCommand(command)
-    }
-
     LaunchedEffect(Unit) {
-        commandProcessor(GetFirebaseClassesCommand { resource ->
+        viewModel.getAsnovaClassesFromFirebase { resource ->
             when (resource) {
                 is Resource.Success -> {
                     studentsClasses = resource.data
@@ -91,7 +83,7 @@ fun ChangeGroupScreen(
                     Log.e("studentsClasses", "idk what happening...")
                 }
             }
-        })
+        }
     }
 
     Box(

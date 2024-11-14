@@ -24,6 +24,7 @@ class SignInScreenViewModel @Inject constructor(
     private val signInWithLauncher: SignInWithLauncher,
     private val signInWithIntentUseCase: SignInWithIntentUseCase,
     private val signInWithOtpUseCase: SignInWithOtpUseCase,
+    private val signInWithPhoneUseCase: SignInWithPhoneUseCase,
     private val createUserWithPhoneUseCase: CreateUserWithPhoneUseCase
 ) : ViewModel() {
 
@@ -59,6 +60,32 @@ class SignInScreenViewModel @Inject constructor(
             }
         }
     }
+
+    fun signInWithPhone(phone: String) {
+        _state.update { it.copy(loading = true) }
+
+        signInWithPhoneUseCase(phone) { resource ->
+            when (resource) {
+                is Resource.Success -> {
+                    val user = resource.data?.data
+                    _state.update {
+                        it.copy(user = user, errorMessage = null, isSignInSuccessful = user != null, loading = false)
+                    }
+                }
+                is Resource.Error -> {
+                    _state.update {
+                        it.copy(user = null, errorMessage = resource.message, isSignInSuccessful = false, loading = false)
+                    }
+                }
+                else -> {
+                    _state.update {
+                        it.copy(user = null, errorMessage = "Unknown error", isSignInSuccessful = false, loading = false)
+                    }
+                }
+            }
+        }
+    }
+
 
     private fun checkIfUserIsSignedIn() {
         viewModelScope.launch {
@@ -107,6 +134,8 @@ class SignInScreenViewModel @Inject constructor(
     suspend fun signInWithLauncher(): IntentSender? {
         return signInWithLauncher.invoke()
     }
+
+
 
     fun createUserWithPhone(mobile: String) {
         createUserWithPhoneUseCase(mobile) { /* Handle result if needed */ }

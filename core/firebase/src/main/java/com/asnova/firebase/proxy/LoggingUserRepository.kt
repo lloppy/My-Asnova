@@ -132,6 +132,14 @@ class LoggingUserRepository(private val repository: UserRepository) :
         }
     }
 
+    override fun signInWithPhone(phone: String, callback: (Resource<SignInResult>) -> Unit) {
+        Log.d(tag, "signInWithPhone called with phone: $phone")
+        repository.signInWithPhone(phone) { resource ->
+            logResourceResult("signInWithPhone", resource)
+            callback(resource)
+        }
+    }
+
     override fun signInWithOtp(
         otp: String,
         verificationId: String,

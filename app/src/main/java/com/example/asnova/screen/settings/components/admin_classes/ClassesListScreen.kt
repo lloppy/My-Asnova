@@ -43,11 +43,6 @@ import com.asnova.model.AsnovaStudentsClass
 import com.asnova.model.Resource
 import com.example.asnova.screen.settings.SettingsScreenViewModel
 import com.example.asnova.screen.settings.components.ClassCard
-import com.example.asnova.screen.settings.components.admin_classes.command.ClassesViewModel
-import com.example.asnova.screen.settings.components.admin_classes.command.Command
-import com.example.asnova.screen.settings.components.admin_classes.command.GetFirebaseClassesCommand
-import com.example.asnova.screen.settings.components.admin_classes.command.GetRawClassesCommand
-import com.example.asnova.screen.settings.components.admin_classes.command.PushClassesToFirebaseCommand
 import com.example.asnova.ui.theme.BottomBarHeight
 import com.example.asnova.ui.theme.backgroundAsnova
 import com.example.asnova.utils.SkeletonScreen
@@ -56,7 +51,6 @@ import com.example.asnova.utils.shimmerEffect
 @Composable
 fun SelectClassScreen(
     context: Context,
-    classesViewModel: ClassesViewModel = hiltViewModel(),
     viewModel: SettingsScreenViewModel = hiltViewModel()
 ) {
     val state by viewModel.state
@@ -67,13 +61,8 @@ fun SelectClassScreen(
 
     var expanded by remember { mutableStateOf(false) }
 
-    // Паттерн Command
-    val commandProcessor = { command: Command ->
-        classesViewModel.processCommand(command)
-    }
-
     LaunchedEffect(Unit) {
-        commandProcessor(GetFirebaseClassesCommand { resource ->
+        viewModel.getAsnovaClassesFromFirebase { resource ->
             when (resource) {
                 is Resource.Success -> {
                     studentsClasses = resource.data
@@ -92,7 +81,7 @@ fun SelectClassScreen(
                     Log.e("studentsClasses", "idk what happening...")
                 }
             }
-        })
+        }
     }
 
     Box(
@@ -143,22 +132,22 @@ fun SelectClassScreen(
                                 DropdownMenuItem(
                                     text = { Text(text = "Получить список групп повторно (текущие изменения не сохранятся)") },
                                     onClick = {
-                                        commandProcessor(GetFirebaseClassesCommand { resource ->
+                                        viewModel.getAsnovaClassesFromFirebase { resource ->
                                             if (resource is Resource.Success) {
                                                 studentsClasses = resource.data
                                             }
-                                        })
+                                        }
                                         expanded = false
                                     })
 
                                 DropdownMenuItem(
                                     text = { Text(text = "Получить данные о группах заново (\"сырые\" данные из расписания)") },
                                     onClick = {
-                                        commandProcessor(GetRawClassesCommand { resource ->
+                                        viewModel.getRawAsnovaClasses { resource ->
                                             if (resource is Resource.Success) {
                                                 studentsClasses = resource.data
                                             }
-                                        })
+                                        }
                                         expanded = false
                                     })
 
@@ -166,13 +155,13 @@ fun SelectClassScreen(
                             DropdownMenuItem(
                                 text = { Text(text = "Очистить всё на базе данных") },
                                 onClick = {
-                                    commandProcessor(GetRawClassesCommand { success ->
+                                    viewModel.cleanDatabase { success ->
                                         if (success) {
                                             Toast.makeText(context, "База данных успешно очищена", Toast.LENGTH_SHORT).show()
                                         } else {
                                             Toast.makeText(context, "Ошибка при очистке базы данных", Toast.LENGTH_SHORT).show()
                                         }
-                                    })
+                                    }
                                 }
                             )
                                  */
@@ -180,13 +169,13 @@ fun SelectClassScreen(
                                 DropdownMenuItem(
                                     text = { Text("Сохранить текущие изменения, отправив новые данные") },
                                     onClick = {
-                                        commandProcessor(PushClassesToFirebaseCommand(state.asnovaClasses) {
+                                        viewModel.pushAsnovaClassesToFirebase(state.asnovaClasses) {
                                             Toast.makeText(
                                                 context,
                                                 "Успешно сохранено на базе данных",
                                                 Toast.LENGTH_SHORT
                                             ).show()
-                                        })
+                                        }
                                         expanded = false
                                     })
                             }

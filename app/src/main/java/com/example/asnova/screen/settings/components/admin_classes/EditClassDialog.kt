@@ -37,7 +37,6 @@ fun EditClassDialog(
         },
         confirmButton = {
             Button(onClick = {
-                // Паттерн Prototype
                 val duplicatedClass = asnovaStudentsClass.clone().copy(name = updatedName)
                 onSave(duplicatedClass)
 
