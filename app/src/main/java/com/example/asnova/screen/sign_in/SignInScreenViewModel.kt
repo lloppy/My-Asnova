@@ -25,8 +25,8 @@ class SignInScreenViewModel @Inject constructor(
     private val signInWithLauncher: SignInWithLauncher,
     private val signInWithIntentUseCase: SignInWithIntentUseCase,
     private val signInWithOtpUseCase: SignInWithOtpUseCase,
-    private val signInWithPhoneUseCase: SignInWithPhoneUseCase,
-    private val createUserWithPhoneUseCase: CreateUserWithPhoneUseCase
+    private val signInWithPhoneUseCase: SignInWithPhoneUseCase
+   // private val createUserWithPhoneUseCase: CreateUserWithPhoneUseCase
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(SignInState())
@@ -37,7 +37,35 @@ class SignInScreenViewModel @Inject constructor(
         checkIfUserIsSignedIn()
     }
 
-    fun signInWithOtp(otp: String, verificationId: String) {
+    fun createUserWithPhone(mobile: String, activity: Activity, onFault: (String) -> Unit) {
+        signInWithPhoneUseCase(mobile, activity) { resource ->
+            when (resource) {
+                is Resource.Success -> {
+                    if (resource.data != null) {
+                        _state.update {
+                            it.copy(otpSent = true, verificationId = resource.data!!.errorMessage)
+                        }
+                    } else {
+                        _state.update {
+                            it.copy(otpSent = true, verificationId = resource.data?.errorMessage)
+                        }
+                        onFault(resource.message ?: "Unknown error")
+                    }
+                }
+                is Resource.Error -> {
+                    _state.update { it.copy(errorMessage = resource.message) }
+                    onFault(resource.message ?: "Unknown error")
+                }
+
+                else -> {
+                    onFault("Unknown error")
+                }
+            }
+        }
+    }
+
+    fun signInWithOtp(otp: String, onFault: (String) -> Unit) {
+        val verificationId = _state.value.verificationId ?: return
         _state.update { it.copy(loading = true) }
 
         signInWithOtpUseCase(otp, verificationId) { resource ->
@@ -52,41 +80,17 @@ class SignInScreenViewModel @Inject constructor(
                     _state.update {
                         it.copy(user = null, errorMessage = resource.message, isSignInSuccessful = false, loading = false)
                     }
+                    onFault(resource.message ?: "Unknown error")
                 }
                 else -> {
                     _state.update {
                         it.copy(user = null, errorMessage = "Unknown error", isSignInSuccessful = false, loading = false)
                     }
+                    onFault("Unknown error")
                 }
             }
         }
     }
-
-    fun signInWithPhone(phone: String, activity: Activity) {
-        _state.update { it.copy(loading = true) }
-
-        signInWithPhoneUseCase("+7$phone", activity) { resource ->
-            when (resource) {
-                is Resource.Success -> {
-                    val user = resource.data?.data
-                    _state.update {
-                        it.copy(user = user, errorMessage = null, isSignInSuccessful = user != null, loading = false)
-                    }
-                }
-                is Resource.Error -> {
-                    _state.update {
-                        it.copy(user = null, errorMessage = resource.message, isSignInSuccessful = false, loading = false)
-                    }
-                }
-                else -> {
-                    _state.update {
-                        it.copy(user = null, errorMessage = "Unknown error", isSignInSuccessful = false, loading = false)
-                    }
-                }
-            }
-        }
-    }
-
 
     private fun checkIfUserIsSignedIn() {
         viewModelScope.launch {
@@ -134,11 +138,5 @@ class SignInScreenViewModel @Inject constructor(
 
     suspend fun signInWithLauncher(): IntentSender? {
         return signInWithLauncher.invoke()
-    }
-
-
-
-    fun createUserWithPhone(mobile: String) {
-        createUserWithPhoneUseCase(mobile) { /* Handle result if needed */ }
     }
 }

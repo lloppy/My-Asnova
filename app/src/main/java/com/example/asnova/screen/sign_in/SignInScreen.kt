@@ -47,7 +47,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.asnova.R
-import com.example.asnova.screen.feed.FeedScreenViewModel
 import com.example.asnova.ui.theme.darkLinear
 import com.example.asnova.ui.theme.grayAsnova
 import com.example.asnova.utils.OtpView
@@ -63,10 +62,13 @@ fun SignInScreen(
     viewModel: SignInScreenViewModel = hiltViewModel()
 ) {
     val bottomSheetState = rememberOneTapBottomSheetState()
-    var showPhone by remember { mutableStateOf(false) }
-    var mobile by remember { mutableStateOf("") }
 
-    val activity = context as? Activity
+    var showPhone by remember { mutableStateOf(false) }
+    var showOtp by remember { mutableStateOf(false) }
+
+    var mobile by remember { mutableStateOf("") }
+    var otp by remember { mutableStateOf("") }
+
 
     LaunchedEffect(Unit) {
         delay(15000)
@@ -142,21 +144,52 @@ fun SignInScreen(
                     )
                 )
                 Spacer(modifier = Modifier.height(20.dp))
-                Button(modifier = Modifier.fillMaxWidth(),
-                    onClick =
-                    {
-                        if (mobile.length > 10){
-                            Toast.makeText(context, "Длина телефона должна быть 10 символов", Toast.LENGTH_SHORT).show()
-                        } else {
-                            activity?.let {
-                                viewModel.signInWithPhone(mobile, it)
-                            }
+                Button(modifier = Modifier.fillMaxWidth(), onClick = {
+                    if (mobile.length == 10) {
+                        showOtp = !showOtp
+                        viewModel.createUserWithPhone(mobile, context as Activity){
+                            Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
                         }
+                    } else {
+                        Toast.makeText(
+                            context,
+                            "Телефон должен состоять из 10 цифр",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
-                ) {
-                    Text(text = "Войти")
+
+                }) {
+                    Text(text = "Получить SMS - код")
                 }
                 Spacer(modifier = Modifier.height(32.dp))
+
+                if (state.otpSent) {
+                    Text(text = "Введите SMS-код", color = grayAsnova)
+                    Spacer(modifier = Modifier.height(6.dp))
+                    OtpView(otpText = otp) { otpValue ->
+                        otp = otpValue
+                    }
+                    Spacer(modifier = Modifier.height(20.dp))
+                    Button(modifier = Modifier.fillMaxWidth(), onClick = {
+                        if (otp.isNotEmpty()) {
+                            viewModel.signInWithOtp(otp){
+                                Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+                            }
+                        } else {
+                            Toast.makeText(context, "Пожалуйста, введите код", Toast.LENGTH_SHORT)
+                                .show()
+                        }
+                    }) {
+                        Text(text = "Подтвердить")
+                    }
+                    Spacer(modifier = Modifier.height(32.dp))
+                }
+            }
+
+            LaunchedEffect(state.isSignInSuccessful) {
+                if (state.isSignInSuccessful) {
+                    goProfile()
+                }
             }
 
             if (!showPhone) {
@@ -195,6 +228,7 @@ fun SignInScreen(
 
             TextButton(onClick = {
                 showPhone = !showPhone
+                showOtp = false
             }) {
                 Text(
                     text = if (!showPhone) stringResource(R.string.login_using_phone) else "или войдите с помощью Google почты",

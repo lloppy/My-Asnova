@@ -332,7 +332,7 @@ class UserRepositoryImpl @Inject constructor(
         val auth = FirebaseAuth.getInstance()
 
         val options = PhoneAuthOptions.newBuilder(auth)
-            .setPhoneNumber(phone)
+            .setPhoneNumber("+7$phone")
             .setTimeout(60L, TimeUnit.SECONDS)
             .setActivity(activity)
             .setCallbacks(object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
@@ -340,19 +340,7 @@ class UserRepositoryImpl @Inject constructor(
                     auth.signInWithCredential(credential)
                         .addOnCompleteListener { task ->
                             if (task.isSuccessful) {
-                                callback(
-                                    Resource.Success(
-                                        SignInResult(
-                                            data = User(
-                                                userUid = task.result?.user?.uid.toString(),
-                                                username = "",
-                                                email = "",
-                                                phone = phone,
-                                            ),
-                                            errorMessage = null
-                                        )
-                                    )
-                                )
+                                callback(Resource.Success(SignInResult(User(task.result?.user?.uid.toString(), "", "", phone), null)))
                             } else {
                                 callback(Resource.Error("Sign-in failed", null))
                             }
@@ -363,11 +351,8 @@ class UserRepositoryImpl @Inject constructor(
                     callback(Resource.Error(e.message ?: "Verification failed", null))
                 }
 
-                override fun onCodeSent(
-                    verificationId: String,
-                    token: PhoneAuthProvider.ForceResendingToken
-                ) {
-                    callback(Resource.Success(SignInResult(User(), null)))
+                override fun onCodeSent(verificationId: String, token: PhoneAuthProvider.ForceResendingToken) {
+                    callback(Resource.Success(SignInResult(User(), verificationId)))
                 }
             })
             .build()
@@ -406,7 +391,6 @@ class UserRepositoryImpl @Inject constructor(
     override fun sendOtp(phone: String, callback: (Resource<String>) -> Unit) {
         val activity = context as Activity
 
-        // Паттерн Builder
         val options = PhoneAuthOptions.newBuilder(_auth)
             .setPhoneNumber(phone)
             .setTimeout(60L, TimeUnit.SECONDS)
@@ -440,7 +424,6 @@ class UserRepositoryImpl @Inject constructor(
     }
 
     private fun buildSignInRequest(): BeginSignInRequest {
-        // Паттерн Builder
         return BeginSignInRequest.Builder()
             .setGoogleIdTokenRequestOptions(
                 BeginSignInRequest.GoogleIdTokenRequestOptions.Builder()
