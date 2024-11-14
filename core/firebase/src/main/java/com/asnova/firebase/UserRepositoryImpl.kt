@@ -328,29 +328,51 @@ class UserRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun signInWithPhone(phone: String, callback: (Resource<SignInResult>) -> Unit) {
-        val currentUser = FirebaseAuth.getInstance().currentUser
-        val userUid = currentUser?.uid ?: UUID.randomUUID().toString()
+    override fun signInWithPhone(phone: String, activity: Activity, callback: (Resource<SignInResult>) -> Unit) {
+        val auth = FirebaseAuth.getInstance()
 
-        val user = User(
-            userUid = userUid,
-            username = "",
-            name = "",
-            surname = "",
-            email = "",
-            phone = phone,
-            profilePictureUrl = ""
-        )
+        val options = PhoneAuthOptions.newBuilder(auth)
+            .setPhoneNumber(phone)
+            .setTimeout(60L, TimeUnit.SECONDS)
+            .setActivity(activity)
+            .setCallbacks(object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
+                override fun onVerificationCompleted(credential: PhoneAuthCredential) {
+                    auth.signInWithCredential(credential)
+                        .addOnCompleteListener { task ->
+                            if (task.isSuccessful) {
+                                callback(
+                                    Resource.Success(
+                                        SignInResult(
+                                            data = User(
+                                                userUid = task.result?.user?.uid.toString(),
+                                                username = "",
+                                                email = "",
+                                                phone = phone,
+                                            ),
+                                            errorMessage = null
+                                        )
+                                    )
+                                )
+                            } else {
+                                callback(Resource.Error("Sign-in failed", null))
+                            }
+                        }
+                }
 
-        _database.child("users").child(userUid).setValue(user)
-            .addOnSuccessListener {
-                callback(Resource.Success(SignInResult(data = user, errorMessage = null)))
-            }
-            .addOnFailureListener { exception ->
-                callback(
-                    Resource.Error(exception.message ?: "Unknown error")
-                )
-            }
+                override fun onVerificationFailed(e: FirebaseException) {
+                    callback(Resource.Error(e.message ?: "Verification failed", null))
+                }
+
+                override fun onCodeSent(
+                    verificationId: String,
+                    token: PhoneAuthProvider.ForceResendingToken
+                ) {
+                    callback(Resource.Success(SignInResult(User(), null)))
+                }
+            })
+            .build()
+
+        PhoneAuthProvider.verifyPhoneNumber(options)
     }
 
     override fun signInWithOtp(

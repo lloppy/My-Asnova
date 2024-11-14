@@ -1,5 +1,6 @@
 package com.example.asnova.screen.sign_in
 
+import android.app.Activity
 import android.content.Intent
 import android.content.IntentSender
 import android.content.SharedPreferences
@@ -61,10 +62,10 @@ class SignInScreenViewModel @Inject constructor(
         }
     }
 
-    fun signInWithPhone(phone: String) {
+    fun signInWithPhone(phone: String, activity: Activity) {
         _state.update { it.copy(loading = true) }
 
-        signInWithPhoneUseCase(phone) { resource ->
+        signInWithPhoneUseCase("+7$phone", activity) { resource ->
             when (resource) {
                 is Resource.Success -> {
                     val user = resource.data?.data

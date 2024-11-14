@@ -1,5 +1,6 @@
 package com.example.asnova.screen.sign_in
 
+import android.app.Activity
 import android.content.Context
 import android.util.Log
 import android.widget.Toast
@@ -64,6 +65,8 @@ fun SignInScreen(
     val bottomSheetState = rememberOneTapBottomSheetState()
     var showPhone by remember { mutableStateOf(false) }
     var mobile by remember { mutableStateOf("") }
+
+    val activity = context as? Activity
 
     LaunchedEffect(Unit) {
         delay(15000)
@@ -145,7 +148,9 @@ fun SignInScreen(
                         if (mobile.length > 10){
                             Toast.makeText(context, "Длина телефона должна быть 10 символов", Toast.LENGTH_SHORT).show()
                         } else {
-                            viewModel.signInWithPhone(mobile)
+                            activity?.let {
+                                viewModel.signInWithPhone(mobile, it)
+                            }
                         }
                     }
                 ) {

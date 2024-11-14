@@ -1,5 +1,6 @@
 package com.asnova.domain.repository.firebase
 
+import android.app.Activity
 import android.content.Intent
 import android.content.IntentSender
 import androidx.activity.result.ActivityResultLauncher
@@ -23,7 +24,7 @@ interface UserRepository {
         verificationId: String,
         callback: (Resource<SignInResult>) -> Unit
     )
-    fun signInWithPhone(phone: String, callback: (Resource<SignInResult>) -> Unit)
+    fun signInWithPhone(phone: String, activity: Activity, callback: (Resource<SignInResult>) -> Unit)
     fun sendOtp(phone: String, callback: (Resource<String>) -> Unit)
     suspend fun signInWithLauncher(): IntentSender?
     fun signOut()
