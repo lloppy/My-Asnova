@@ -27,6 +27,11 @@ interface UserRepository {
     fun signInWithPhone(phone: String, activity: Activity, callback: (Resource<SignInResult>) -> Unit)
     fun sendOtp(phone: String, callback: (Resource<String>) -> Unit)
     suspend fun signInWithLauncher(): IntentSender?
+
+    fun signInWithEmail(email: String, password: String, callback: (Resource<SignInResult>) -> Unit)
+
+    fun registerWithEmail(email: String, password: String, callback: (Resource<SignInResult>) -> Unit)
+
     fun signOut()
 
 

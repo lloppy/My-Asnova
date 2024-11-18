@@ -1,5 +1,9 @@
 package com.example.asnova.screen.main.components
 
+import android.content.Context
+import android.content.Intent
+import android.net.Uri
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -14,18 +18,23 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.asnova.screen.main.MainScreenViewModel
+import com.example.asnova.ui.theme.grayAsnova
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -33,6 +42,7 @@ fun UserInfoModalSheet(
     viewModel: MainScreenViewModel,
     showBottomSheet: Boolean,
     onDismiss: () -> Unit,
+    context: Context,
     onSubmit: (String, String, String, String) -> Unit
 ) {
     var name by remember { mutableStateOf("") }
@@ -140,11 +150,13 @@ fun UserInfoModalSheet(
                         Text("Готово")
                     }
 
-                    Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.height(6.dp))
 
                     Button(
                         modifier = Modifier.fillMaxWidth(),
                         onClick = {
+                            viewModel.saveDontAskAgainPreference(context, true)
+
                             onSubmit(
                                 checkForNullOrEmpty(viewModel.userData?.name),
                                 checkForNullOrEmpty(viewModel.userData?.surname),
@@ -162,6 +174,22 @@ fun UserInfoModalSheet(
                     ) {
                         Text("Больше не спрашивать")
                     }
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    Text(
+                        text = "Ознакомиться с Политикой конфиденциальности",
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .align(Alignment.CenterHorizontally)
+                            .clickable {
+                                val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://www.termsfeed.com/live/2ef6f1ab-c17b-42d2-b2df-80dd0218b31a"))
+                                context.startActivity(intent)
+                        },
+                        textAlign = TextAlign.Center,
+                        fontSize = 12.sp,
+                        color = Color.Gray
+                    )
 
                     Spacer(modifier = Modifier.height(40.dp))
                 }

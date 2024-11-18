@@ -1,8 +1,8 @@
 plugins {
+    alias(libs.plugins.android.application)
     kotlin("kapt")
     id("com.google.dagger.hilt.android")
     id("com.google.gms.google-services")
-    alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
 }
 
@@ -116,12 +116,12 @@ dependencies {
     implementation("androidx.compose.runtime:runtime-livedata:1.6.8")
 
     // Firebase
-    implementation(platform("com.google.firebase:firebase-bom:33.4.0"))
+    implementation(platform("com.google.firebase:firebase-bom:33.6.0"))
     implementation("com.google.firebase:firebase-database:21.0.0")
     implementation("com.google.firebase:firebase-analytics:22.0.2")
     implementation("com.firebaseui:firebase-ui-auth:8.0.2")
     implementation("com.google.android.gms:play-services-auth:21.2.0")
-
+    implementation("com.google.firebase:firebase-auth")
     implementation("com.google.firebase:firebase-storage:21.0.0")
 
     // Lottie
@@ -167,15 +167,15 @@ dependencies {
     implementation("com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:0.8.0")
     implementation("com.squareup.okhttp3:logging-interceptor:4.9.1")
 
-    // SceneView https://github.com/SceneView/sceneview-android/tree/main
+//    // SceneView https://github.com/SceneView/sceneview-android/tree/main
 //    implementation("io.github.sceneview:sceneview:2.2.1")
-    implementation("io.github.sceneview:arsceneview:2.1.0")
+//    implementation("io.github.sceneview:arsceneview:2.1.0")
 
     // week compose Calendar https://github.com/kizitonwose/Calendar/tree/main
     implementation("com.kizitonwose.calendar:compose:2.6.0")
     implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.3.2")
 
-    //https://github.com/maxkeppeler/sheets-compose-dialogs
+    // https://github.com/maxkeppeler/sheets-compose-dialogs
     implementation("com.maxkeppeler.sheets-compose-dialogs:core:1.3.0")
 
     implementation("androidx.lifecycle:lifecycle-common:2.1.0")

@@ -12,13 +12,9 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.layout.size
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -34,6 +30,7 @@ import com.example.asnova.screen.greeting.GreetingScreen
 import com.example.asnova.screen.main.MainScreen
 import com.example.asnova.screen.sign_in.SignInScreen
 import com.example.asnova.screen.sign_in.SignInScreenViewModel
+import com.example.asnova.screen.sign_in.components.EmailSignInScreen
 import com.example.asnova.ui.theme.AsnovaTheme
 import com.example.asnova.utils.SplashScreen
 import com.example.asnova.utils.createExternalRouter
@@ -58,8 +55,6 @@ class MainActivity : ComponentActivity() {
                 navController = rememberNavController()
                 val viewModel: SignInScreenViewModel = hiltViewModel()
                 val state by viewModel.state.collectAsStateWithLifecycle()
-
-
 
                 val launcher = rememberLauncherForActivityResult(
                     contract = ActivityResultContracts.StartIntentSenderForResult(),
@@ -97,6 +92,16 @@ class MainActivity : ComponentActivity() {
                     composable(Screen.Greeting.route) {
                         GreetingScreen(navHostController = navController, isLoading = state.loading)
                     }
+                    composable(Screen.EmailSignIn.route) {
+                        EmailSignInScreen(
+                            context = LocalContext.current,
+                            navController = navController,
+                            onSignInClick = {
+                                 viewModel.signInWithEmail("asnovatest@gmail.com","testasnovahuawei2004"){
+                                     Log.e("LoggingUserRepository", it.message.toString())
+                                 }
+                            })
+                    }
                     composable(Screen.LogIn.route) {
                         SignInScreen(
                             state = state,
@@ -110,6 +115,9 @@ class MainActivity : ComponentActivity() {
                                         ).build()
                                     )
                                 }
+                            },
+                            onSignInEmailClick = {
+                                navController.navigate(route = Screen.EmailSignIn.route)
                             },
                             goProfile = {
                                 navController.navigate(route = Screen.Main.route) {

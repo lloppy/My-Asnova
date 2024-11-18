@@ -10,7 +10,6 @@ import com.asnova.model.Resource
 import com.asnova.model.SignInResult
 import com.asnova.model.User
 
-// Паттерн Proxy
 class LoggingUserRepository(private val repository: UserRepository) :
     Logger("LoggingUserRepository"), UserRepository {
     override fun <T> logResourceResult(methodName: String, resource: Resource<T>) {
@@ -79,6 +78,32 @@ class LoggingUserRepository(private val repository: UserRepository) :
     override suspend fun signInWithLauncher(): IntentSender? {
         Log.d(tag, "signInWithLauncher called")
         return repository.signInWithLauncher()
+    }
+
+    override fun signInWithEmail(
+        email: String,
+        password: String,
+        callback: (Resource<SignInResult>) -> Unit
+    ) {
+        Log.d(tag, "signInWithEmail called")
+        Log.d(tag, "data is $email and $password")
+        return repository.signInWithEmail(email, password) { resource ->
+            logResourceResult("signInWithEmail", resource)
+            callback(resource)
+        }
+    }
+
+    override fun registerWithEmail(
+        email: String,
+        password: String,
+        callback: (Resource<SignInResult>) -> Unit
+    ) {
+        Log.d(tag, "registerWithEmail called")
+        Log.d(tag, "data is $email and $password")
+        return repository.signInWithEmail(email, password) { resource ->
+            logResourceResult("registerWithEmail", resource)
+            callback(resource)
+        }
     }
 
     override fun signInWithIntent(

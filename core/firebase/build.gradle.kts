@@ -47,7 +47,7 @@ dependencies {
     implementation("org.jsoup:jsoup:1.17.2")
 
     // Firebase
-    implementation(platform("com.google.firebase:firebase-bom:33.1.1"))
+    implementation(platform("com.google.firebase:firebase-bom:33.6.0"))
 
     implementation("com.google.firebase:firebase-database:21.0.0")
     implementation("com.firebaseui:firebase-ui-auth:8.0.2")

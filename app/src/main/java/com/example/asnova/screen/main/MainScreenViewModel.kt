@@ -1,5 +1,6 @@
 package com.example.asnova.screen.main
 
+import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.asnova.domain.repository.firebase.UserRepository
@@ -48,5 +49,19 @@ class MainScreenViewModel @Inject constructor(
     fun writeNewDataUser(name: String, surname: String, email: String, phone: String, onSuccess: () -> Unit, onFailure: (String) -> Unit) {
         userRepository.writeNewDataUser(name, surname, email, phone, onSuccess, onFailure)
     }
+
+    fun saveDontAskAgainPreference(context: Context, value: Boolean) {
+        val sharedPreferences = context.getSharedPreferences("app_preferences", Context.MODE_PRIVATE)
+        with(sharedPreferences.edit()) {
+            putBoolean("dont_ask_again", value)
+            apply()
+        }
+    }
+
+    fun shouldShowDialog(context: Context): Boolean {
+        val sharedPreferences = context.getSharedPreferences("app_preferences", Context.MODE_PRIVATE)
+        return !sharedPreferences.getBoolean("dont_ask_again", false)
+    }
+
 
 }

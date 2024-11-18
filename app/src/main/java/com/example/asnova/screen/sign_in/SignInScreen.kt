@@ -2,7 +2,6 @@ package com.example.asnova.screen.sign_in
 
 import android.app.Activity
 import android.content.Context
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -50,37 +49,21 @@ import com.example.asnova.R
 import com.example.asnova.ui.theme.darkLinear
 import com.example.asnova.ui.theme.grayAsnova
 import com.example.asnova.utils.OtpView
-import com.vk.id.onetap.compose.onetap.sheet.rememberOneTapBottomSheetState
-import kotlinx.coroutines.delay
 
 @Composable
 fun SignInScreen(
     state: SignInState,
     context: Context,
     onSignInClick: () -> Unit,
+    onSignInEmailClick: () -> Unit,
     goProfile: () -> Unit,
     viewModel: SignInScreenViewModel = hiltViewModel()
 ) {
-    val bottomSheetState = rememberOneTapBottomSheetState()
-
     var showPhone by remember { mutableStateOf(false) }
     var showOtp by remember { mutableStateOf(false) }
 
     var mobile by remember { mutableStateOf("") }
     var otp by remember { mutableStateOf("") }
-
-
-    LaunchedEffect(Unit) {
-        delay(15000)
-        if (!showPhone) bottomSheetState.show()
-    }
-
-    LaunchedEffect(key1 = state.errorMessage) {
-        state.errorMessage?.let { error ->
-            Log.e("login_info", "$error! Вход не выполнен")
-            if (!showPhone) onSignInClick.invoke()
-        }
-    }
 
     Box(
         modifier = Modifier
@@ -147,7 +130,7 @@ fun SignInScreen(
                 Button(modifier = Modifier.fillMaxWidth(), onClick = {
                     if (mobile.length == 10) {
                         showOtp = !showOtp
-                        viewModel.createUserWithPhone(mobile, context as Activity){
+                        viewModel.createUserWithPhone(mobile, context as Activity) {
                             Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
                         }
                     } else {
@@ -172,7 +155,7 @@ fun SignInScreen(
                     Spacer(modifier = Modifier.height(20.dp))
                     Button(modifier = Modifier.fillMaxWidth(), onClick = {
                         if (otp.isNotEmpty()) {
-                            viewModel.signInWithOtp(otp){
+                            viewModel.signInWithOtp(otp) {
                                 Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
                             }
                         } else {
@@ -224,6 +207,41 @@ fun SignInScreen(
                     )
                 }
                 Spacer(modifier = Modifier.height(40.dp))
+
+                /*
+                // Email-password Sign-In Button
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .shadow(
+                            elevation = 2.dp,
+                            shape = RoundedCornerShape(percent = 12),
+                            spotColor = Color.Black,
+                            ambientColor = Color.Black
+                        )
+                        .background(Color.White)
+                        .clip(RoundedCornerShape(12))
+                        .clickable(onClick = onSignInEmailClick)
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.pic_gmail),
+                        contentDescription = "Email-password Sign-In Button",
+                        modifier = Modifier
+                            .padding(start = 8.dp)
+                            .size(48.dp)
+                            .align(Alignment.CenterStart)
+                    )
+                    Text(
+                        text = "Войти через почту",
+                        fontFamily = FontFamily(Font(R.font.pretendbold)),
+                        color = Color(0xFF1F1F1F),
+                        fontSize = 16.sp,
+                        modifier = Modifier.align(Alignment.Center)
+                    )
+                }
+                Spacer(modifier = Modifier.height(40.dp))
+
+                 */
             }
 
             TextButton(onClick = {

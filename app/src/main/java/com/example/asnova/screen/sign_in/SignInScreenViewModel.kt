@@ -6,10 +6,15 @@ import android.content.IntentSender
 import android.content.SharedPreferences
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.asnova.domain.usecase.*
+import com.asnova.domain.usecase.GetUserDataUseCase
+import com.asnova.domain.usecase.RegisterWithEmailUseCase
+import com.asnova.domain.usecase.SignInWithEmailUseCase
+import com.asnova.domain.usecase.SignInWithIntentUseCase
+import com.asnova.domain.usecase.SignInWithLauncher
+import com.asnova.domain.usecase.SignInWithOtpUseCase
+import com.asnova.domain.usecase.SignInWithPhoneUseCase
 import com.asnova.model.Resource
 import com.asnova.model.SignInResult
-import com.asnova.model.User
 import com.example.asnova.data.UserManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -25,8 +30,11 @@ class SignInScreenViewModel @Inject constructor(
     private val signInWithLauncher: SignInWithLauncher,
     private val signInWithIntentUseCase: SignInWithIntentUseCase,
     private val signInWithOtpUseCase: SignInWithOtpUseCase,
-    private val signInWithPhoneUseCase: SignInWithPhoneUseCase
-   // private val createUserWithPhoneUseCase: CreateUserWithPhoneUseCase
+    private val signInWithPhoneUseCase: SignInWithPhoneUseCase,
+    private val registerWithEmailUseCase: RegisterWithEmailUseCase,
+    private val signInWithEmailUseCase: SignInWithEmailUseCase,
+
+    // private val createUserWithPhoneUseCase: CreateUserWithPhoneUseCase
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(SignInState())
@@ -35,6 +43,67 @@ class SignInScreenViewModel @Inject constructor(
     init {
         UserManager.init(userSharedPreferences)
         checkIfUserIsSignedIn()
+    }
+
+    fun registerWithEmail(
+        email: String,
+        password: String,
+        callback: (Resource<SignInResult>) -> Unit
+    ) {
+        registerWithEmailUseCase(email, password) { resource ->
+            when (resource) {
+                is Resource.Success -> {
+                    if (resource.data != null) {
+                        _state.update {
+                            it.copy(otpSent = true, verificationId = resource.data!!.errorMessage)
+                        }
+                    } else {
+                        _state.update {
+                            it.copy(otpSent = true, verificationId = resource.data?.errorMessage)
+                        }
+                    }
+                }
+
+                is Resource.Error -> {
+                    _state.update { it.copy(errorMessage = resource.message) }
+                }
+
+                else -> {}
+            }
+        }
+    }
+
+    fun signInWithEmail(
+        email: String,
+        password: String,
+        callback: (Resource<SignInResult>) -> Unit
+    ) {
+        signInWithEmailUseCase(email, password) { resource ->
+            when (resource) {
+                is Resource.Success -> {
+                    if (resource.data != null) {
+                        _state.update {
+                            it.copy(otpSent = true, verificationId = resource.data!!.errorMessage)
+                        }
+                        callback(resource)
+                    } else {
+                        _state.update {
+                            it.copy(otpSent = true, verificationId = resource.data?.errorMessage)
+                        }
+                        callback(resource)
+                    }
+                }
+
+                is Resource.Error -> {
+                    _state.update { it.copy(errorMessage = resource.message) }
+                    callback(resource)
+                }
+
+                else -> {
+                    callback(resource)
+                }
+            }
+        }
     }
 
     fun createUserWithPhone(mobile: String, activity: Activity, onFault: (String) -> Unit) {
@@ -52,6 +121,7 @@ class SignInScreenViewModel @Inject constructor(
                         onFault(resource.message ?: "Unknown error")
                     }
                 }
+
                 is Resource.Error -> {
                     _state.update { it.copy(errorMessage = resource.message) }
                     onFault(resource.message ?: "Unknown error")
@@ -73,18 +143,35 @@ class SignInScreenViewModel @Inject constructor(
                 is Resource.Success -> {
                     val user = resource.data?.data
                     _state.update {
-                        it.copy(user = user, errorMessage = null, isSignInSuccessful = user != null, loading = false)
+                        it.copy(
+                            user = user,
+                            errorMessage = null,
+                            isSignInSuccessful = user != null,
+                            loading = false
+                        )
                     }
                 }
+
                 is Resource.Error -> {
                     _state.update {
-                        it.copy(user = null, errorMessage = resource.message, isSignInSuccessful = false, loading = false)
+                        it.copy(
+                            user = null,
+                            errorMessage = resource.message,
+                            isSignInSuccessful = false,
+                            loading = false
+                        )
                     }
                     onFault(resource.message ?: "Unknown error")
                 }
+
                 else -> {
                     _state.update {
-                        it.copy(user = null, errorMessage = "Unknown error", isSignInSuccessful = false, loading = false)
+                        it.copy(
+                            user = null,
+                            errorMessage = "Unknown error",
+                            isSignInSuccessful = false,
+                            loading = false
+                        )
                     }
                     onFault("Unknown error")
                 }
@@ -99,9 +186,23 @@ class SignInScreenViewModel @Inject constructor(
             getUserDataUseCase.invoke { resource ->
                 val user = resource.data
                 if (user != null) {
-                    _state.update { it.copy(user = user, errorMessage = null, isSignInSuccessful = true, loading = false) }
+                    _state.update {
+                        it.copy(
+                            user = user,
+                            errorMessage = null,
+                            isSignInSuccessful = true,
+                            loading = false
+                        )
+                    }
                 } else {
-                    _state.update { it.copy(user = null, errorMessage = "User not signed in", isSignInSuccessful = false, loading = false) }
+                    _state.update {
+                        it.copy(
+                            user = null,
+                            errorMessage = "User not signed in",
+                            isSignInSuccessful = false,
+                            loading = false
+                        )
+                    }
                 }
             }
         }
@@ -119,17 +220,34 @@ class SignInScreenViewModel @Inject constructor(
                 is Resource.Success -> {
                     val user = resource.data?.data
                     _state.update {
-                        it.copy(user = user, errorMessage = null, isSignInSuccessful = user != null, loading = false)
+                        it.copy(
+                            user = user,
+                            errorMessage = null,
+                            isSignInSuccessful = user != null,
+                            loading = false
+                        )
                     }
                 }
+
                 is Resource.Error -> {
                     _state.update {
-                        it.copy(user = null, errorMessage = resource.message, isSignInSuccessful = false, loading = false)
+                        it.copy(
+                            user = null,
+                            errorMessage = resource.message,
+                            isSignInSuccessful = false,
+                            loading = false
+                        )
                     }
                 }
+
                 else -> {
                     _state.update {
-                        it.copy(user = null, errorMessage = "Unknown error", isSignInSuccessful = false, loading = false)
+                        it.copy(
+                            user = null,
+                            errorMessage = "Unknown error",
+                            isSignInSuccessful = false,
+                            loading = false
+                        )
                     }
                 }
             }
@@ -137,6 +255,12 @@ class SignInScreenViewModel @Inject constructor(
     }
 
     suspend fun signInWithLauncher(): IntentSender? {
-        return signInWithLauncher.invoke()
+        _state.update { it.copy(loading = true) }
+
+        val intentSender = signInWithLauncher.invoke()
+
+        _state.update { it.copy(loading = false) }
+
+        return intentSender
     }
 }

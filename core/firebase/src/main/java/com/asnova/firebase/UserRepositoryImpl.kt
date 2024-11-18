@@ -37,6 +37,32 @@ class UserRepositoryImpl @Inject constructor(
     private val adminsRef = _database.child("asnovaAppAdmins")
     private val promoRef = _database.child("asnovaPromocode")
 
+    override fun signInWithEmail(email: String, password: String, callback: (Resource<SignInResult>) -> Unit) {
+        _auth.signInWithEmailAndPassword(email, password)
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    val user = _auth.currentUser
+                    val signInResult = SignInResult(User(user?.uid ?: "", email = email, username = user?.displayName, phone = user?.phoneNumber.toString()), null)
+                    callback(Resource.Success(signInResult))
+                } else {
+                    callback(Resource.Error(task.exception?.message ?: "Ошибка входа"))
+                }
+            }
+    }
+
+    override fun registerWithEmail(email: String, password: String, callback: (Resource<SignInResult>) -> Unit) {
+        _auth.createUserWithEmailAndPassword(email, password)
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    val user = _auth.currentUser
+                    val signInResult = SignInResult(User(user?.uid ?: "", email = email), null)
+                    callback(Resource.Success(signInResult))
+                } else {
+                    callback(Resource.Error(task.exception?.message ?: "Ошибка регистрации"))
+                }
+            }
+    }
+
     override fun writeNewDataUser(
         name: String,
         surname: String,

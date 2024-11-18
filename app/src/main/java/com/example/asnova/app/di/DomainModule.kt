@@ -33,12 +33,14 @@ import com.asnova.domain.usecase.IsAuthedUserUseCase
 import com.asnova.domain.usecase.OnDownloadMoreAsnovaNewsUseCase
 import com.asnova.domain.usecase.OnDownloadMoreSafetyNewsUseCase
 import com.asnova.domain.usecase.PushAsnovaClassesUseCase
+import com.asnova.domain.usecase.RegisterWithEmailUseCase
 import com.asnova.domain.usecase.SaveAuthStatusUseCase
 import com.asnova.domain.usecase.SaveLanguageSettingUseCase
 import com.asnova.domain.usecase.SaveNotificationsSettingUseCase
 import com.asnova.domain.usecase.SaveScheduleStateUseCase
 import com.asnova.domain.usecase.SaveThemeSettingUseCase
 import com.asnova.domain.usecase.SelectClassUseCase
+import com.asnova.domain.usecase.SignInWithEmailUseCase
 import com.asnova.domain.usecase.SignInWithIntentUseCase
 import com.asnova.domain.usecase.SignInWithLauncher
 import com.asnova.domain.usecase.SignInWithOtpUseCase
@@ -73,6 +75,20 @@ class DomainModule {
         repository: UserRepository
     ): SignInWithPhoneUseCase {
         return SignInWithPhoneUseCase(repository)
+    }
+
+    @Provides
+    fun provideRegisterWithEmailUseCase(
+        repository: UserRepository
+    ): RegisterWithEmailUseCase {
+        return RegisterWithEmailUseCase(repository)
+    }
+
+    @Provides
+    fun provideSignInWithEmailUseCase(
+        repository: UserRepository
+    ): SignInWithEmailUseCase {
+        return SignInWithEmailUseCase(repository)
     }
 
     @Provides

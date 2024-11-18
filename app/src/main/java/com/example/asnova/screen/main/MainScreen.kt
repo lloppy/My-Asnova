@@ -84,11 +84,12 @@ fun MainScreen(
             onRestartApp = onRestartApp
         )
 
-        if (showBottomSheet) {
+        if (showBottomSheet && viewModel.shouldShowDialog(context)) {
             UserInfoModalSheet(
                 viewModel = viewModel,
                 showBottomSheet = showBottomSheet,
                 onDismiss = { showBottomSheet = false },
+                context = context,
                 onSubmit = { name, surname, email, phone ->
                     viewModel.writeNewDataUser(name, surname, email, phone,
                         onSuccess = {
