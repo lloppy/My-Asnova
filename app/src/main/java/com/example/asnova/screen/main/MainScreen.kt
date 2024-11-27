@@ -28,8 +28,6 @@ import com.example.asnova.navigation.Screen
 import com.example.asnova.navigation.SetupNavGraph
 import com.example.asnova.screen.main.components.UserInfoModalSheet
 import com.example.asnova.utils.Router
-import com.google.firebase.database.ktx.database
-import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.launch
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -68,7 +66,12 @@ fun MainScreen(
     }
 
     Scaffold(
-        snackbarHost = { SnackbarHost(snackbarHostState, modifier = Modifier.padding(bottom = screenHeight.minus(160.dp))) },
+        snackbarHost = {
+            SnackbarHost(
+                snackbarHostState,
+                modifier = Modifier.padding(bottom = screenHeight.minus(160.dp))
+            )
+        },
         bottomBar = {
             if (showBottomBar) {
                 BottomNavigationBar(navController)

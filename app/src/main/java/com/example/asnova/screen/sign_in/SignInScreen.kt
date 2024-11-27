@@ -22,7 +22,6 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -55,11 +54,10 @@ fun SignInScreen(
     state: SignInState,
     context: Context,
     onSignInClick: () -> Unit,
-    onSignInEmailClick: () -> Unit,
     goProfile: () -> Unit,
     viewModel: SignInScreenViewModel = hiltViewModel()
 ) {
-    var showPhone by remember { mutableStateOf(false) }
+    val showPhone by remember { mutableStateOf(false) }
     var showOtp by remember { mutableStateOf(false) }
 
     var mobile by remember { mutableStateOf("") }
@@ -90,7 +88,12 @@ fun SignInScreen(
         }
 
         if (state.loading) {
-            CircularProgressIndicator(modifier = Modifier.size(64.dp))
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator(modifier = Modifier.size(64.dp))
+            }
         }
 
         Column(
@@ -207,52 +210,6 @@ fun SignInScreen(
                     )
                 }
                 Spacer(modifier = Modifier.height(40.dp))
-
-                /*
-                // Email-password Sign-In Button
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .shadow(
-                            elevation = 2.dp,
-                            shape = RoundedCornerShape(percent = 12),
-                            spotColor = Color.Black,
-                            ambientColor = Color.Black
-                        )
-                        .background(Color.White)
-                        .clip(RoundedCornerShape(12))
-                        .clickable(onClick = onSignInEmailClick)
-                ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.pic_gmail),
-                        contentDescription = "Email-password Sign-In Button",
-                        modifier = Modifier
-                            .padding(start = 8.dp)
-                            .size(48.dp)
-                            .align(Alignment.CenterStart)
-                    )
-                    Text(
-                        text = "Войти через почту",
-                        fontFamily = FontFamily(Font(R.font.pretendbold)),
-                        color = Color(0xFF1F1F1F),
-                        fontSize = 16.sp,
-                        modifier = Modifier.align(Alignment.Center)
-                    )
-                }
-                Spacer(modifier = Modifier.height(40.dp))
-
-                 */
-            }
-
-            TextButton(onClick = {
-                showPhone = !showPhone
-                showOtp = false
-            }) {
-                Text(
-                    text = if (!showPhone) stringResource(R.string.login_using_phone) else "или войдите с помощью Google почты",
-                    color = grayAsnova,
-                    fontSize = 12.sp
-                )
             }
         }
     }

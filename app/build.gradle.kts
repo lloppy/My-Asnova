@@ -15,7 +15,7 @@ android {
         minSdk = 26
         targetSdk = 34
         versionCode = 1
-        versionName = "1.0"
+        versionName = "1.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -23,8 +23,8 @@ android {
         }
 
         addManifestPlaceholders(mapOf(
-            "VKIDRedirectHost" to "vk.com", // Обычно vk.com.
-            "VKIDRedirectScheme" to "vk1233445", // Строго в формате vk{ID приложения}.
+            "VKIDRedirectHost" to "vk.com",
+            "VKIDRedirectScheme" to "vk1233445",
             "VKIDClientID" to "51989160",
             "VKIDClientSecret" to "bPqwTigtISWdmH9BR8eA"
         ))

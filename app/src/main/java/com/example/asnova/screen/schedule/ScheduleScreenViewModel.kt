@@ -134,7 +134,7 @@ class ScheduleScreenViewModel @Inject constructor(
     }
 
     fun pullToRefresh() {
-        if (UserManager.getRole() == Role.ADMIN) loadScheduleFromSite() else loadAvailableSchedule()
+        loadAvailableSchedule()
     }
 
 }

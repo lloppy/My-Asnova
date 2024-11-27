@@ -60,6 +60,7 @@ fun SelectClassScreen(
     var selectedClass by remember { mutableStateOf<AsnovaStudentsClass?>(null) }
 
     var expanded by remember { mutableStateOf(false) }
+    val caretaker = remember { AsnovaStudentsClassCaretaker() }
 
     LaunchedEffect(Unit) {
         viewModel.getAsnovaClassesFromFirebase { resource ->
@@ -178,6 +179,19 @@ fun SelectClassScreen(
                                         }
                                         expanded = false
                                     })
+
+                                DropdownMenuItem(
+                                    text = { Text(text = "Отменить последнее изменение") },
+                                    onClick = {
+                                        caretaker.restoreMemento()?.let { memento ->
+                                            selectedClass?.restoreMemento(memento)
+                                            Toast.makeText(context, "Изменение отменено", Toast.LENGTH_SHORT).show()
+                                        } ?: run {
+                                            Toast.makeText(context, "Нет изменений для отмены", Toast.LENGTH_SHORT).show()
+                                        }
+                                        expanded = false
+                                    })
+
                             }
                         }
                     }
@@ -219,6 +233,8 @@ fun SelectClassScreen(
                             )
                         }?.forEach { asnovaClass ->
                             ClassCard(asnovaClass = asnovaClass, onClickDelete = {
+                                // Паттерн Memento использование
+                                caretaker.saveMemento(asnovaClass.createMemento())
                                 viewModel.removeClass(asnovaClass)
                             }) { selected ->
                                 selectedClass = selected
