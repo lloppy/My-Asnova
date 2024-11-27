@@ -38,6 +38,7 @@ class ScheduleScreenViewModel @Inject constructor(
     private val _state = mutableStateOf(ScheduleState())
     val state: State<ScheduleState> = _state
 
+    // Паттерн Observer
     private val selectedDateMutableState = MutableLiveData(LocalDate.now())
     val selectedDate: MutableLiveData<LocalDate?> = selectedDateMutableState
 
