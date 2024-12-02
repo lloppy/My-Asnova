@@ -179,19 +179,6 @@ fun SelectClassScreen(
                                         }
                                         expanded = false
                                     })
-
-                                DropdownMenuItem(
-                                    text = { Text(text = "Отменить последнее изменение") },
-                                    onClick = {
-                                        caretaker.restoreMemento()?.let { memento ->
-                                            selectedClass?.restoreMemento(memento)
-                                            Toast.makeText(context, "Изменение отменено", Toast.LENGTH_SHORT).show()
-                                        } ?: run {
-                                            Toast.makeText(context, "Нет изменений для отмены", Toast.LENGTH_SHORT).show()
-                                        }
-                                        expanded = false
-                                    })
-
                             }
                         }
                     }
