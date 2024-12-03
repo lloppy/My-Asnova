@@ -48,6 +48,8 @@ class SignInScreenViewModel @Inject constructor(
         password: String,
         callback: (Resource<SignInResult>) -> Unit
     ) {
+        _state.update { it.copy(loading = true) }
+
         registerWithEmailUseCase(email, password) { resource ->
             when (resource) {
                 is Resource.Success -> {
@@ -80,6 +82,10 @@ class SignInScreenViewModel @Inject constructor(
                 }
 
                 is Resource.Error -> {
+
+                    signInWithEmailUseCase(email, password) { resource ->
+
+                    }
                     _state.update { it.copy(errorMessage = resource.message) }
                     callback(resource)
                 }
@@ -97,6 +103,7 @@ class SignInScreenViewModel @Inject constructor(
         role: String,
         callback: (Resource<SignInResult>) -> Unit
     ) {
+        _state.update { it.copy(loading = true) }
         signInWithEmailUseCase(email, password, role) { resource ->
             when (resource) {
                 is Resource.Success -> {
@@ -141,6 +148,7 @@ class SignInScreenViewModel @Inject constructor(
     }
 
     fun createUserWithPhone(mobile: String, activity: Activity, onFault: (String) -> Unit) {
+        _state.update { it.copy(loading = true) }
         signInWithPhoneUseCase(mobile, activity) { resource ->
             when (resource) {
                 is Resource.Success -> {

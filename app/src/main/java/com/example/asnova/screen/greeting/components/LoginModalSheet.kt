@@ -3,6 +3,7 @@ package com.example.asnova.screen.greeting.components
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -29,7 +30,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.toLowerCase
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.asnova.model.Role
@@ -43,7 +43,8 @@ fun LoginModalSheet(
     onDismiss: () -> Unit,
     onSignInGoogle: () -> Unit,
     context: Context,
-    onSubmit: (String, String) -> Unit
+    onSubmitLogin: (String, String) -> Unit,
+    onSubmitSignIn: (String, String) -> Unit
 ) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -66,7 +67,10 @@ fun LoginModalSheet(
                         .fillMaxWidth()
                         .padding(16.dp)
                 ) {
-                    Text(text = if (role != Role.NONE) "Войти как " + role.lowercase(Locale.ROOT) else "Вход", style = MaterialTheme.typography.titleMedium)
+                    Text(
+                        text = if (role != Role.NONE) "Войти как " + role.lowercase(Locale.ROOT) else "Вход",
+                        style = MaterialTheme.typography.titleMedium
+                    )
 
                     Spacer(modifier = Modifier.height(16.dp))
 
@@ -74,7 +78,7 @@ fun LoginModalSheet(
                         value = email,
                         onValueChange = {
                             email = it
-                            emailError = it.isEmpty()
+                            emailError = it.isEmpty() || !isValidEmail(it)
                         },
                         label = { Text("Электронная почта") },
                         keyboardOptions = KeyboardOptions(
@@ -88,7 +92,7 @@ fun LoginModalSheet(
                         value = password,
                         onValueChange = {
                             password = it
-                            passwordError = it.isEmpty()
+                            passwordError = it.length < 6
                         },
                         label = { Text("Пароль") },
                         keyboardOptions = KeyboardOptions(
@@ -106,13 +110,21 @@ fun LoginModalSheet(
                             emailError = email.isEmpty()
                             passwordError = password.isEmpty()
 
-                            if ( !emailError && !passwordError) {
-                                onSubmit(email, password)
+                            if (!emailError && !passwordError) {
+                                onSubmitSignIn(email, password)
                                 onDismiss()
+                            } else {
+                                val errorMessage =
+                                    if (emailError && passwordError) "Пожалуйста, исправьте ошибки в email и пароле"
+                                    else if (emailError) "Введите корректный адрес электронной почты"
+                                    else "Пароль должен содержать не менее 6 символов"
+                                Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()
                             }
                         }) {
                         Text("Войти")
                     }
+
+                    Spacer(modifier = Modifier.height(6.dp))
 
                     Button(
                         modifier = Modifier.fillMaxWidth(),
@@ -136,9 +148,12 @@ fun LoginModalSheet(
                             .fillMaxWidth()
                             .align(Alignment.CenterHorizontally)
                             .clickable {
-                                val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://www.termsfeed.com/live/2ef6f1ab-c17b-42d2-b2df-80dd0218b31a"))
+                                val intent = Intent(
+                                    Intent.ACTION_VIEW,
+                                    Uri.parse("https://www.termsfeed.com/live/2ef6f1ab-c17b-42d2-b2df-80dd0218b31a")
+                                )
                                 context.startActivity(intent)
-                        },
+                            },
                         textAlign = TextAlign.Center,
                         fontSize = 12.sp,
                         color = Color.Gray
@@ -149,4 +164,8 @@ fun LoginModalSheet(
             }
         )
     }
+}
+
+private fun isValidEmail(email: String): Boolean {
+    return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
 }

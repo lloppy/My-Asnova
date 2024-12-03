@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
@@ -118,32 +119,38 @@ fun EmailSignInScreen(
 
             Button(
                 modifier = Modifier.fillMaxWidth(),
+                colors = ButtonColors(
+                    containerColor = Color.Gray,
+                    contentColor = Color.White,
+                    disabledContainerColor = Color.Gray,
+                    disabledContentColor = Color.White
+                ),
                 onClick = {
-                viewModel.registerWithEmail(email, password) { resource ->
-                    when (resource) {
-                        is Resource.Success -> {
-                            Toast.makeText(context, "Регистрация выполнена", Toast.LENGTH_SHORT)
-                                .show()
-                        }
+                    viewModel.registerWithEmail(email, password) { resource ->
+                        when (resource) {
+                            is Resource.Success -> {
+                                Toast.makeText(context, "Регистрация выполнена", Toast.LENGTH_SHORT)
+                                    .show()
+                            }
 
-                        is Resource.Error -> {
-                            Toast.makeText(
-                                context,
-                                resource.message ?: "Ошибка",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        }
+                            is Resource.Error -> {
+                                Toast.makeText(
+                                    context,
+                                    resource.message ?: "Ошибка",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
 
-                        else -> {
-                            Toast.makeText(
-                                context,
-                                resource.message ?: "Ошибка",
-                                Toast.LENGTH_SHORT
-                            ).show()
+                            else -> {
+                                Toast.makeText(
+                                    context,
+                                    resource.message ?: "Ошибка",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
                         }
                     }
-                }
-            }) {
+                }) {
                 Text("Зарегистрироваться")
             }
         }

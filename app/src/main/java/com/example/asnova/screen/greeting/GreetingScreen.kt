@@ -4,7 +4,6 @@ import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Build
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -48,6 +47,7 @@ import com.example.asnova.navigation.Screen
 import com.example.asnova.screen.greeting.components.LoginModalSheet
 import com.example.asnova.screen.sign_in.SignInScreenViewModel
 import com.example.asnova.ui.theme.darkLinear
+import com.example.asnova.ui.theme.greenAsnova
 
 @Composable
 fun GreetingScreen(
@@ -100,7 +100,7 @@ fun GreetingScreen(
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center
             ) {
-                CircularProgressIndicator(modifier = Modifier.size(64.dp))
+                CircularProgressIndicator(modifier = Modifier.size(64.dp), color = greenAsnova)
             }
         }
 
@@ -176,9 +176,14 @@ fun GreetingScreen(
                     onSignInClick.invoke()
                 },
                 context = context,
-                onSubmit = { email, password ->
+                onSubmitLogin = { email, password ->
                     signInViewModel.signInWithEmail(email, password, selectedRole) {
-                        Log.e("signInWithEmail", it.message.toString())
+                        Toast.makeText(context, it.message.toString(), Toast.LENGTH_LONG).show()
+                    }
+                },
+                onSubmitSignIn = { email, password ->
+                    signInViewModel.registerWithEmail(email, password) {
+                        Toast.makeText(context, it.message.toString(), Toast.LENGTH_LONG).show()
                     }
                 }
             )

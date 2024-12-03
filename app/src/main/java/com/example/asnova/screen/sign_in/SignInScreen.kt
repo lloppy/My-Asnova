@@ -54,6 +54,7 @@ fun SignInScreen(
     state: SignInState,
     context: Context,
     onSignInClick: () -> Unit,
+    onSignInClickEmail: () -> Unit,
     goProfile: () -> Unit,
     viewModel: SignInScreenViewModel = hiltViewModel()
 ) {
