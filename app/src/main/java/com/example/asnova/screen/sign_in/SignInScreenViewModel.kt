@@ -55,27 +55,27 @@ class SignInScreenViewModel @Inject constructor(
         registerWithEmailUseCase(email, password, role, fmc) { resource ->
             when (resource) {
                 is Resource.Success -> {
-                    if (resource.data != null) {
-                        val user = resource.data?.data
+                    resource.data?.let { data ->
+                        val user = data.data
                         _state.update {
                             it.copy(
                                 user = user,
                                 errorMessage = null,
                                 isSignInSuccessful = user != null,
                                 otpSent = true,
-                                verificationId = resource.data!!.errorMessage,
+                                verificationId = data.errorMessage,
                                 loading = false
                             )
                         }
                         callback(resource)
-                    } else {
+                    } ?: run {
                         _state.update {
                             it.copy(
                                 user = null,
-                                errorMessage = it.errorMessage,
+                                errorMessage = resource.message ?: "Unknown error",
                                 isSignInSuccessful = false,
                                 otpSent = true,
-                                verificationId = resource.data?.errorMessage,
+                                verificationId = null,
                                 loading = false
                             )
                         }
@@ -84,67 +84,70 @@ class SignInScreenViewModel @Inject constructor(
                 }
 
                 is Resource.Error -> {
-                    signInWithEmailUseCase(email, password, role) {
-                        when (resource) {
-                            is Resource.Success -> {
-                                if (resource.data != null) {
-                                    val user = resource.data?.data
-                                    _state.update {
-                                        it.copy(
-                                            user = user,
-                                            errorMessage = null,
-                                            isSignInSuccessful = false,
-                                            otpSent = true,
-                                            verificationId = resource.data!!.errorMessage,
-                                            loading = false
-                                        )
+                    if (resource.message == "The email address is already in use by another account.") {
+                        signInWithEmailUseCase(email, password, role) { signInResource ->
+                            when (signInResource) {
+                                is Resource.Success -> {
+                                    signInResource.data?.let { data ->
+                                        val user = data.data
+                                        _state.update {
+                                            it.copy(
+                                                user = user,
+                                                errorMessage = null,
+                                                isSignInSuccessful = true,
+                                                otpSent = true,
+                                                verificationId = data.errorMessage,
+                                                loading = false
+                                            )
+                                        }
+                                        callback(signInResource)
+                                    } ?: run {
+                                        _state.update {
+                                            it.copy(
+                                                user = null,
+                                                errorMessage = signInResource.message ?: "Unknown error",
+                                                isSignInSuccessful = false,
+                                                otpSent = true,
+                                                verificationId = null,
+                                                loading = false
+                                            )
+                                        }
+                                        callback(signInResource)
                                     }
-                                    callback(resource)
-                                } else {
+                                }
+
+                                is Resource.Error -> {
                                     _state.update {
                                         it.copy(
                                             user = null,
-                                            errorMessage = it.errorMessage,
+                                            errorMessage = signInResource.message ?: "Ошибка входа",
                                             isSignInSuccessful = false,
-                                            otpSent = true,
-                                            verificationId = resource.data?.errorMessage,
+                                            otpSent = false,
+                                            verificationId = null,
                                             loading = false
                                         )
                                     }
-                                    callback(resource)
+                                    callback(signInResource)
                                 }
-                            }
 
-                            is Resource.Error -> {
-                                _state.update {
-                                    it.copy(
-                                        user = null,
-                                        errorMessage = it.errorMessage,
-                                        isSignInSuccessful = false,
-                                        otpSent = true,
-                                        verificationId = resource.data?.errorMessage,
-                                        loading = false
-                                    )
+                                else -> {
+                                    callback(signInResource)
                                 }
-                                callback(resource)
-                            }
-
-                            else -> {
-                                callback(resource)
                             }
                         }
+                    } else {
+                        _state.update {
+                            it.copy(
+                                user = null,
+                                errorMessage = resource.message ?: "Ошибка регистрации",
+                                isSignInSuccessful = false,
+                                otpSent = false,
+                                verificationId = null,
+                                loading = false
+                            )
+                        }
+                        callback(resource)
                     }
-                    _state.update {
-                        it.copy(
-                            user = null,
-                            errorMessage = it.errorMessage,
-                            isSignInSuccessful = false,
-                            otpSent = true,
-                            verificationId = resource.message,
-                            loading = false
-                        )
-                    }
-                    callback(resource)
                 }
 
                 else -> {
