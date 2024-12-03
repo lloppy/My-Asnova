@@ -28,7 +28,6 @@ import com.example.asnova.navigation.Screen
 import com.example.asnova.screen.greeting.GreetingScreen
 import com.example.asnova.screen.main.MainScreen
 import com.example.asnova.screen.sign_in.SignInScreenViewModel
-import com.example.asnova.screen.sign_in.components.EmailSignInScreen
 import com.example.asnova.ui.theme.AsnovaTheme
 import com.example.asnova.utils.createExternalRouter
 import com.example.asnova.utils.navigate
@@ -83,12 +82,15 @@ class MainActivity : ComponentActivity() {
                     composable(Screen.Greeting.route) {
                         GreetingScreen(
                             isLoading = state.loading,
+                            fmc = UserManager.fmc,
                             context = this@MainActivity,
                             onSignInClick = {
                                 lifecycleScope.launch {
                                     val signInIntentSender = viewModel.signInWithLauncher()
                                     launcher.launch(
-                                        IntentSenderRequest.Builder(signInIntentSender ?: return@launch).build()
+                                        IntentSenderRequest.Builder(
+                                            signInIntentSender ?: return@launch
+                                        ).build()
                                     )
                                 }
                             },
@@ -106,20 +108,6 @@ class MainActivity : ComponentActivity() {
                                 navController.navigate(screen, params)
                             }
                         )
-                    }
-                    composable(Screen.Email.route) {
-                        EmailSignInScreen(
-                            context = this@MainActivity,
-                            navController = navController,
-                            onSignInClick = {
-                                if (state.isSignInSuccessful) {
-                                    navController.navigate(route = Screen.Main.route) {
-                                        popUpTo(route = Screen.Main.route) {
-                                            inclusive = true
-                                        }
-                                    }
-                                }
-                            })
                     }
                 }
             }

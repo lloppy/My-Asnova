@@ -20,7 +20,7 @@ class LoggingUserRepository(private val repository: UserRepository) :
         }
     }
 
-    override fun writeNewDataUser(
+    override fun updateUserInfo(
         name: String,
         surname: String,
         email: String,
@@ -29,7 +29,7 @@ class LoggingUserRepository(private val repository: UserRepository) :
         onFailure: (String) -> Unit
     ) {
         Log.d(tag, "writeNewDataUser called with name: $name, surname: $surname")
-        repository.writeNewDataUser(name, surname, email, phone, {
+        repository.updateUserInfo(name, surname, email, phone, {
             Log.d(tag, "writeNewDataUser success")
             onSuccess()
         }, { error ->
@@ -97,11 +97,13 @@ class LoggingUserRepository(private val repository: UserRepository) :
     override fun registerWithEmail(
         email: String,
         password: String,
+        role: String,
+        fmc: String,
         callback: (Resource<SignInResult>) -> Unit
     ) {
         Log.d(tag, "registerWithEmail called")
         Log.d(tag, "data is $email and $password")
-        return repository.registerWithEmail(email, password) { resource ->
+        return repository.registerWithEmail(email, password, role, fmc,) { resource ->
             logResourceResult("registerWithEmail", resource)
             callback(resource)
         }

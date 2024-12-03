@@ -47,7 +47,7 @@ class MainScreenViewModel @Inject constructor(
     }
 
     fun writeNewDataUser(name: String, surname: String, email: String, phone: String, onSuccess: () -> Unit, onFailure: (String) -> Unit) {
-        userRepository.writeNewDataUser(name, surname, email, phone, onSuccess, onFailure)
+        userRepository.updateUserInfo(name, surname, email, phone, onSuccess, onFailure)
     }
 
     fun saveDontAskAgainPreference(context: Context, value: Boolean) {

@@ -46,104 +46,76 @@ class UserRepositoryImpl @Inject constructor(
         role: String,
         callback: (Resource<SignInResult>) -> Unit
     ) {
-        usersRef.orderByChild("email").equalTo(email).get().addOnCompleteListener { task ->
-            if (task.isSuccessful) {
-                val dataSnapshot = task.result
-                if (dataSnapshot.exists()) {
-                    customSignInUser(email, password, callback)
+        _auth.signInWithEmailAndPassword(email, password)
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    val user = _auth.currentUser
+
+                    val signInResult = SignInResult(
+                        data = User(
+                            userUid = user?.uid ?: "",
+                            username = user?.displayName ?: "",
+                            email = user?.email ?: email,
+                            phone = "",
+                            fmc = "",
+                            asnovaClass = "",
+                            profilePictureUrl = user?.photoUrl?.toString(),
+                            role = role,
+                            name = "",
+                            surname = ""
+                        ),
+                        errorMessage = null
+                    )
+                    callback(Resource.Success(signInResult))
                 } else {
-                    registerNewUser(email, password, role, callback)
+                    callback(Resource.Error(task.exception?.message ?: "Ошибка входа"))
                 }
-            } else {
-                callback(Resource.Error("Ошибка при регистрации пользователя \n${task.exception?.message}"))
             }
-        }
-    }
-
-    private fun registerNewUser(
-        email: String,
-        password: String,
-        role: String,
-        callback: (Resource<SignInResult>) -> Unit
-    ) {
-        val userUid = UUID.randomUUID().toString()
-        val salt = generateSalt(email)
-        val passwordHash = hashPassword(password, salt)
-
-        val newUser = User(
-            userUid = userUid,
-            email = email,
-            passwordHash = passwordHash,
-            profilePictureUrl = DEFAULT_IMAGE_RESOURCE_URL,
-            role = role,
-            username = email
-        )
-
-        usersRef.child(userUid).setValue(newUser).addOnCompleteListener { task ->
-            if (task.isSuccessful) {
-                callback(Resource.Success(SignInResult(newUser, null)))
-            } else {
-                callback(Resource.Error("Ошибка при регистрации пользователя \n${task.exception?.message}"))
-            }
-        }
-    }
-
-    private fun customSignInUser(
-        email: String,
-        password: String,
-        callback: (Resource<SignInResult>) -> Unit
-    ) {
-        val database = Firebase.database.reference
-        val usersRef = database.child("users")
-
-        usersRef.orderByChild("email").equalTo(email).get().addOnCompleteListener { task ->
-            if (task.isSuccessful) {
-                val dataSnapshot = task.result
-
-                if (dataSnapshot.exists()) {
-                    for (userSnapshot in dataSnapshot.children) {
-                        val user = userSnapshot.getValue(User::class.java)
-                        Log.e("usersRef", user.toString())
-                        Log.e("usersRef", user?.passwordHash.toString())
-                        Log.e("usersRef", hashPassword(password, generateSalt(email)))
-
-                        if (user != null && user.passwordHash == hashPassword(
-                                password,
-                                generateSalt(email)
-                            )
-                        ) {
-                            callback(Resource.Success(SignInResult(user, null)))
-                            return@addOnCompleteListener
-                        }
-                    }
-                    callback(Resource.Error("Неверный пароль"))
-                } else {
-                    callback(Resource.Error("Пользователь не найден"))
-                }
-            } else {
-                callback(Resource.Error("Ошибка при выполнении запроса"))
-            }
-        }
     }
 
     override fun registerWithEmail(
         email: String,
         password: String,
+        role: String,
+        fmc: String,
         callback: (Resource<SignInResult>) -> Unit
     ) {
         _auth.createUserWithEmailAndPassword(email, password)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    val user = _auth.currentUser
-                    val signInResult = SignInResult(User(user?.uid ?: "", email = email), null)
-                    callback(Resource.Success(signInResult))
+                    val user = task.result?.user
+
+                    val result = SignInResult(
+                        data = user?.run {
+                            User(
+                                userUid = user.uid,
+                                username = user.displayName,
+                                name = user?.email ?: email,
+                                surname = "",
+                                email = user.email,
+                                phone = "",
+                                fmc = fmc,
+                                asnovaClass = "",
+                                profilePictureUrl = "https://psv4.userapi.com/s/v1/d/IVX_1EiJTaE6qQlPJUP6is6SFrySq3cUPh-v18lzCiH4dNnP1BuknZfB8Lg6ozVibmcz9_xfVuAWJhwDmrOr9dZuKdTkR9pN0ofLpLIGCtHihLxzNfTkwQ/asnova_logo.png",
+                                role = role
+                            )
+                        },
+                        errorMessage = null
+                    )
+
+                    result.data?.userUid?.let { userUid ->
+                        _database.child("users").child(userUid).setValue(result.data)
+                            .addOnSuccessListener {}
+                            .addOnFailureListener {}
+                    } ?: run {}
+                    callback(Resource.Success(result))
                 } else {
                     callback(Resource.Error(task.exception?.message ?: "Ошибка регистрации"))
                 }
             }
     }
 
-    override fun writeNewDataUser(
+    override fun updateUserInfo(
         name: String,
         surname: String,
         email: String,
@@ -154,17 +126,13 @@ class UserRepositoryImpl @Inject constructor(
         val currentUser = FirebaseAuth.getInstance().currentUser
         val userUid = currentUser?.uid
         if (userUid != null) {
-            val user = User(
-                userUid = userUid,
-                username = currentUser.displayName,
-                name = name,
-                surname = surname,
-                email = currentUser.email,
-                phone = phone,
-                profilePictureUrl = currentUser.photoUrl?.toString()
-            )
+            val updates = mutableMapOf<String, Any>()
 
-            _database.child("users").child(userUid).setValue(user)
+            name?.let { updates["name"] = it }
+            surname?.let { updates["surname"] = it }
+            phone?.let { updates["phone"] = it }
+
+            _database.child("users").child(userUid).updateChildren(updates)
                 .addOnSuccessListener {
                     onSuccess()
                 }
@@ -571,17 +539,5 @@ class UserRepositoryImpl @Inject constructor(
             )
             .setAutoSelectEnabled(true)
             .build()
-    }
-
-    private fun hashPassword(password: String, salt: ByteArray): String {
-        val md = MessageDigest.getInstance("SHA-256")
-        md.update(salt)
-        val hashedPassword = md.digest(password.toByteArray())
-        return hashedPassword.joinToString("") { "%02x".format(it) }
-    }
-
-    private fun generateSalt(email: String): ByteArray {
-        val md = MessageDigest.getInstance("SHA-256")
-        return md.digest(email.toByteArray())
     }
 }

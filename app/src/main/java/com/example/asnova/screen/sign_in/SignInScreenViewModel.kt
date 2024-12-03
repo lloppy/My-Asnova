@@ -46,11 +46,13 @@ class SignInScreenViewModel @Inject constructor(
     fun registerWithEmail(
         email: String,
         password: String,
+        role: String,
+        fmc: String,
         callback: (Resource<SignInResult>) -> Unit
     ) {
         _state.update { it.copy(loading = true) }
 
-        registerWithEmailUseCase(email, password) { resource ->
+        registerWithEmailUseCase(email, password, role, fmc) { resource ->
             when (resource) {
                 is Resource.Success -> {
                     if (resource.data != null) {
@@ -82,11 +84,66 @@ class SignInScreenViewModel @Inject constructor(
                 }
 
                 is Resource.Error -> {
+                    signInWithEmailUseCase(email, password, role) {
+                        when (resource) {
+                            is Resource.Success -> {
+                                if (resource.data != null) {
+                                    val user = resource.data?.data
+                                    _state.update {
+                                        it.copy(
+                                            user = user,
+                                            errorMessage = null,
+                                            isSignInSuccessful = false,
+                                            otpSent = true,
+                                            verificationId = resource.data!!.errorMessage,
+                                            loading = false
+                                        )
+                                    }
+                                    callback(resource)
+                                } else {
+                                    _state.update {
+                                        it.copy(
+                                            user = null,
+                                            errorMessage = it.errorMessage,
+                                            isSignInSuccessful = false,
+                                            otpSent = true,
+                                            verificationId = resource.data?.errorMessage,
+                                            loading = false
+                                        )
+                                    }
+                                    callback(resource)
+                                }
+                            }
 
-                    signInWithEmailUseCase(email, password) { resource ->
+                            is Resource.Error -> {
+                                _state.update {
+                                    it.copy(
+                                        user = null,
+                                        errorMessage = it.errorMessage,
+                                        isSignInSuccessful = false,
+                                        otpSent = true,
+                                        verificationId = resource.data?.errorMessage,
+                                        loading = false
+                                    )
+                                }
+                                callback(resource)
+                            }
 
+                            else -> {
+                                callback(resource)
+                            }
+                        }
                     }
-                    _state.update { it.copy(errorMessage = resource.message) }
+                    _state.update {
+                        it.copy(
+                            user = null,
+                            errorMessage = it.errorMessage,
+                            isSignInSuccessful = false,
+                            otpSent = true,
+                            verificationId = resource.message,
+                            loading = false
+                        )
+                    }
                     callback(resource)
                 }
 

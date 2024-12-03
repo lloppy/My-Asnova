@@ -85,7 +85,7 @@ class SettingsScreenViewModel @Inject constructor(
         onSuccess: () -> Unit,
         onFailure: (String) -> Unit
     ) {
-        userRepository.writeNewDataUser(name, surname, email, phone, onSuccess, onFailure)
+        userRepository.updateUserInfo(name, surname, email, phone, onSuccess, onFailure)
     }
 
     fun getUserData(callback: (Resource<User?>) -> Unit) {

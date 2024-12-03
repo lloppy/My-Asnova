@@ -3,8 +3,6 @@ package com.asnova.domain.repository.firebase
 import android.app.Activity
 import android.content.Intent
 import android.content.IntentSender
-import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.IntentSenderRequest
 import com.asnova.model.AsnovaStudentsClass
 import com.asnova.model.Resource
 import com.asnova.model.SignInResult
@@ -24,20 +22,33 @@ interface UserRepository {
         verificationId: String,
         callback: (Resource<SignInResult>) -> Unit
     )
-    fun signInWithPhone(phone: String, activity: Activity, callback: (Resource<SignInResult>) -> Unit)
+
+    fun signInWithPhone(
+        phone: String,
+        activity: Activity,
+        callback: (Resource<SignInResult>) -> Unit
+    )
+
     fun sendOtp(phone: String, callback: (Resource<String>) -> Unit)
     suspend fun signInWithLauncher(): IntentSender?
 
-    fun signInWithEmail(email: String, password: String, role: String, callback: (Resource<SignInResult>) -> Unit)
+    fun signInWithEmail(
+        email: String,
+        password: String,
+        role: String,
+        callback: (Resource<SignInResult>) -> Unit
+    )
 
-    fun registerWithEmail(email: String, password: String, callback: (Resource<SignInResult>) -> Unit)
+    fun registerWithEmail(
+        email: String, password: String, role: String, fmc: String, callback: (Resource<SignInResult>) -> Unit
+    )
 
     fun signOut()
 
 
     // user data + check
     fun isAuthedUser(callback: (Resource<Boolean>) -> Unit)
-    fun writeNewDataUser(
+    fun updateUserInfo(
         name: String,
         surname: String,
         email: String,

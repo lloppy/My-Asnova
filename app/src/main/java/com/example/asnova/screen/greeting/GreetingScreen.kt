@@ -48,10 +48,12 @@ import com.example.asnova.screen.greeting.components.LoginModalSheet
 import com.example.asnova.screen.sign_in.SignInScreenViewModel
 import com.example.asnova.ui.theme.darkLinear
 import com.example.asnova.ui.theme.greenAsnova
+import com.example.asnova.ui.theme.neonGreenAsnova
 
 @Composable
 fun GreetingScreen(
     isLoading: Boolean,
+    fmc: String,
     onSignInClick: () -> Unit,
     context: Context,
     navHostController: NavHostController,
@@ -100,7 +102,7 @@ fun GreetingScreen(
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center
             ) {
-                CircularProgressIndicator(modifier = Modifier.size(64.dp), color = greenAsnova)
+                CircularProgressIndicator(modifier = Modifier.size(64.dp), color = neonGreenAsnova)
             }
         }
 
@@ -124,7 +126,7 @@ fun GreetingScreen(
                 Text(
                     text = "УЭЦ АСНОВА!",
                     style = MaterialTheme.typography.displaySmall.copy(fontWeight = FontWeight.Bold),
-                    color = Color(0xFF80F988),
+                    color = neonGreenAsnova,
                 )
             }
             Spacer(modifier = Modifier.height(80.dp))
@@ -178,12 +180,16 @@ fun GreetingScreen(
                 context = context,
                 onSubmitLogin = { email, password ->
                     signInViewModel.signInWithEmail(email, password, selectedRole) {
-                        Toast.makeText(context, it.message.toString(), Toast.LENGTH_LONG).show()
+                        if (it.message != null) {
+                            Toast.makeText(context, it.message.toString(), Toast.LENGTH_LONG).show()
+                        }
                     }
                 },
                 onSubmitSignIn = { email, password ->
-                    signInViewModel.registerWithEmail(email, password) {
-                        Toast.makeText(context, it.message.toString(), Toast.LENGTH_LONG).show()
+                    signInViewModel.registerWithEmail(email, password, selectedRole, fmc) {
+                        if (it.message != null) {
+                            Toast.makeText(context, it.message.toString(), Toast.LENGTH_LONG).show()
+                        }
                     }
                 }
             )

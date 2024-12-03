@@ -10,8 +10,10 @@ class RegisterWithEmailUseCase(
     operator fun invoke(
         email: String,
         password: String,
+        role: String,
+        fmc: String,
         callback: (Resource<SignInResult>) -> Unit
     ) {
-        userRepository.registerWithEmail(email, password, callback)
+        userRepository.registerWithEmail(email, password, role, fmc, callback)
     }
 }
