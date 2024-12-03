@@ -1,4 +1,4 @@
-package com.example.asnova.screen.main.components
+package com.example.asnova.screen.greeting.components
 
 import android.content.Context
 import android.content.Intent
@@ -18,7 +18,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -29,31 +28,28 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.toLowerCase
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.asnova.screen.main.MainScreenViewModel
-import com.example.asnova.ui.theme.grayAsnova
+import com.asnova.model.Role
+import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun UserInfoModalSheet(
-    viewModel: MainScreenViewModel,
+fun LoginModalSheet(
+    role: String,
     showBottomSheet: Boolean,
     onDismiss: () -> Unit,
+    onSignInGoogle: () -> Unit,
     context: Context,
-    onSubmit: (String, String, String, String) -> Unit
+    onSubmit: (String, String) -> Unit
 ) {
-    var name by remember { mutableStateOf("") }
-    var surname by remember { mutableStateOf("") }
-    var email by remember { mutableStateOf(viewModel.userData?.email ?: "") }
-    var phone by remember { mutableStateOf("") }
+    var email by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
 
-    var nameError by remember { mutableStateOf(false) }
-    var surnameError by remember { mutableStateOf(false) }
     var emailError by remember { mutableStateOf(false) }
-    var phoneError by remember { mutableStateOf(false) }
+    var passwordError by remember { mutableStateOf(false) }
 
     val sheetState = rememberModalBottomSheetState(
         skipPartiallyExpanded = false,
@@ -70,7 +66,7 @@ fun UserInfoModalSheet(
                         .fillMaxWidth()
                         .padding(16.dp)
                 ) {
-                    Text(text = "Введите ваши данные", style = MaterialTheme.typography.titleMedium)
+                    Text(text = if (role != Role.NONE) "Войти как " + role.lowercase(Locale.ROOT) else "Вход", style = MaterialTheme.typography.titleMedium)
 
                     Spacer(modifier = Modifier.height(16.dp))
 
@@ -84,52 +80,22 @@ fun UserInfoModalSheet(
                         keyboardOptions = KeyboardOptions(
                             imeAction = ImeAction.Next,
                         ),
-                        enabled = viewModel.userData?.email.isNullOrEmpty(),
                         modifier = Modifier.fillMaxWidth(),
                         isError = emailError
                     )
 
                     OutlinedTextField(
-                        value = name,
+                        value = password,
                         onValueChange = {
-                            name = it
-                            nameError = it.isEmpty()
+                            password = it
+                            passwordError = it.isEmpty()
                         },
-                        label = { Text("Имя") },
-                        keyboardOptions = KeyboardOptions(
-                            imeAction = ImeAction.Next,
-                        ),
-                        modifier = Modifier.fillMaxWidth(),
-                        isError = nameError
-                    )
-
-                    OutlinedTextField(
-                        value = surname,
-                        onValueChange = {
-                            surname = it
-                            surnameError = it.isEmpty()
-                        },
-                        label = { Text("Фамилия") },
-                        keyboardOptions = KeyboardOptions(
-                            imeAction = ImeAction.Next,
-                        ),
-                        modifier = Modifier.fillMaxWidth(),
-                        isError = surnameError
-                    )
-
-                    OutlinedTextField(
-                        value = phone,
-                        onValueChange = {
-                            phone = it
-                            phoneError = it.isEmpty()
-                        },
-                        label = { Text("Телефон") },
+                        label = { Text("Пароль") },
                         keyboardOptions = KeyboardOptions(
                             imeAction = ImeAction.Done,
-                            keyboardType = KeyboardType.Phone
                         ),
                         modifier = Modifier.fillMaxWidth(),
-                        isError = phoneError
+                        isError = passwordError
                     )
 
                     Spacer(modifier = Modifier.height(16.dp))
@@ -137,33 +103,21 @@ fun UserInfoModalSheet(
                     Button(
                         modifier = Modifier.fillMaxWidth(),
                         onClick = {
-                            nameError = name.isEmpty()
-                            surnameError = surname.isEmpty()
                             emailError = email.isEmpty()
-                            phoneError = phone.isEmpty() || !phone.matches(Regex("\\+?[0-9]*"))
+                            passwordError = password.isEmpty()
 
-                            if (!nameError && !surnameError && !emailError && !phoneError) {
-                                onSubmit(name, surname, email, phone)
+                            if ( !emailError && !passwordError) {
+                                onSubmit(email, password)
                                 onDismiss()
                             }
                         }) {
-                        Text("Готово")
+                        Text("Войти")
                     }
-
-                    Spacer(modifier = Modifier.height(6.dp))
 
                     Button(
                         modifier = Modifier.fillMaxWidth(),
                         onClick = {
-                            viewModel.saveDontAskAgainPreference(context, true)
-
-                            onSubmit(
-                                checkForNullOrEmpty(viewModel.userData?.name),
-                                checkForNullOrEmpty(viewModel.userData?.surname),
-                                checkForNullOrEmpty(viewModel.userData?.email),
-                                checkForNullOrEmpty(viewModel.userData?.phone)
-                            )
-                            onDismiss()
+                            onSignInGoogle.invoke()
                         },
                         colors = ButtonColors(
                             containerColor = Color.Gray,
@@ -172,10 +126,9 @@ fun UserInfoModalSheet(
                             disabledContentColor = Color.White
                         )
                     ) {
-                        Text("Больше не спрашивать")
+                        Text("или войти через Google")
                     }
-
-                    Spacer(modifier = Modifier.height(12.dp))
+                    Spacer(modifier = Modifier.height(6.dp))
 
                     Text(
                         text = "Ознакомиться с Политикой конфиденциальности",
@@ -183,12 +136,9 @@ fun UserInfoModalSheet(
                             .fillMaxWidth()
                             .align(Alignment.CenterHorizontally)
                             .clickable {
-                                val intent = Intent(
-                                    Intent.ACTION_VIEW,
-                                    Uri.parse("https://www.termsfeed.com/live/2ef6f1ab-c17b-42d2-b2df-80dd0218b31a")
-                                )
+                                val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://www.termsfeed.com/live/2ef6f1ab-c17b-42d2-b2df-80dd0218b31a"))
                                 context.startActivity(intent)
-                            },
+                        },
                         textAlign = TextAlign.Center,
                         fontSize = 12.sp,
                         color = Color.Gray
@@ -199,8 +149,4 @@ fun UserInfoModalSheet(
             }
         )
     }
-}
-
-private fun checkForNullOrEmpty(value: String?): String {
-    return if (value.isNullOrEmpty()) "" else value
 }

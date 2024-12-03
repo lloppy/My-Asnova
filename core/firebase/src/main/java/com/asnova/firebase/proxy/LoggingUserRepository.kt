@@ -83,11 +83,12 @@ class LoggingUserRepository(private val repository: UserRepository) :
     override fun signInWithEmail(
         email: String,
         password: String,
+        role: String,
         callback: (Resource<SignInResult>) -> Unit
     ) {
         Log.d(tag, "signInWithEmail called")
         Log.d(tag, "data is $email and $password")
-        return repository.signInWithEmail(email, password) { resource ->
+        return repository.signInWithEmail(email, password, role) { resource ->
             logResourceResult("signInWithEmail", resource)
             callback(resource)
         }
@@ -100,7 +101,7 @@ class LoggingUserRepository(private val repository: UserRepository) :
     ) {
         Log.d(tag, "registerWithEmail called")
         Log.d(tag, "data is $email and $password")
-        return repository.signInWithEmail(email, password) { resource ->
+        return repository.registerWithEmail(email, password) { resource ->
             logResourceResult("registerWithEmail", resource)
             callback(resource)
         }

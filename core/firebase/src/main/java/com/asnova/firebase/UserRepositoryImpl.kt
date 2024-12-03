@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.IntentSender
+import android.util.Log
 import com.asnova.domain.repository.firebase.UserRepository
 import com.asnova.model.AsnovaStudentsClass
 import com.asnova.model.Promocode
@@ -23,6 +24,7 @@ import com.google.firebase.auth.auth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.database
 import kotlinx.coroutines.tasks.await
+import java.security.MessageDigest
 import java.util.UUID
 import java.util.concurrent.CancellationException
 import java.util.concurrent.TimeUnit
@@ -36,21 +38,99 @@ class UserRepositoryImpl @Inject constructor(
     private val _auth: FirebaseAuth = Firebase.auth
     private val adminsRef = _database.child("asnovaAppAdmins")
     private val promoRef = _database.child("asnovaPromocode")
+    private val usersRef = _database.child("users")
 
-    override fun signInWithEmail(email: String, password: String, callback: (Resource<SignInResult>) -> Unit) {
-        _auth.signInWithEmailAndPassword(email, password)
-            .addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    val user = _auth.currentUser
-                    val signInResult = SignInResult(User(user?.uid ?: "", email = email, username = user?.displayName, phone = user?.phoneNumber.toString()), null)
-                    callback(Resource.Success(signInResult))
+    override fun signInWithEmail(
+        email: String,
+        password: String,
+        role: String,
+        callback: (Resource<SignInResult>) -> Unit
+    ) {
+        usersRef.orderByChild("email").equalTo(email).get().addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                val dataSnapshot = task.result
+                if (dataSnapshot.exists()) {
+                    customSignInUser(email, password, callback)
                 } else {
-                    callback(Resource.Error(task.exception?.message ?: "Ошибка входа"))
+                    registerNewUser(email, password, role, callback)
                 }
+            } else {
+                callback(Resource.Error("Ошибка при регистрации пользователя \n${task.exception?.message}"))
             }
+        }
     }
 
-    override fun registerWithEmail(email: String, password: String, callback: (Resource<SignInResult>) -> Unit) {
+    private fun registerNewUser(
+        email: String,
+        password: String,
+        role: String,
+        callback: (Resource<SignInResult>) -> Unit
+    ) {
+        val userUid = UUID.randomUUID().toString()
+        val salt = generateSalt(email)
+        val passwordHash = hashPassword(password, salt)
+
+        val newUser = User(
+            userUid = userUid,
+            email = email,
+            passwordHash = passwordHash,
+            profilePictureUrl = DEFAULT_IMAGE_RESOURCE_URL,
+            role = role,
+            username = email
+        )
+
+        usersRef.child(userUid).setValue(newUser).addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                callback(Resource.Success(SignInResult(newUser, null)))
+            } else {
+                callback(Resource.Error("Ошибка при регистрации пользователя \n${task.exception?.message}"))
+            }
+        }
+    }
+
+    private fun customSignInUser(
+        email: String,
+        password: String,
+        callback: (Resource<SignInResult>) -> Unit
+    ) {
+        val database = Firebase.database.reference
+        val usersRef = database.child("users")
+
+        usersRef.orderByChild("email").equalTo(email).get().addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                val dataSnapshot = task.result
+
+                if (dataSnapshot.exists()) {
+                    for (userSnapshot in dataSnapshot.children) {
+                        val user = userSnapshot.getValue(User::class.java)
+                        Log.e("usersRef", user.toString())
+                        Log.e("usersRef", user?.passwordHash.toString())
+                        Log.e("usersRef", hashPassword(password, generateSalt(email)))
+
+                        if (user != null && user.passwordHash == hashPassword(
+                                password,
+                                generateSalt(email)
+                            )
+                        ) {
+                            callback(Resource.Success(SignInResult(user, null)))
+                            return@addOnCompleteListener
+                        }
+                    }
+                    callback(Resource.Error("Неверный пароль"))
+                } else {
+                    callback(Resource.Error("Пользователь не найден"))
+                }
+            } else {
+                callback(Resource.Error("Ошибка при выполнении запроса"))
+            }
+        }
+    }
+
+    override fun registerWithEmail(
+        email: String,
+        password: String,
+        callback: (Resource<SignInResult>) -> Unit
+    ) {
         _auth.createUserWithEmailAndPassword(email, password)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
@@ -257,7 +337,8 @@ class UserRepositoryImpl @Inject constructor(
                                     if (isAdmin2 != null && email2 != null) {
                                         if (isAdmin2 && email2 == email) {
                                             isAdmin = isAdmin2
-                                            _database.child("users").child(userUid).child("role")
+                                            _database.child("users").child(userUid)
+                                                .child("role")
                                                 .setValue("Администратор")
                                         }
                                     }
@@ -308,29 +389,37 @@ class UserRepositoryImpl @Inject constructor(
         val user = FirebaseAuth.getInstance().currentUser
         val userUid = user?.uid
         if (userUid != null) {
-            _database.child("users").child(userUid).removeValue().addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    user!!.delete().addOnCompleteListener { deleteTask ->
-                        if (deleteTask.isSuccessful) {
-                            callback(Resource.Success(true))
-                        } else {
-                            callback(
-                                Resource.Error(
-                                    "Failed to delete account: ${deleteTask.exception?.message}",
-                                    false
+            _database.child("users").child(userUid).removeValue()
+                .addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        user.delete().addOnCompleteListener { deleteTask ->
+                            if (deleteTask.isSuccessful) {
+                                callback(Resource.Success(true))
+                            } else {
+                                callback(
+                                    Resource.Error(
+                                        "Failed to delete account: ${deleteTask.exception?.message}",
+                                        false
+                                    )
                                 )
-                            )
+                            }
                         }
-                    }
-                } else {
-                    callback(
-                        Resource.Error(
-                            "Failed to remove user data: ${task.exception?.message}",
-                            false
+                    } else {
+                        callback(
+                            Resource.Error(
+                                "Failed to remove user data: ${task.exception?.message}",
+                                false
+                            )
                         )
-                    )
+                    }
                 }
-            }
+        } else {
+            callback(
+                Resource.Error(
+                    "Failed to remove user data cause its custom login user",
+                    false
+                )
+            )
         }
     }
 
@@ -354,7 +443,11 @@ class UserRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun signInWithPhone(phone: String, activity: Activity, callback: (Resource<SignInResult>) -> Unit) {
+    override fun signInWithPhone(
+        phone: String,
+        activity: Activity,
+        callback: (Resource<SignInResult>) -> Unit
+    ) {
         val auth = FirebaseAuth.getInstance()
 
         val options = PhoneAuthOptions.newBuilder(auth)
@@ -366,7 +459,18 @@ class UserRepositoryImpl @Inject constructor(
                     auth.signInWithCredential(credential)
                         .addOnCompleteListener { task ->
                             if (task.isSuccessful) {
-                                callback(Resource.Success(SignInResult(User(task.result?.user?.uid.toString(), "", "", phone), null)))
+                                callback(
+                                    Resource.Success(
+                                        SignInResult(
+                                            User(
+                                                task.result?.user?.uid.toString(),
+                                                "",
+                                                "",
+                                                phone
+                                            ), null
+                                        )
+                                    )
+                                )
                             } else {
                                 callback(Resource.Error("Sign-in failed", null))
                             }
@@ -377,7 +481,10 @@ class UserRepositoryImpl @Inject constructor(
                     callback(Resource.Error(e.message ?: "Verification failed", null))
                 }
 
-                override fun onCodeSent(verificationId: String, token: PhoneAuthProvider.ForceResendingToken) {
+                override fun onCodeSent(
+                    verificationId: String,
+                    token: PhoneAuthProvider.ForceResendingToken
+                ) {
                     callback(Resource.Success(SignInResult(User(), verificationId)))
                 }
             })
@@ -428,7 +535,11 @@ class UserRepositoryImpl @Inject constructor(
                             if (task.isSuccessful) {
                                 callback(Resource.Success("Verification completed successfully"))
                             } else {
-                                callback(Resource.Error(task.exception?.message ?: "Unknown error"))
+                                callback(
+                                    Resource.Error(
+                                        task.exception?.message ?: "Unknown error"
+                                    )
+                                )
                             }
                         }
                 }
@@ -462,4 +573,15 @@ class UserRepositoryImpl @Inject constructor(
             .build()
     }
 
+    private fun hashPassword(password: String, salt: ByteArray): String {
+        val md = MessageDigest.getInstance("SHA-256")
+        md.update(salt)
+        val hashedPassword = md.digest(password.toByteArray())
+        return hashedPassword.joinToString("") { "%02x".format(it) }
+    }
+
+    private fun generateSalt(email: String): ByteArray {
+        val md = MessageDigest.getInstance("SHA-256")
+        return md.digest(email.toByteArray())
+    }
 }

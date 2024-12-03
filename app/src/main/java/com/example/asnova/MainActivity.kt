@@ -87,13 +87,12 @@ class MainActivity : ComponentActivity() {
                                 lifecycleScope.launch {
                                     val signInIntentSender = viewModel.signInWithLauncher()
                                     launcher.launch(
-                                        IntentSenderRequest.Builder(
-                                            signInIntentSender ?: return@launch
-                                        ).build()
+                                        IntentSenderRequest.Builder(signInIntentSender ?: return@launch).build()
                                     )
                                 }
                             },
-                            navHostController = navController
+                            navHostController = navController,
+                            signInViewModel = viewModel
                         )
                     }
                     composable(Screen.Main.route) {

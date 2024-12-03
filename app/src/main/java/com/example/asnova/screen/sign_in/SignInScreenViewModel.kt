@@ -32,9 +32,7 @@ class SignInScreenViewModel @Inject constructor(
     private val signInWithOtpUseCase: SignInWithOtpUseCase,
     private val signInWithPhoneUseCase: SignInWithPhoneUseCase,
     private val registerWithEmailUseCase: RegisterWithEmailUseCase,
-    private val signInWithEmailUseCase: SignInWithEmailUseCase,
-
-    // private val createUserWithPhoneUseCase: CreateUserWithPhoneUseCase
+    private val signInWithEmailUseCase: SignInWithEmailUseCase
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(SignInState())
@@ -54,21 +52,41 @@ class SignInScreenViewModel @Inject constructor(
             when (resource) {
                 is Resource.Success -> {
                     if (resource.data != null) {
+                        val user = resource.data?.data
                         _state.update {
-                            it.copy(otpSent = true, verificationId = resource.data!!.errorMessage)
+                            it.copy(
+                                user = user,
+                                errorMessage = null,
+                                isSignInSuccessful = user != null,
+                                otpSent = true,
+                                verificationId = resource.data!!.errorMessage,
+                                loading = false
+                            )
                         }
+                        callback(resource)
                     } else {
                         _state.update {
-                            it.copy(otpSent = true, verificationId = resource.data?.errorMessage)
+                            it.copy(
+                                user = null,
+                                errorMessage = it.errorMessage,
+                                isSignInSuccessful = false,
+                                otpSent = true,
+                                verificationId = resource.data?.errorMessage,
+                                loading = false
+                            )
                         }
+                        callback(resource)
                     }
                 }
 
                 is Resource.Error -> {
                     _state.update { it.copy(errorMessage = resource.message) }
+                    callback(resource)
                 }
 
-                else -> {}
+                else -> {
+                    callback(resource)
+                }
             }
         }
     }
@@ -76,19 +94,35 @@ class SignInScreenViewModel @Inject constructor(
     fun signInWithEmail(
         email: String,
         password: String,
+        role: String,
         callback: (Resource<SignInResult>) -> Unit
     ) {
-        signInWithEmailUseCase(email, password) { resource ->
+        signInWithEmailUseCase(email, password, role) { resource ->
             when (resource) {
                 is Resource.Success -> {
                     if (resource.data != null) {
+                        val user = resource.data?.data
                         _state.update {
-                            it.copy(otpSent = true, verificationId = resource.data!!.errorMessage)
+                            it.copy(
+                                user = user,
+                                errorMessage = null,
+                                isSignInSuccessful = user != null,
+                                otpSent = true,
+                                verificationId = resource.data!!.errorMessage,
+                                loading = false
+                            )
                         }
                         callback(resource)
                     } else {
                         _state.update {
-                            it.copy(otpSent = true, verificationId = resource.data?.errorMessage)
+                            it.copy(
+                                user = null,
+                                errorMessage = it.errorMessage,
+                                isSignInSuccessful = false,
+                                otpSent = true,
+                                verificationId = resource.data?.errorMessage,
+                                loading = false
+                            )
                         }
                         callback(resource)
                     }
@@ -111,12 +145,27 @@ class SignInScreenViewModel @Inject constructor(
             when (resource) {
                 is Resource.Success -> {
                     if (resource.data != null) {
+                        val user = resource.data?.data
                         _state.update {
-                            it.copy(otpSent = true, verificationId = resource.data!!.errorMessage)
+                            it.copy(
+                                user = user,
+                                errorMessage = null,
+                                isSignInSuccessful = user != null,
+                                otpSent = true,
+                                verificationId = resource.data!!.errorMessage,
+                                loading = false
+                            )
                         }
                     } else {
                         _state.update {
-                            it.copy(otpSent = true, verificationId = resource.data?.errorMessage)
+                            it.copy(
+                                user = null,
+                                errorMessage = it.errorMessage,
+                                isSignInSuccessful = false,
+                                otpSent = true,
+                                verificationId = resource.data?.errorMessage,
+                                loading = false
+                            )
                         }
                         onFault(resource.message ?: "Unknown error")
                     }

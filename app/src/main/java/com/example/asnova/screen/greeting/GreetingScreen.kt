@@ -23,7 +23,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -37,17 +36,17 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import com.asnova.model.Resource
 import com.asnova.model.Role
 import com.example.asnova.R
 import com.example.asnova.navigation.Screen
+import com.example.asnova.screen.greeting.components.LoginModalSheet
+import com.example.asnova.screen.sign_in.SignInScreenViewModel
 import com.example.asnova.ui.theme.darkLinear
 
 @Composable
@@ -56,8 +55,12 @@ fun GreetingScreen(
     onSignInClick: () -> Unit,
     context: Context,
     navHostController: NavHostController,
-    viewModel: GreetingScreenViewModel = hiltViewModel()
+    signInViewModel: SignInScreenViewModel,
+    viewModel: GreetingScreenViewModel = hiltViewModel(),
 ) {
+    var showBottomSheet by remember { mutableStateOf(false) }
+    var selectedRole by remember { mutableStateOf(Role.NONE) }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -84,7 +87,11 @@ fun GreetingScreen(
 
         LaunchedEffect(Unit) {
             if (!isNetworkAvailable(context)) {
-                Toast.makeText(context, context.getString(R.string.check_internet_connection), Toast.LENGTH_LONG).show()
+                Toast.makeText(
+                    context,
+                    context.getString(R.string.check_internet_connection),
+                    Toast.LENGTH_LONG
+                ).show()
             }
         }
 
@@ -139,40 +146,63 @@ fun GreetingScreen(
                 ) {
                     RoleButton(roleName = Role.WORKER, R.drawable.worker, isLoading) {
                         viewModel.onRoleSelected(Role.WORKER) {
-                            onSignInClick.invoke()
+                            selectedRole = Role.WORKER
+                            showBottomSheet = true
                         }
                     }
 
                     RoleButton(roleName = Role.STUDENT, R.drawable.student, isLoading) {
                         viewModel.onRoleSelected(Role.STUDENT) {
-                            onSignInClick.invoke()
+                            selectedRole = Role.STUDENT
+                            showBottomSheet = true
                         }
                     }
 
                     RoleButton(roleName = Role.GUEST, R.drawable.guest, isLoading) {
-                        viewModel.onRoleSelected(Role.GUEST){
+                        viewModel.onRoleSelected(Role.GUEST) {
+                            selectedRole = Role.GUEST
                             navHostController.navigate(Screen.Main.route)
                         }
                     }
                 }
             }
         }
+        if (showBottomSheet) {
+            LoginModalSheet(
+                role = selectedRole,
+                showBottomSheet = showBottomSheet,
+                onDismiss = { showBottomSheet = false },
+                onSignInGoogle = {
+                    onSignInClick.invoke()
+                },
+                context = context,
+                onSubmit = { email, password ->
+                    signInViewModel.signInWithEmail(email, password, selectedRole) {
+                        Log.e("signInWithEmail", it.message.toString())
+                    }
+                }
+            )
+        }
     }
 }
 
 private fun isNetworkAvailable(context: Context?): Boolean {
     if (context == null) return false
-    val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+    val connectivityManager =
+        context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-        val capabilities = connectivityManager.getNetworkCapabilities(connectivityManager.activeNetwork)
+        val capabilities =
+            connectivityManager.getNetworkCapabilities(connectivityManager.activeNetwork)
         if (capabilities != null) {
             when {
                 capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> {
                     return true
                 }
+
                 capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> {
                     return true
                 }
+
                 capabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> {
                     return true
                 }
@@ -196,7 +226,10 @@ fun RoleButton(roleName: String, iconId: Int, isLoading: Boolean, onClick: () ->
                 .size(75.dp),
             shape = CircleShape,
             enabled = !isLoading,
-            colors = ButtonDefaults.buttonColors(containerColor = Color.White, disabledContainerColor = Color.White),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color.White,
+                disabledContainerColor = Color.White
+            ),
             elevation = ButtonDefaults.buttonElevation(defaultElevation = 10.dp)
         ) {
             Image(
