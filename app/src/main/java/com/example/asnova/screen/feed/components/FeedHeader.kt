@@ -122,6 +122,8 @@ fun HeaderSection(
                                 ",\n${userData!!.username}"
                             }
                         }",
+                        maxLines = 2,
+                        overflow = TextOverflow.Clip,
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold,
                         color = Color.White

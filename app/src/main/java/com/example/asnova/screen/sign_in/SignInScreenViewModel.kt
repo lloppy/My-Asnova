@@ -105,7 +105,8 @@ class SignInScreenViewModel @Inject constructor(
                                         _state.update {
                                             it.copy(
                                                 user = null,
-                                                errorMessage = signInResource.message ?: "Unknown error",
+                                                errorMessage = signInResource.message
+                                                    ?: "Unknown error",
                                                 isSignInSuccessful = false,
                                                 otpSent = true,
                                                 verificationId = null,
