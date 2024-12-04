@@ -68,6 +68,7 @@ class ScheduleScreenViewModel @Inject constructor(
         getUserDataUseCase.invoke(callback)
     }
 
+    // Паттерн State
     fun loadScheduleForGroup(currentGroup: String? = "") {
         Log.e("currentGroup", "до " + currentGroup.toString())
 

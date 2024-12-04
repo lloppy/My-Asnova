@@ -54,6 +54,7 @@ fun ScheduleScreen(
     lifecycleOwner: LifecycleOwner,
     viewModel: ScheduleScreenViewModel = hiltViewModel()
 ) {
+    // Паттерн State
     val state = viewModel.state
     var userData by remember { mutableStateOf<User?>(null) }
 
@@ -95,6 +96,7 @@ fun ScheduleScreen(
             .fillMaxSize()
             .background(Color.White)
     ) {
+        // Паттерн State
         SkeletonScreen(
             isLoading = state.value.loading,
             skeleton = {

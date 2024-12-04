@@ -1,5 +1,6 @@
 package com.asnova.model
 
+// Паттерн State
 sealed class Resource<T>(
     val data: T? = null,
     val message: String? = null,
