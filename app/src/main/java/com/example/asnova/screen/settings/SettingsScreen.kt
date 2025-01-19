@@ -30,7 +30,6 @@ import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -49,12 +48,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.LifecycleCoroutineScope
-import androidx.lifecycle.LifecycleOwner
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
-import com.asnova.model.Resource
 import com.asnova.model.Role
-import com.asnova.model.User
 import com.example.asnova.R
 import com.example.asnova.data.UserManager
 import com.example.asnova.navigation.Screen
@@ -62,33 +58,29 @@ import com.example.asnova.screen.settings.components.SettingsItemBox
 import com.example.asnova.screen.settings.components.UserEditInfoModalSheet
 import com.example.asnova.ui.theme.BottomBarHeight
 import com.example.asnova.ui.theme.blackShadesLinear
-import com.example.asnova.utils.Router
 import com.example.asnova.utils.SkeletonScreen
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun ProfileSettingsScreen(
-    user: User?,
-    externalRouter: Router,
     context: Context,
     lifecycleScope: LifecycleCoroutineScope,
-    lifecycleOwner: LifecycleOwner,
+    navController: NavController,
     navigateToChats: () -> Unit,
     navigateToChangeGroup: () -> Unit,
     navigateToSelectClass: () -> Unit,
     navigateToEnterPromocode: () -> Unit,
     onRestartApp: () -> Unit,
-    navController: NavController,
     viewModel: SettingsScreenViewModel = hiltViewModel()
 ) {
-    var userData by remember { mutableStateOf(user) }
+    val userData by remember { mutableStateOf(UserManager.user) }
     val state = viewModel.state
 
     var showBottomSheet by remember { mutableStateOf(false) }
 
     // Refresh state
-    var isRefreshing by remember { mutableStateOf(false) }
+    val isRefreshing by remember { mutableStateOf(false) }
     val stateRefresh = rememberPullRefreshState(isRefreshing, { viewModel.pullToRefresh() })
 
     Box(
@@ -255,7 +247,9 @@ fun ProfileSettingsScreen(
                     if (UserManager.getRole() != Role.NONE) {
                         SettingsItemBox(
                             icon = Icons.AutoMirrored.Filled.ExitToApp,
-                            text = if (UserManager.getRole() == Role.GUEST) "Выйти из аккаунта гостя" else  stringResource(R.string.log_out),
+                            text = if (UserManager.getRole() == Role.GUEST) "Выйти из аккаунта гостя" else stringResource(
+                                R.string.log_out
+                            ),
                             onClick = {
                                 lifecycleScope.launch {
                                     viewModel.signOut()

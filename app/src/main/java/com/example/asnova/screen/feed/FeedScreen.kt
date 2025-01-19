@@ -18,7 +18,6 @@ import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -31,11 +30,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.LifecycleOwner
-import androidx.navigation.NavController
-import com.asnova.model.Resource
-import com.asnova.model.User
 import com.example.asnova.R
+import com.example.asnova.data.UserManager
 import com.example.asnova.screen.feed.components.FeedItemView
 import com.example.asnova.screen.feed.components.HeaderSection
 import com.example.asnova.screen.feed.components.Segments
@@ -43,19 +39,14 @@ import com.example.asnova.ui.theme.BottomBarHeight
 import com.example.asnova.ui.theme.FeedItemHeight
 import com.example.asnova.ui.theme.backgroundAsnova
 import com.example.asnova.utils.SkeletonScreen
-import com.example.asnova.utils.Router
 import com.example.asnova.utils.shimmerEffect
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun FeedScreen(
-    user: User?,
-    externalRouter: Router,
-    navController: NavController,
-    lifecycleOwner: LifecycleOwner,
     viewModel: FeedScreenViewModel = hiltViewModel()
 ) {
-    var userData by remember { mutableStateOf(user) }
+    val userData by remember { mutableStateOf(UserManager.user) }
 
     val listState = rememberLazyListState()
     val state by viewModel.state

@@ -1,7 +1,6 @@
 package com.example.asnova.navigation
 
 import android.content.Context
-import android.util.Log
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -13,13 +12,10 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.LifecycleCoroutineScope
-import androidx.lifecycle.LifecycleOwner
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.asnova.model.User
-import com.example.asnova.data.UserManager
 import com.example.asnova.screen.chat.ChatScreen
 import com.example.asnova.screen.feed.FeedScreen
 import com.example.asnova.screen.schedule.ScheduleScreen
@@ -28,7 +24,6 @@ import com.example.asnova.screen.settings.components.ChangeGroupScreen
 import com.example.asnova.screen.settings.components.EnterPromocodeScreen
 import com.example.asnova.screen.settings.components.admin_classes.SelectClassScreen
 import com.example.asnova.ui.theme.BottomBarHeight
-import com.example.asnova.utils.Router
 import com.example.bottombar.AnimatedBottomBar
 import com.example.bottombar.components.BottomBarItem
 import com.example.bottombar.model.IndicatorDirection
@@ -38,45 +33,28 @@ import com.example.bottombar.model.VisibleItem
 
 @Composable
 fun SetupNavGraph(
-    navHostController: NavHostController,
     context: Context,
     lifecycleScope: LifecycleCoroutineScope,
-    lifecycleOwner: LifecycleOwner,
-    router: Router,
+    navHostController: NavHostController,
     onRestartApp: () -> Unit
 ) {
-    val user = UserManager.user
-    Log.e("check_user", user?.surname.toString())
-    Log.e("check_user", user?.profilePictureUrl.toString())
-    Log.e("check_user", user?.email.toString())
-
     NavHost(
         navController = navHostController,
         startDestination = Screen.Feed.route
     ) {
         composable(Screen.Feed.route) {
-            FeedScreen(
-                user = user,
-                externalRouter = router,
-                navController = navHostController,
-                lifecycleOwner = lifecycleOwner
-            )
+            FeedScreen()
         }
         composable(Screen.Schedule.route) {
             ScheduleScreen(
-                user = user,
-                externalRouter = router,
-                context = context,
-                lifecycleOwner = lifecycleOwner
+                context = context
             )
         }
         composable(Screen.ProfileSettings.route) {
             ProfileSettingsScreen(
-                user = user,
-                externalRouter = router,
                 context = context,
                 lifecycleScope = lifecycleScope,
-                lifecycleOwner = lifecycleOwner,
+                navController = navHostController,
                 navigateToChats = {
                     navHostController.navigate(Screen.Chats.route)
                 },
@@ -89,7 +67,6 @@ fun SetupNavGraph(
                 navigateToEnterPromocode = {
                     navHostController.navigate(Screen.EnterPromocode.route)
                 },
-                navController = navHostController,
                 onRestartApp = onRestartApp
             )
         }

@@ -1,6 +1,5 @@
 package com.example.asnova.screen.schedule
 
-
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -32,16 +31,13 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.LifecycleOwner
-import com.asnova.model.Resource
-import com.asnova.model.User
+import com.example.asnova.data.UserManager
 import com.example.asnova.screen.schedule.components.GroupScheduleItem
 import com.example.asnova.screen.schedule.components.ScheduleHeader
 import com.example.asnova.screen.schedule.components.ScheduleHeaderSegment
 import com.example.asnova.screen.schedule.components.SiteScheduleItem
 import com.example.asnova.screen.schedule.components.WeekNavigationRow
 import com.example.asnova.ui.theme.BottomBarHeight
-import com.example.asnova.utils.Router
 import com.example.asnova.utils.ScheduleScreenSkeleton
 import com.example.asnova.utils.SkeletonScreen
 import java.time.LocalDate
@@ -49,14 +45,11 @@ import java.time.LocalDate
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun ScheduleScreen(
-    user: User?,
-    externalRouter: Router,
     context: Context,
-    lifecycleOwner: LifecycleOwner,
     viewModel: ScheduleScreenViewModel = hiltViewModel()
 ) {
     val state = viewModel.state
-    var userData by remember { mutableStateOf(user) }
+    val userData by remember { mutableStateOf(UserManager.user) }
 
     val configuration = LocalConfiguration.current
     val screenHeight = configuration.screenHeightDp.dp
@@ -68,8 +61,10 @@ fun ScheduleScreen(
     val currentDate = LocalDate.now()
     val selectedMutableDate = remember { mutableStateOf(currentDate) }
 
-    val lastMonday = remember { mutableStateOf(currentDate.minusDays(currentDate.dayOfWeek.value.toLong() - 1)) }
-    val dateList = remember { mutableStateOf(List(7) { index -> lastMonday.value.plusDays(index.toLong()) }) }
+    val lastMonday =
+        remember { mutableStateOf(currentDate.minusDays(currentDate.dayOfWeek.value.toLong() - 1)) }
+    val dateList =
+        remember { mutableStateOf(List(7) { index -> lastMonday.value.plusDays(index.toLong()) }) }
 
     var currentScheduleIsPrivate by remember { mutableStateOf(true) }
 
@@ -145,7 +140,9 @@ fun ScheduleScreen(
                                 }
                             }
                         } else {
-                            val schedulesForSelectedDate = state.value.privateSchedule[selectedMutableDate.value] ?: emptyList()
+                            val schedulesForSelectedDate =
+                                state.value.privateSchedule[selectedMutableDate.value]
+                                    ?: emptyList()
                             items(schedulesForSelectedDate) { item ->
                                 GroupScheduleItem(item, context)
                             }

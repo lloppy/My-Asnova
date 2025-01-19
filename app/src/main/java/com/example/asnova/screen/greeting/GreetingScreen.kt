@@ -43,6 +43,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.asnova.model.Role
 import com.example.asnova.R
+import com.example.asnova.data.UserManager
 import com.example.asnova.navigation.Screen
 import com.example.asnova.screen.greeting.components.LoginModalSheet
 import com.example.asnova.screen.sign_in.SignInScreenViewModel
@@ -53,7 +54,6 @@ import com.example.asnova.ui.theme.neonGreenAsnova
 @Composable
 fun GreetingScreen(
     isLoading: Boolean,
-    fmc: String,
     onSignInClick: () -> Unit,
     context: Context,
     navHostController: NavHostController,
@@ -186,7 +186,7 @@ fun GreetingScreen(
                     }
                 },
                 onSubmitSignIn = { email, password ->
-                    signInViewModel.registerWithEmail(email, password, selectedRole, fmc) {
+                    signInViewModel.registerWithEmail(email, password, selectedRole, UserManager.fmc) {
                         if (it.message != null) {
                             Toast.makeText(context, it.message.toString(), Toast.LENGTH_LONG).show()
                         }

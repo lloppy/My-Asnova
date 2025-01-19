@@ -18,7 +18,6 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.LifecycleCoroutineScope
-import androidx.lifecycle.LifecycleOwner
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.asnova.model.Role
@@ -27,7 +26,6 @@ import com.example.asnova.navigation.BottomNavigationBar
 import com.example.asnova.navigation.Screen
 import com.example.asnova.navigation.SetupNavGraph
 import com.example.asnova.screen.main.components.UserInfoModalSheet
-import com.example.asnova.utils.Router
 import kotlinx.coroutines.launch
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -35,9 +33,7 @@ import kotlinx.coroutines.launch
 fun MainScreen(
     context: Context,
     lifecycleScope: LifecycleCoroutineScope,
-    lifecycleOwner: LifecycleOwner,
     onRestartApp: () -> Unit,
-    router: Router,
     viewModel: MainScreenViewModel = hiltViewModel()
 ) {
     val hideList = setOf(
@@ -79,11 +75,9 @@ fun MainScreen(
         }
     ) {
         SetupNavGraph(
-            navController,
             context = context,
             lifecycleScope = lifecycleScope,
-            lifecycleOwner = lifecycleOwner,
-            router = router,
+            navHostController = navController,
             onRestartApp = onRestartApp
         )
 

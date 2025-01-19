@@ -29,8 +29,6 @@ import com.example.asnova.navigation.Screen
 import com.example.asnova.screen.greeting.GreetingScreen
 import com.example.asnova.screen.main.MainScreen
 import com.example.asnova.ui.theme.AsnovaTheme
-import com.example.asnova.utils.createExternalRouter
-import com.example.asnova.utils.navigate
 import com.google.firebase.messaging.FirebaseMessaging
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -82,7 +80,6 @@ class MainActivity : ComponentActivity() {
                     composable(Screen.Greeting.route) {
                         GreetingScreen(
                             isLoading = state.loading,
-                            fmc = UserManager.fmc,
                             context = this@MainActivity,
                             onSignInClick = {
                                 lifecycleScope.launch {
@@ -102,11 +99,7 @@ class MainActivity : ComponentActivity() {
                         MainScreen(
                             context = this@MainActivity,
                             lifecycleScope = lifecycleScope,
-                            lifecycleOwner = this@MainActivity,
-                            onRestartApp = { restartApp() },
-                            router = createExternalRouter { screen, params ->
-                                navController.navigate(screen, params)
-                            }
+                            onRestartApp = { restartApp() }
                         )
                     }
                 }
