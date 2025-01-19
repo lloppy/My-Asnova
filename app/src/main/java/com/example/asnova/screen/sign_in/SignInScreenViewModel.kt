@@ -56,12 +56,11 @@ class SignInScreenViewModel @Inject constructor(
             when (resource) {
                 is Resource.Success -> {
                     resource.data?.let { data ->
-                        val user = data.data
+                        UserManager.user = data.data
                         _state.update {
                             it.copy(
-                                user = user,
                                 errorMessage = null,
-                                isSignInSuccessful = user != null,
+                                isSignInSuccessful = UserManager.isUserSignedIn(),
                                 otpSent = true,
                                 verificationId = data.errorMessage,
                                 loading = false
@@ -71,7 +70,6 @@ class SignInScreenViewModel @Inject constructor(
                     } ?: run {
                         _state.update {
                             it.copy(
-                                user = null,
                                 errorMessage = resource.message ?: "Unknown error",
                                 isSignInSuccessful = false,
                                 otpSent = true,
@@ -89,10 +87,9 @@ class SignInScreenViewModel @Inject constructor(
                             when (signInResource) {
                                 is Resource.Success -> {
                                     signInResource.data?.let { data ->
-                                        val user = data.data
+                                        UserManager.user = data.data
                                         _state.update {
                                             it.copy(
-                                                user = user,
                                                 errorMessage = null,
                                                 isSignInSuccessful = true,
                                                 otpSent = true,
@@ -104,7 +101,6 @@ class SignInScreenViewModel @Inject constructor(
                                     } ?: run {
                                         _state.update {
                                             it.copy(
-                                                user = null,
                                                 errorMessage = signInResource.message
                                                     ?: "Unknown error",
                                                 isSignInSuccessful = false,
@@ -120,7 +116,6 @@ class SignInScreenViewModel @Inject constructor(
                                 is Resource.Error -> {
                                     _state.update {
                                         it.copy(
-                                            user = null,
                                             errorMessage = signInResource.message ?: "Ошибка входа",
                                             isSignInSuccessful = false,
                                             otpSent = false,
@@ -139,7 +134,6 @@ class SignInScreenViewModel @Inject constructor(
                     } else {
                         _state.update {
                             it.copy(
-                                user = null,
                                 errorMessage = resource.message ?: "Ошибка регистрации",
                                 isSignInSuccessful = false,
                                 otpSent = false,
@@ -172,7 +166,6 @@ class SignInScreenViewModel @Inject constructor(
                         val user = resource.data?.data
                         _state.update {
                             it.copy(
-                                user = user,
                                 errorMessage = null,
                                 isSignInSuccessful = user != null,
                                 otpSent = true,
@@ -184,7 +177,6 @@ class SignInScreenViewModel @Inject constructor(
                     } else {
                         _state.update {
                             it.copy(
-                                user = null,
                                 errorMessage = it.errorMessage,
                                 isSignInSuccessful = false,
                                 otpSent = true,
@@ -214,12 +206,11 @@ class SignInScreenViewModel @Inject constructor(
             when (resource) {
                 is Resource.Success -> {
                     if (resource.data != null) {
-                        val user = resource.data?.data
+                        UserManager.user = resource.data?.data
                         _state.update {
                             it.copy(
-                                user = user,
                                 errorMessage = null,
-                                isSignInSuccessful = user != null,
+                                isSignInSuccessful = UserManager.isUserSignedIn(),
                                 otpSent = true,
                                 verificationId = resource.data!!.errorMessage,
                                 loading = false
@@ -228,7 +219,6 @@ class SignInScreenViewModel @Inject constructor(
                     } else {
                         _state.update {
                             it.copy(
-                                user = null,
                                 errorMessage = it.errorMessage,
                                 isSignInSuccessful = false,
                                 otpSent = true,
@@ -259,12 +249,11 @@ class SignInScreenViewModel @Inject constructor(
         signInWithOtpUseCase(otp, verificationId) { resource ->
             when (resource) {
                 is Resource.Success -> {
-                    val user = resource.data?.data
+                    UserManager.user = resource.data?.data
                     _state.update {
                         it.copy(
-                            user = user,
                             errorMessage = null,
-                            isSignInSuccessful = user != null,
+                            isSignInSuccessful = UserManager.isUserSignedIn(),
                             loading = false
                         )
                     }
@@ -273,7 +262,6 @@ class SignInScreenViewModel @Inject constructor(
                 is Resource.Error -> {
                     _state.update {
                         it.copy(
-                            user = null,
                             errorMessage = resource.message,
                             isSignInSuccessful = false,
                             loading = false
@@ -285,7 +273,6 @@ class SignInScreenViewModel @Inject constructor(
                 else -> {
                     _state.update {
                         it.copy(
-                            user = null,
                             errorMessage = "Unknown error",
                             isSignInSuccessful = false,
                             loading = false
@@ -302,11 +289,10 @@ class SignInScreenViewModel @Inject constructor(
             _state.update { it.copy(loading = true) }
 
             getUserDataUseCase.invoke { resource ->
-                val user = resource.data
-                if (user != null) {
+                UserManager.user = resource.data
+                if (resource.data != null) {
                     _state.update {
                         it.copy(
-                            user = user,
                             errorMessage = null,
                             isSignInSuccessful = true,
                             loading = false
@@ -315,7 +301,6 @@ class SignInScreenViewModel @Inject constructor(
                 } else {
                     _state.update {
                         it.copy(
-                            user = null,
                             errorMessage = "User not signed in",
                             isSignInSuccessful = false,
                             loading = false
@@ -336,12 +321,11 @@ class SignInScreenViewModel @Inject constructor(
         signInWithIntentUseCase.invoke(intent, role, fmc) { resource ->
             when (resource) {
                 is Resource.Success -> {
-                    val user = resource.data?.data
+                    UserManager.user = resource.data?.data
                     _state.update {
                         it.copy(
-                            user = user,
                             errorMessage = null,
-                            isSignInSuccessful = user != null,
+                            isSignInSuccessful = UserManager.isUserSignedIn(),
                             loading = false
                         )
                     }
@@ -350,7 +334,6 @@ class SignInScreenViewModel @Inject constructor(
                 is Resource.Error -> {
                     _state.update {
                         it.copy(
-                            user = null,
                             errorMessage = resource.message,
                             isSignInSuccessful = false,
                             loading = false
@@ -361,7 +344,6 @@ class SignInScreenViewModel @Inject constructor(
                 else -> {
                     _state.update {
                         it.copy(
-                            user = null,
                             errorMessage = "Unknown error",
                             isSignInSuccessful = false,
                             loading = false

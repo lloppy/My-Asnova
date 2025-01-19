@@ -3,7 +3,7 @@ package com.example.asnova.notification.products
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import com.example.asnova.MainActivity
+import com.example.asnova.screen.sign_in.MainActivity
 import com.example.asnova.R
 import com.example.asnova.notification.CoreNotification
 import com.google.firebase.messaging.RemoteMessage

@@ -1,6 +1,7 @@
 package com.example.asnova.navigation
 
 import android.content.Context
+import android.util.Log
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -18,6 +19,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.asnova.model.User
+import com.example.asnova.data.UserManager
 import com.example.asnova.screen.chat.ChatScreen
 import com.example.asnova.screen.feed.FeedScreen
 import com.example.asnova.screen.schedule.ScheduleScreen
@@ -38,12 +40,16 @@ import com.example.bottombar.model.VisibleItem
 fun SetupNavGraph(
     navHostController: NavHostController,
     context: Context,
-    user: User?,
     lifecycleScope: LifecycleCoroutineScope,
     lifecycleOwner: LifecycleOwner,
     router: Router,
     onRestartApp: () -> Unit
 ) {
+    val user = UserManager.user
+    Log.e("check_user", user?.surname.toString())
+    Log.e("check_user", user?.profilePictureUrl.toString())
+    Log.e("check_user", user?.email.toString())
+
     NavHost(
         navController = navHostController,
         startDestination = Screen.Feed.route

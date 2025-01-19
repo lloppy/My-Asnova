@@ -45,6 +45,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.asnova.R
+import com.example.asnova.data.UserManager
 import com.example.asnova.ui.theme.darkLinear
 import com.example.asnova.ui.theme.grayAsnova
 import com.example.asnova.utils.OtpView
@@ -173,8 +174,8 @@ fun SignInScreen(
                 }
             }
 
-            LaunchedEffect(state.isSignInSuccessful) {
-                if (state.isSignInSuccessful) {
+            LaunchedEffect(UserManager.user) {
+                if (UserManager.isUserSignedIn()) {
                     goProfile()
                 }
             }

@@ -1,4 +1,4 @@
-package com.example.asnova
+package com.example.asnova.screen.sign_in
 
 import android.Manifest
 import android.annotation.SuppressLint
@@ -23,11 +23,11 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.asnova.model.Role
+import com.example.asnova.R
 import com.example.asnova.data.UserManager
 import com.example.asnova.navigation.Screen
 import com.example.asnova.screen.greeting.GreetingScreen
 import com.example.asnova.screen.main.MainScreen
-import com.example.asnova.screen.sign_in.SignInScreenViewModel
 import com.example.asnova.ui.theme.AsnovaTheme
 import com.example.asnova.utils.createExternalRouter
 import com.example.asnova.utils.navigate
@@ -101,7 +101,6 @@ class MainActivity : ComponentActivity() {
                     composable(Screen.Main.route) {
                         MainScreen(
                             context = this@MainActivity,
-                            user = state.user,
                             lifecycleScope = lifecycleScope,
                             lifecycleOwner = this@MainActivity,
                             onRestartApp = { restartApp() },

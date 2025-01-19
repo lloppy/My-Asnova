@@ -12,7 +12,7 @@ import androidx.core.app.NotificationCompat
 import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
 import com.asnova.model.Role
-import com.example.asnova.MainActivity
+import com.example.asnova.screen.sign_in.MainActivity
 import com.example.asnova.R
 import com.example.asnova.notification.creators.GuestNotificationCreator
 import com.example.asnova.notification.creators.StudentNotificationCreator
