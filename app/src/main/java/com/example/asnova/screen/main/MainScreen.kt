@@ -22,6 +22,7 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.asnova.model.Role
+import com.asnova.model.User
 import com.example.asnova.data.UserManager
 import com.example.asnova.navigation.BottomNavigationBar
 import com.example.asnova.navigation.Screen
@@ -34,6 +35,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun MainScreen(
     context: Context,
+    user: User?,
     lifecycleScope: LifecycleCoroutineScope,
     lifecycleOwner: LifecycleOwner,
     onRestartApp: () -> Unit,
@@ -81,6 +83,7 @@ fun MainScreen(
         SetupNavGraph(
             navController,
             context = context,
+            user = user,
             lifecycleScope = lifecycleScope,
             lifecycleOwner = lifecycleOwner,
             router = router,

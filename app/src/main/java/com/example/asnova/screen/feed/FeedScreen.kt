@@ -49,11 +49,14 @@ import com.example.asnova.utils.shimmerEffect
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun FeedScreen(
+    user: User?,
     externalRouter: Router,
     navController: NavController,
     lifecycleOwner: LifecycleOwner,
     viewModel: FeedScreenViewModel = hiltViewModel()
 ) {
+    var userData by remember { mutableStateOf(user) }
+
     val listState = rememberLazyListState()
     val state by viewModel.state
     val segmentsForCurrentUser = viewModel.availableSegments
@@ -64,23 +67,6 @@ fun FeedScreen(
     var selectedThreeSegment by remember { mutableStateOf(Segments.WORK_PROFESSIONS) }
 
     val context = LocalContext.current
-    var userData by remember { mutableStateOf<User?>(null) }
-
-    LaunchedEffect(Unit) {
-        viewModel.getUserData { resource ->
-            when (resource) {
-                is Resource.Success -> {
-                    userData = resource.data
-                }
-
-                is Resource.Error -> {
-                    // Handle error
-                }
-
-                else -> {}
-            }
-        }
-    }
 
     Box(
         modifier = Modifier

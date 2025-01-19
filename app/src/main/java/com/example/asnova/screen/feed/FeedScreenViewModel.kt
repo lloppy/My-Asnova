@@ -28,9 +28,8 @@ class FeedScreenViewModel @Inject constructor(
     private val getSafetyNewsUseCase: GetSafetyNewsUseCase,
 
     private val onDownloadMoreAsnovaNewsUseCase: OnDownloadMoreAsnovaNewsUseCase,
-    private val onDownloadMoreSafetyNewsUseCase: OnDownloadMoreSafetyNewsUseCase,
+    private val onDownloadMoreSafetyNewsUseCase: OnDownloadMoreSafetyNewsUseCase
 
-    private val getUserDataUseCase: GetUserDataUseCase
 ) : ViewModel() {
 
     val availableSegments: List<String> = when (UserManager.getRole()) {
@@ -46,10 +45,6 @@ class FeedScreenViewModel @Inject constructor(
 
     init {
         loadNewsForSegment(selectedSegment)
-    }
-
-    fun getUserData(callback: (Resource<User?>) -> Unit) {
-        getUserDataUseCase.invoke(callback)
     }
 
     private fun loadNewsForSegment(segment: String) {

@@ -49,14 +49,14 @@ import java.time.LocalDate
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun ScheduleScreen(
+    user: User?,
     externalRouter: Router,
     context: Context,
     lifecycleOwner: LifecycleOwner,
     viewModel: ScheduleScreenViewModel = hiltViewModel()
 ) {
-    // Паттерн State
     val state = viewModel.state
-    var userData by remember { mutableStateOf<User?>(null) }
+    var userData by remember { mutableStateOf(user) }
 
     val configuration = LocalConfiguration.current
     val screenHeight = configuration.screenHeightDp.dp
@@ -74,20 +74,7 @@ fun ScheduleScreen(
     var currentScheduleIsPrivate by remember { mutableStateOf(true) }
 
     LaunchedEffect(Unit) {
-        viewModel.getUserData { resource ->
-            when (resource) {
-                is Resource.Success -> {
-                    userData = resource.data
-                    viewModel.loadScheduleForGroup(userData?.asnovaClass)
-                }
-
-                is Resource.Error -> {
-                    // Handle error
-                }
-
-                else -> {}
-            }
-        }
+        viewModel.loadScheduleForGroup(userData?.asnovaClass)
     }
 
     Box(
@@ -96,7 +83,6 @@ fun ScheduleScreen(
             .fillMaxSize()
             .background(Color.White)
     ) {
-        // Паттерн State
         SkeletonScreen(
             isLoading = state.value.loading,
             skeleton = {

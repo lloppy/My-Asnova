@@ -5,14 +5,10 @@ import android.util.Log
 import com.asnova.model.Role
 import com.asnova.storage.KEY_USER_SETTING
 
-/*
-    В Kotlin ключевое слово Object используется для создания объекта-одиночки
-    https://apptractor.ru/info/techhype/kotlin-object.html
-*/
-
 object UserManager {
     private var _role: String = Role.NONE
     var fmc = ""
+
     fun init(sharedPreferences: SharedPreferences) {
         val userRole = sharedPreferences.getString(KEY_USER_SETTING, Role.NONE) ?: Role.NONE
         _role = userRole

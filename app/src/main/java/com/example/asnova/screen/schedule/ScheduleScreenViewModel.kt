@@ -10,11 +10,9 @@ import com.asnova.domain.usecase.GetScheduleFromSiteUseCase
 import com.asnova.domain.usecase.GetScheduleMapUseCase
 import com.asnova.domain.usecase.GetScheduleStateUseCase
 import com.asnova.domain.usecase.GetScheduleUseCase
-import com.asnova.domain.usecase.GetUserDataUseCase
 import com.asnova.domain.usecase.SaveScheduleStateUseCase
 import com.asnova.model.Resource
 import com.asnova.model.Role
-import com.asnova.model.ScheduleAsnovaPrivate
 import com.asnova.model.ScheduleAsnovaSite
 import com.asnova.model.User
 import com.example.asnova.data.UserManager
@@ -30,9 +28,8 @@ class ScheduleScreenViewModel @Inject constructor(
     private val getScheduleFromSiteUseCase: GetScheduleFromSiteUseCase,
     private val checkUserClassUseCase: CheckUserClassUseCase,
     private val saveScheduleStateUseCase: SaveScheduleStateUseCase,
-    private val getScheduleStateUseCase: GetScheduleStateUseCase,
+    private val getScheduleStateUseCase: GetScheduleStateUseCase
 
-    private val getUserDataUseCase: GetUserDataUseCase
 ) : ViewModel() {
 
     private val _state = mutableStateOf(ScheduleState())
@@ -62,10 +59,6 @@ class ScheduleScreenViewModel @Inject constructor(
                 loadScheduleForGroup()
             }
         }
-    }
-
-    fun getUserData(callback: (Resource<User?>) -> Unit) {
-        getUserDataUseCase.invoke(callback)
     }
 
     // Паттерн State

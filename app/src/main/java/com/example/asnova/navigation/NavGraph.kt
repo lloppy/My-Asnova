@@ -17,6 +17,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.asnova.model.User
 import com.example.asnova.screen.chat.ChatScreen
 import com.example.asnova.screen.feed.FeedScreen
 import com.example.asnova.screen.schedule.ScheduleScreen
@@ -37,6 +38,7 @@ import com.example.bottombar.model.VisibleItem
 fun SetupNavGraph(
     navHostController: NavHostController,
     context: Context,
+    user: User?,
     lifecycleScope: LifecycleCoroutineScope,
     lifecycleOwner: LifecycleOwner,
     router: Router,
@@ -48,6 +50,7 @@ fun SetupNavGraph(
     ) {
         composable(Screen.Feed.route) {
             FeedScreen(
+                user = user,
                 externalRouter = router,
                 navController = navHostController,
                 lifecycleOwner = lifecycleOwner
@@ -55,6 +58,7 @@ fun SetupNavGraph(
         }
         composable(Screen.Schedule.route) {
             ScheduleScreen(
+                user = user,
                 externalRouter = router,
                 context = context,
                 lifecycleOwner = lifecycleOwner
@@ -62,6 +66,7 @@ fun SetupNavGraph(
         }
         composable(Screen.ProfileSettings.route) {
             ProfileSettingsScreen(
+                user = user,
                 externalRouter = router,
                 context = context,
                 lifecycleScope = lifecycleScope,

@@ -2,18 +2,14 @@ package com.example.asnova.screen.greeting
 
 import android.content.SharedPreferences
 import android.util.Log
-import androidx.compose.runtime.State
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import com.asnova.storage.KEY_USER_SETTING
 import com.example.asnova.data.UserManager
-import com.example.asnova.screen.sign_in.SignInState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import javax.inject.Inject
-import kotlinx.coroutines.flow.update
 
 @HiltViewModel
 class GreetingScreenViewModel @Inject constructor(

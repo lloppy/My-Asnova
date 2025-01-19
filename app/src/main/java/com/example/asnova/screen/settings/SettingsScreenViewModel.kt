@@ -34,7 +34,6 @@ class SettingsScreenViewModel @Inject constructor(
     private val userRepository: UserRepository,
 
     private val signOutUserUseCase: SignOutUserUseCase,
-    private val getUserDataUseCase: GetUserDataUseCase,
     private val deleteAccountUseCase: DeleteAccountUseCase,
 
     private val pushAsnovaClassesUseCase: PushAsnovaClassesUseCase,
@@ -86,10 +85,6 @@ class SettingsScreenViewModel @Inject constructor(
         onFailure: (String) -> Unit
     ) {
         userRepository.updateUserInfo(name, surname, email, phone, onSuccess, onFailure)
-    }
-
-    fun getUserData(callback: (Resource<User?>) -> Unit) {
-        getUserDataUseCase.invoke(callback)
     }
 
     fun signOut() {
@@ -199,44 +194,44 @@ class SettingsScreenViewModel @Inject constructor(
     }
 
     fun submitPromocode(promocode: String, context: Context, navController: NavController) {
-        getUserData { resource ->
-            when (resource) {
-                is Resource.Success -> {
-                    val userData = resource.data
-                    if (userData != null) {
-                        submitPromocodeUseCase(
-                            promocode = promocode,
-                            userData = userData,
-                            callback = { result ->
-                                Toast.makeText(
-                                    context,
-                                    "Промокод успешно отправлен на проверку",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                                navController.popBackStack()
-                            }
-                        )
-                    } else {
-                        Toast.makeText(
-                            context,
-                            "Ошибка отправки промокода. Пустые данные пользователя",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                }
-
-                is Resource.Error -> {
-                    Toast.makeText(
-                        context,
-                        "Ошибка отправки промокода",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
-
-                is Resource.Loading -> {
-                }
-            }
-        }
+//        getUserData { resource ->
+//            when (resource) {
+//                is Resource.Success -> {
+//                    val userData = resource.data
+//                    if (userData != null) {
+//                        submitPromocodeUseCase(
+//                            promocode = promocode,
+//                            userData = userData,
+//                            callback = { result ->
+//                                Toast.makeText(
+//                                    context,
+//                                    "Промокод успешно отправлен на проверку",
+//                                    Toast.LENGTH_SHORT
+//                                ).show()
+//                                navController.popBackStack()
+//                            }
+//                        )
+//                    } else {
+//                        Toast.makeText(
+//                            context,
+//                            "Ошибка отправки промокода. Пустые данные пользователя",
+//                            Toast.LENGTH_SHORT
+//                        ).show()
+//                    }
+//                }
+//
+//                is Resource.Error -> {
+//                    Toast.makeText(
+//                        context,
+//                        "Ошибка отправки промокода",
+//                        Toast.LENGTH_SHORT
+//                    ).show()
+//                }
+//
+//                is Resource.Loading -> {
+//                }
+//            }
+//        }
     }
 
     fun pullToRefresh() {

@@ -19,10 +19,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ExitToApp
-import androidx.compose.material.icons.automirrored.filled.Login
 import androidx.compose.material.icons.filled.DeleteOutline
 import androidx.compose.material.icons.filled.Group
-import androidx.compose.material.icons.filled.Login
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Replay
 import androidx.compose.material.icons.outlined.Discount
@@ -71,6 +69,7 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun ProfileSettingsScreen(
+    user: User?,
     externalRouter: Router,
     context: Context,
     lifecycleScope: LifecycleCoroutineScope,
@@ -83,7 +82,7 @@ fun ProfileSettingsScreen(
     navController: NavController,
     viewModel: SettingsScreenViewModel = hiltViewModel()
 ) {
-    var userData by remember { mutableStateOf<User?>(null) }
+    var userData by remember { mutableStateOf(user) }
     val state = viewModel.state
 
     var showBottomSheet by remember { mutableStateOf(false) }
@@ -91,22 +90,6 @@ fun ProfileSettingsScreen(
     // Refresh state
     var isRefreshing by remember { mutableStateOf(false) }
     val stateRefresh = rememberPullRefreshState(isRefreshing, { viewModel.pullToRefresh() })
-
-    LaunchedEffect(Unit) {
-        viewModel.getUserData { resource ->
-            when (resource) {
-                is Resource.Success -> {
-                    userData = resource.data
-                }
-
-                is Resource.Error -> {
-                    // Handle error
-                }
-
-                else -> {}
-            }
-        }
-    }
 
     Box(
         modifier = Modifier

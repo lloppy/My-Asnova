@@ -101,6 +101,7 @@ class MainActivity : ComponentActivity() {
                     composable(Screen.Main.route) {
                         MainScreen(
                             context = this@MainActivity,
+                            user = state.user,
                             lifecycleScope = lifecycleScope,
                             lifecycleOwner = this@MainActivity,
                             onRestartApp = { restartApp() },
